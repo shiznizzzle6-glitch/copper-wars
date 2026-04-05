@@ -907,6 +907,39 @@ body::before {
   white-space: nowrap;
 }
 
+/* ── Collapsible Sections ── */
+.section-title.collapsible {
+  cursor: pointer;
+  user-select: none;
+  transition: color 0.2s;
+}
+
+.section-title.collapsible:hover {
+  color: var(--blue);
+}
+
+.section-title.collapsible .toggle-icon {
+  margin-left: auto;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  transition: transform 0.3s ease;
+}
+
+.section-title.collapsible.collapsed .toggle-icon {
+  transform: rotate(-90deg);
+}
+
+.collapsible-content {
+  overflow: hidden;
+  transition: max-height 0.5s ease, opacity 0.3s ease;
+  opacity: 1;
+}
+
+.collapsible-content.collapsed {
+  max-height: 0 !important;
+  opacity: 0;
+}
+
 /* ── Footer ── */
 .footer {
   text-align: center;
@@ -1118,7 +1151,8 @@ body::before {
 
   <!-- Multi-Attacker Match Details -->
   <div class="section anim anim-d5">
-    <div class="section-title"><span class="icon" style="background:var(--orange)"></span> Multi-Attacker Match Details</div>
+    <div class="section-title collapsible" onclick="toggleSection(this)" aria-expanded="true"><span class="icon" style="background:var(--orange)"></span> Multi-Attacker Match Details <span class="toggle-icon">▼</span></div>
+    <div class="collapsible-content" id="multiContent" style="max-height:5000px;">
     <div class="filter-bar" id="multiFilterBar">
       <button class="filter-btn active" data-mfilter="all">All</button>
       <button class="filter-btn" data-mfilter="1">Battle 1</button>
@@ -1345,6 +1379,7 @@ body::before {
       </div>
 
     </div>
+    </div>
   </div>
 
   <!-- Server Performance -->
@@ -1566,13 +1601,32 @@ body::before {
     </div>
   </div>
 
-  <div class="footer">Copper Wars Season Dashboard · Updated April 4, 2026 · Battle 2 of 8 · v1.4</div>
+  <div class="footer">Copper Wars Season Dashboard · Updated April 4, 2026 · Battle 2 of 8 · v1.5</div>
 </div>
 
 <div class="tooltip" id="tooltip"></div>
 <button class="back-to-top" id="backToTop" aria-label="Back to top">▲</button>
 
 <script>
+// ── Collapsible Sections ──
+function toggleSection(titleEl) {
+  const content = titleEl.nextElementSibling;
+  const isCollapsed = content.classList.contains('collapsed');
+  if (isCollapsed) {
+    content.style.maxHeight = content.scrollHeight + 'px';
+    content.classList.remove('collapsed');
+    titleEl.classList.remove('collapsed');
+    titleEl.setAttribute('aria-expanded', 'true');
+  } else {
+    content.style.maxHeight = content.scrollHeight + 'px';
+    requestAnimationFrame(() => {
+      content.classList.add('collapsed');
+      titleEl.classList.add('collapsed');
+      titleEl.setAttribute('aria-expanded', 'false');
+    });
+  }
+}
+
 // ── Battle Data ──
 const battleData = [
   // Battle 1
