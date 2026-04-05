@@ -1126,7 +1126,8 @@ body::before {
 
   <!-- Match Type Breakdown -->
   <div class="section anim anim-d4">
-    <div class="section-title"><span class="icon" style="background:var(--blue)"></span> Match Type Breakdown</div>
+    <div class="section-title collapsible collapsed" onclick="toggleSection(this)" aria-expanded="false"><span class="icon" style="background:var(--blue)"></span> Match Type Breakdown <span class="toggle-icon">▼</span></div>
+    <div class="collapsible-content collapsed" style="max-height:0;">
     <div class="match-type-grid">
       <div class="match-type-card">
         <div class="mt-label" style="color:var(--blue)">1v1</div>
@@ -1147,12 +1148,13 @@ body::before {
         <div class="mt-stat">No match played</div>
       </div>
     </div>
+    </div>
   </div>
 
   <!-- Multi-Attacker Match Details -->
   <div class="section anim anim-d5">
-    <div class="section-title collapsible" onclick="toggleSection(this)" aria-expanded="true"><span class="icon" style="background:var(--orange)"></span> Multi-Attacker Match Details <span class="toggle-icon">▼</span></div>
-    <div class="collapsible-content" id="multiContent" style="max-height:5000px;">
+    <div class="section-title collapsible collapsed" onclick="toggleSection(this)" aria-expanded="false"><span class="icon" style="background:var(--orange)"></span> Multi-Attacker Match Details <span class="toggle-icon">▼</span></div>
+    <div class="collapsible-content collapsed" id="multiContent" style="max-height:0;">
     <div class="filter-bar" id="multiFilterBar">
       <button class="filter-btn active" data-mfilter="all">All</button>
       <button class="filter-btn" data-mfilter="1">Battle 1</button>
@@ -1384,7 +1386,8 @@ body::before {
 
   <!-- Server Performance -->
   <div class="section">
-    <div class="section-title"><span class="icon" style="background:var(--cyan)"></span> Server Performance — Cumulative</div>
+    <div class="section-title collapsible collapsed" onclick="toggleSection(this)" aria-expanded="false"><span class="icon" style="background:var(--cyan)"></span> Server Performance — Cumulative <span class="toggle-icon">▼</span></div>
+    <div class="collapsible-content collapsed" style="max-height:0;">
     <div class="two-col">
       <div class="card">
         <div class="card-title">Attacker Servers</div>
@@ -1419,11 +1422,13 @@ body::before {
         </table>
       </div>
     </div>
+    </div>
   </div>
 
   <!-- Team Leaderboards -->
   <div class="section">
-    <div class="section-title"><span class="icon" style="background:var(--gold)"></span> Team Leaderboards — Cumulative</div>
+    <div class="section-title collapsible collapsed" onclick="toggleSection(this)" aria-expanded="false"><span class="icon" style="background:var(--gold)"></span> Team Leaderboards — Cumulative <span class="toggle-icon">▼</span></div>
+    <div class="collapsible-content collapsed" style="max-height:0;">
     <div class="two-col">
       <div class="card">
         <div class="card-title">Top Attackers — Copper Earned</div>
@@ -1462,17 +1467,21 @@ body::before {
         </table>
       </div>
     </div>
+    </div>
   </div>
 
   <!-- Copper Distribution Chart -->
   <div class="section">
-    <div class="section-title"><span class="icon" style="background:var(--gold)"></span> Copper Distribution</div>
+    <div class="section-title collapsible collapsed" onclick="toggleSection(this)" aria-expanded="false"><span class="icon" style="background:var(--gold)"></span> Copper Distribution <span class="toggle-icon">▼</span></div>
+    <div class="collapsible-content collapsed" style="max-height:0;">
     <div class="chart-container" id="copperChart"></div>
+    </div>
   </div>
 
   <!-- Cross-Battle Trends -->
   <div class="section">
-    <div class="section-title"><span class="icon" style="background:var(--purple)"></span> Cross-Battle Trends</div>
+    <div class="section-title collapsible collapsed" onclick="toggleSection(this)" aria-expanded="false"><span class="icon" style="background:var(--purple)"></span> Cross-Battle Trends <span class="toggle-icon">▼</span></div>
+    <div class="collapsible-content collapsed" style="max-height:0;">
     <div class="trend-grid">
 
       <div class="trend-card">
@@ -1567,11 +1576,13 @@ body::before {
       </div>
 
     </div>
+    </div>
   </div>
 
   <!-- Full Matchup Table -->
   <div class="section">
-    <div class="section-title"><span class="icon" style="background:var(--blue)"></span> Full Matchup Table</div>
+    <div class="section-title collapsible collapsed" onclick="toggleSection(this)" aria-expanded="false"><span class="icon" style="background:var(--blue)"></span> Full Matchup Table <span class="toggle-icon">▼</span></div>
+    <div class="collapsible-content collapsed" style="max-height:0;">
     <div class="filter-bar" id="filterBar">
       <button class="filter-btn active" data-filter="all">All</button>
       <button class="filter-btn" data-filter="B1">Battle 1</button>
@@ -1599,9 +1610,10 @@ body::before {
         <tbody id="matchupBody"></tbody>
       </table>
     </div>
+    </div>
   </div>
 
-  <div class="footer">Copper Wars Season Dashboard · Updated April 4, 2026 · Battle 2 of 8 · v1.5</div>
+  <div class="footer">Copper Wars Season Dashboard · Updated April 4, 2026 · Battle 2 of 8 · v1.6</div>
 </div>
 
 <div class="tooltip" id="tooltip"></div>
