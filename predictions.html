@@ -456,6 +456,226 @@ body::before {
 .mm-team-kou { background: var(--green-dim); color: var(--green); }
 .mm-team-kag { background: rgba(34,211,238,0.12); color: var(--cyan); }
 
+/* ── Battle Predictor ── */
+.bp-status {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 20px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  margin-bottom: 20px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  letter-spacing: 1px;
+}
+
+.bp-status-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.bp-status-dot.live { background: var(--green); box-shadow: 0 0 8px var(--green); }
+.bp-status-dot.waiting { background: var(--orange); }
+.bp-status-dot.none { background: var(--text-muted); }
+
+.bp-summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.bp-summary-card {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px;
+  text-align: center;
+}
+
+.bp-summary-value {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 1.3rem;
+  font-weight: 700;
+}
+
+.bp-summary-label {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.62rem;
+  color: var(--text-muted);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-top: 2px;
+}
+
+.bp-matchups {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 16px;
+}
+
+.bp-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+.bp-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+}
+
+.bp-card.favor-atk::before { background: var(--green); }
+.bp-card.favor-def::before { background: var(--red); }
+.bp-card.favor-even::before { background: var(--orange); }
+
+.bp-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.bp-card-type {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  letter-spacing: 1px;
+}
+
+.bp-card-prob {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  padding: 3px 10px;
+  border-radius: 4px;
+}
+
+.bp-card-prob.high { background: var(--green-dim); color: var(--green); }
+.bp-card-prob.mid { background: var(--orange-dim); color: var(--orange); }
+.bp-card-prob.low { background: var(--red-dim); color: var(--red); }
+
+.bp-versus {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.bp-team-side {
+  text-align: center;
+}
+
+.bp-team-role {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+.bp-team-name {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+}
+
+.bp-team-server {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.bp-team-copper {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.75rem;
+  color: var(--gold);
+  margin-top: 4px;
+}
+
+.bp-vs-icon {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  letter-spacing: 3px;
+}
+
+.bp-prob-bar {
+  height: 8px;
+  background: rgba(255,255,255,0.05);
+  border-radius: 4px;
+  overflow: hidden;
+  display: flex;
+  margin-bottom: 12px;
+}
+
+.bp-prob-fill-atk {
+  height: 100%;
+  background: var(--green);
+  border-radius: 4px 0 0 4px;
+  transition: width 0.6s ease;
+}
+
+.bp-prob-fill-def {
+  height: 100%;
+  background: var(--red);
+  border-radius: 0 4px 4px 0;
+  transition: width 0.6s ease;
+}
+
+.bp-detail-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 5px 0;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+.bp-detail-label {
+  color: var(--text-muted);
+}
+
+.bp-no-declarations {
+  text-align: center;
+  padding: 40px 20px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+
+.bp-no-declarations p {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  letter-spacing: 1px;
+  margin-bottom: 8px;
+}
+
+.bp-no-declarations code {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.72rem;
+  color: var(--text-secondary);
+  background: var(--bg-secondary);
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
 /* ── Phase Labels ── */
 .phase-label {
   display: inline-block;
@@ -566,24 +786,29 @@ body::before {
       <div class="mm-grid" id="mmGrid"></div>
     </div>
 
-    <!-- Coming Soon: Phase 2 & 3 -->
+    <!-- Battle Predictor -->
+    <div class="section anim anim-d2">
+      <span class="phase-label">Phase 2 — Battle Predictor</span>
+      <div class="section-title"><span class="icon" style="background:var(--green)"></span> Battle Predictor — Next Matchups</div>
+      <p style="font-family:'Share Tech Mono',monospace;font-size:0.78rem;color:var(--text-muted);margin-bottom:16px;letter-spacing:1px">
+        Win probabilities based on historical attack/defense records, copper differentials, and match type.
+        Add declarations to <code style="background:var(--bg-secondary);padding:2px 6px;border-radius:3px;color:var(--text-secondary)">declarations.csv</code> to see predictions.
+      </p>
+      <div id="battlePredictor"></div>
+    </div>
+
+    <!-- Coming Soon: Phase 3 -->
     <div class="section">
       <div class="section-title"><span class="icon" style="background:var(--blue)"></span> Coming Soon</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
-        <div class="coming-soon">
-          <div class="coming-soon-title">Phase 2 — Battle Predictor</div>
-          <div class="coming-soon-desc">Input confirmed declarations 24hrs before battle.<br>Win probabilities & expected copper impact.</div>
-        </div>
-        <div class="coming-soon">
-          <div class="coming-soon-title">Phase 3 — Monte Carlo Simulator</div>
-          <div class="coming-soon-desc">1,000+ season simulations with probabilistic outcomes.<br>Confidence ranges & swing match analysis.</div>
-        </div>
+      <div class="coming-soon">
+        <div class="coming-soon-title">Phase 3 — Monte Carlo Simulator</div>
+        <div class="coming-soon-desc">1,000+ season simulations with probabilistic outcomes.<br>Confidence ranges & swing match analysis.</div>
       </div>
     </div>
 
   </div>
 
-  <div class="footer">Copper Wars Season Projector · Phase 1 · v0.1</div>
+  <div class="footer">Copper Wars Season Projector · Phase 2 · v0.2</div>
 </div>
 
 <script>
@@ -662,15 +887,17 @@ function fmtK(n) {
 // ── Data Loading ──
 async function loadData() {
   try {
-    const [genRes, standingsRes] = await Promise.all([
+    const [genRes, standingsRes, battleRes] = await Promise.all([
       fetch('copper_generation.csv'),
-      fetch('copper_standings.csv')
+      fetch('copper_standings.csv'),
+      fetch('battle_data.csv')
     ]);
 
-    if (!genRes.ok || !standingsRes.ok) throw new Error('CSV load failed');
+    if (!genRes.ok || !standingsRes.ok || !battleRes.ok) throw new Error('CSV load failed');
 
     const genRows = parseCSV(await genRes.text());
     const standingsRows = parseCSV(await standingsRes.text());
+    const battleRows = parseCSV(await battleRes.text());
 
     // Parse generation rates
     const genRates = {};
@@ -687,17 +914,53 @@ async function loadData() {
       const genRate = genRates[team] || 0;
       standings.push({ team, server: srv, faction, copper, genRate });
     });
-
-    // Sort by current copper
     standings.sort((a, b) => b.copper - a.copper);
+
+    // Parse battle history into team stats
+    const teamStats = {};
+    battleRows.forEach(r => {
+      if (r['Match Type'] === 'DNF') return;
+      const atk = r['Attacker'];
+      const def = r['Defender'];
+      const res = r['Result'];
+      const copper = parseFloat(r['Copper Gained']) || 0;
+
+      if (!teamStats[atk]) teamStats[atk] = { atkW: 0, atkL: 0, defHold: 0, defBreached: 0 };
+      if (res === 'W') teamStats[atk].atkW++;
+      else teamStats[atk].atkL++;
+
+      if (def) {
+        if (!teamStats[def]) teamStats[def] = { atkW: 0, atkL: 0, defHold: 0, defBreached: 0 };
+        if (res === 'W') teamStats[def].defBreached++;
+        else teamStats[def].defHold++;
+      }
+    });
+
+    // Try to load declarations (optional — may not exist)
+    let declarations = [];
+    try {
+      const declRes = await fetch('declarations.csv');
+      if (declRes.ok) {
+        const declRows = parseCSV(await declRes.text());
+        declRows.forEach(r => {
+          if (r['Attacker'] && r['Defender']) {
+            declarations.push({
+              battle: parseInt(r['Battle']) || 0,
+              atk: r['Attacker'].trim(),
+              def: r['Defender'].trim(),
+              matchType: r['Match Type'] ? r['Match Type'].trim() : '1v1'
+            });
+          }
+        });
+      }
+    } catch (e) { /* declarations.csv doesn't exist yet — that's fine */ }
 
     // Calculate projections
     const now = new Date();
     const snapshotTime = new Date(snapshotDate + 'T12:00:00');
     const hoursToEnd = (seasonEnd - snapshotTime) / 3600000;
-    const hoursFromNow = (seasonEnd - now) / 3600000;
 
-    // Determine current battle
+    // Determine current/next battle
     const today = now.toISOString().slice(0, 10);
     let completedBattles = 0;
     battleSchedule.forEach(b => {
@@ -712,12 +975,192 @@ async function loadData() {
     renderProjectionTable(standings, hoursToEnd);
     renderProjectionChart(standings, hoursToEnd);
     renderMatchmaking(standings, hoursToEnd);
+    renderBattlePredictor(declarations, teamStats, standings, completedBattles);
 
   } catch (err) {
     document.getElementById('loadingIndicator').innerHTML =
-      '<span style="color:var(--red)">⚠ Failed to load data. Make sure copper_generation.csv and copper_standings.csv are in the same directory.</span>';
+      '<span style="color:var(--red)">⚠ Failed to load data. Make sure CSV files are in the same directory.</span>';
     console.error(err);
   }
+}
+
+// ── Win Probability Engine ──
+function calcWinProb(atkTeam, defTeam, teamStats, standings) {
+  // Bayesian approach: blend team-specific history with overall baseline
+  const BASELINE_ATK_WIN = 0.655; // overall attacker win rate from B1-B2
+  const PRIOR_WEIGHT = 2; // how many "virtual" games of baseline to blend in
+
+  const atkStats = teamStats[atkTeam] || { atkW: 0, atkL: 0, defHold: 0, defBreached: 0 };
+  const defStats = teamStats[defTeam] || { atkW: 0, atkL: 0, defHold: 0, defBreached: 0 };
+
+  // Attacker's attack strength
+  const atkGames = atkStats.atkW + atkStats.atkL;
+  const atkRawRate = atkGames > 0 ? atkStats.atkW / atkGames : BASELINE_ATK_WIN;
+  const atkBlended = (atkStats.atkW + PRIOR_WEIGHT * BASELINE_ATK_WIN) / (atkGames + PRIOR_WEIGHT);
+
+  // Defender's defense strength
+  const defGames = defStats.defHold + defStats.defBreached;
+  const defRawRate = defGames > 0 ? defStats.defHold / defGames : (1 - BASELINE_ATK_WIN);
+  const defBlended = (defStats.defHold + PRIOR_WEIGHT * (1 - BASELINE_ATK_WIN)) / (defGames + PRIOR_WEIGHT);
+
+  // Copper differential factor: higher copper defender = slightly harder target
+  // (they got rich for a reason — likely strong)
+  const atkStanding = standings.find(s => s.team === atkTeam);
+  const defStanding = standings.find(s => s.team === defTeam);
+  let copperFactor = 0;
+  if (atkStanding && defStanding && atkStanding.copper > 0 && defStanding.copper > 0) {
+    const ratio = defStanding.copper / atkStanding.copper;
+    copperFactor = (ratio - 1) * 0.05; // slight adjustment: richer defender = slightly harder
+  }
+
+  // Combined probability
+  const rawProb = atkBlended * (1 - defBlended) / (atkBlended * (1 - defBlended) + (1 - atkBlended) * defBlended);
+
+  // Apply copper factor and clamp
+  let prob = rawProb - copperFactor;
+  prob = Math.max(0.15, Math.min(0.85, prob)); // clamp to reasonable range
+
+  return {
+    atkWinProb: prob,
+    atkRecord: atkStats.atkW + 'W/' + atkStats.atkL + 'L',
+    defRecord: defStats.defHold + 'H/' + defStats.defBreached + 'B',
+    atkCopper: atkStanding ? atkStanding.copper : 0,
+    defCopper: defStanding ? defStanding.copper : 0,
+    expectedSteal: defStanding ? defStanding.copper * 0.15 : 0,
+    confidence: Math.min(atkGames, defGames) >= 2 ? 'normal' : 'low'
+  };
+}
+
+// ── Battle Predictor Renderer ──
+function renderBattlePredictor(declarations, teamStats, standings, completedBattles) {
+  const container = document.getElementById('battlePredictor');
+  const nextBattle = completedBattles + 1;
+
+  if (declarations.length === 0) {
+    container.innerHTML = `
+      <div class="bp-no-declarations">
+        <p>No declarations loaded yet</p>
+        <p>Create <code>declarations.csv</code> with columns:</p>
+        <p><code>Battle,Attacker,Defender,Match Type</code></p>
+        <p style="margin-top:8px;font-size:0.72rem">Add confirmed matchups 24 hours before battle to see predictions</p>
+      </div>`;
+    return;
+  }
+
+  // Filter to next battle (or show all if mixed)
+  const battleNums = [...new Set(declarations.map(d => d.battle))];
+  const displayBattle = battleNums.length === 1 ? battleNums[0] : nextBattle;
+  const matchups = declarations.filter(d => d.battle === displayBattle || d.battle === 0);
+
+  // Determine which battle info
+  const battleInfo = battleSchedule.find(b => b.num === displayBattle);
+  const battleDate = battleInfo ? battleInfo.date : '';
+  const battleDay = battleInfo ? battleInfo.day : '';
+
+  // Calculate predictions for each matchup
+  const predictions = matchups.map(m => {
+    const pred = calcWinProb(m.atk, m.def, teamStats, standings);
+    return { ...m, ...pred };
+  });
+
+  // Group by match ID for multi-attacker detection
+  const defenderGroups = {};
+  predictions.forEach(p => {
+    if (!defenderGroups[p.def]) defenderGroups[p.def] = [];
+    defenderGroups[p.def].push(p);
+  });
+
+  // Mark multi-attacker matchups
+  predictions.forEach(p => {
+    const group = defenderGroups[p.def];
+    if (group.length > 1) {
+      p.matchType = group.length + 'v1';
+    }
+  });
+
+  // Summary stats
+  const totalMatchups = predictions.length;
+  const avgAtkWin = predictions.reduce((s, p) => s + p.atkWinProb, 0) / totalMatchups;
+  const totalCopperAtRisk = predictions.reduce((s, p) => s + p.expectedSteal, 0);
+  const predictedAtkWins = predictions.filter(p => p.atkWinProb > 0.5).length;
+
+  // Status
+  const statusDot = declarations.length > 0 ? 'live' : 'none';
+  const statusText = 'Battle ' + displayBattle + ' · ' + battleDate + ' ' + battleDay + ' · ' + totalMatchups + ' matchups declared';
+
+  let html = '';
+
+  // Status bar
+  html += '<div class="bp-status"><span class="bp-status-dot ' + statusDot + '"></span>' + statusText + '</div>';
+
+  // Summary
+  html += '<div class="bp-summary">';
+  html += '<div class="bp-summary-card"><div class="bp-summary-value" style="color:var(--text-primary)">' + totalMatchups + '</div><div class="bp-summary-label">Matchups</div></div>';
+  html += '<div class="bp-summary-card"><div class="bp-summary-value" style="color:var(--green)">' + predictedAtkWins + '</div><div class="bp-summary-label">Predicted ATK Wins</div></div>';
+  html += '<div class="bp-summary-card"><div class="bp-summary-value" style="color:var(--red)">' + (totalMatchups - predictedAtkWins) + '</div><div class="bp-summary-label">Predicted DEF Holds</div></div>';
+  html += '<div class="bp-summary-card"><div class="bp-summary-value" style="color:var(--gold)">' + fmtK(totalCopperAtRisk) + '</div><div class="bp-summary-label">Copper at Risk</div></div>';
+  html += '<div class="bp-summary-card"><div class="bp-summary-value" style="color:var(--green)">' + Math.round(avgAtkWin * 100) + '%</div><div class="bp-summary-label">Avg ATK Win Prob</div></div>';
+  html += '</div>';
+
+  // Matchup cards (sorted by attacker win prob descending)
+  predictions.sort((a, b) => b.atkWinProb - a.atkWinProb);
+
+  html += '<div class="bp-matchups">';
+  predictions.forEach(p => {
+    const prob = Math.round(p.atkWinProb * 100);
+    const favor = prob >= 60 ? 'favor-atk' : prob <= 40 ? 'favor-def' : 'favor-even';
+    const probClass = prob >= 60 ? 'high' : prob <= 40 ? 'low' : 'mid';
+    const probLabel = prob >= 50 ? 'ATK ' + prob + '%' : 'DEF ' + (100 - prob) + '%';
+
+    const atkFaction = standings.find(s => s.team === p.atk);
+    const defFaction = standings.find(s => s.team === p.def);
+    const atkFacColor = atkFaction && atkFaction.faction === 'Koubutai' ? 'var(--green)' : 'var(--cyan)';
+    const defFacColor = defFaction && defFaction.faction === 'Koubutai' ? 'var(--green)' : 'var(--cyan)';
+    const atkSrv = atkFaction ? 'S' + atkFaction.server : '';
+    const defSrv = defFaction ? 'S' + defFaction.server : '';
+
+    const typeLabel = p.matchType !== '1v1' ? p.matchType : '1v1';
+    const confNote = p.confidence === 'low' ? ' · limited data' : '';
+
+    html += '<div class="bp-card ' + favor + '">';
+    html += '<div class="bp-card-header">';
+    html += '<span class="bp-card-type">' + typeLabel + confNote + '</span>';
+    html += '<span class="bp-card-prob ' + probClass + '">' + probLabel + '</span>';
+    html += '</div>';
+
+    html += '<div class="bp-versus">';
+    html += '<div class="bp-team-side">';
+    html += '<div class="bp-team-role" style="color:var(--green)">⚔ ATK</div>';
+    html += '<div class="bp-team-name" style="color:' + atkFacColor + '">' + p.atk + '</div>';
+    html += '<div class="bp-team-server">' + atkSrv + '</div>';
+    html += '<div class="bp-team-copper">' + fmtCopper(p.atkCopper) + '</div>';
+    html += '</div>';
+    html += '<div class="bp-vs-icon">VS</div>';
+    html += '<div class="bp-team-side">';
+    html += '<div class="bp-team-role" style="color:var(--red)">🛡 DEF</div>';
+    html += '<div class="bp-team-name" style="color:' + defFacColor + '">' + p.def + '</div>';
+    html += '<div class="bp-team-server">' + defSrv + '</div>';
+    html += '<div class="bp-team-copper">' + fmtCopper(p.defCopper) + '</div>';
+    html += '</div>';
+    html += '</div>';
+
+    // Probability bar
+    html += '<div class="bp-prob-bar">';
+    html += '<div class="bp-prob-fill-atk" style="width:' + prob + '%"></div>';
+    html += '<div class="bp-prob-fill-def" style="width:' + (100 - prob) + '%"></div>';
+    html += '</div>';
+
+    // Details
+    html += '<div class="bp-detail-row"><span class="bp-detail-label">ATK record</span><span>' + p.atkRecord + '</span></div>';
+    html += '<div class="bp-detail-row"><span class="bp-detail-label">DEF record</span><span>' + p.defRecord + '</span></div>';
+    html += '<div class="bp-detail-row"><span class="bp-detail-label">Copper at stake</span><span style="color:var(--gold)">' + fmtCopper(p.expectedSteal) + '</span></div>';
+    html += '<div class="bp-detail-row"><span class="bp-detail-label">If ATK wins</span><span style="color:var(--green)">ATK +' + fmtK(p.expectedSteal) + ' / DEF -' + fmtK(p.expectedSteal) + '</span></div>';
+
+    html += '</div>';
+  });
+  html += '</div>';
+
+  container.innerHTML = html;
 }
 
 // ── Timeline ──
