@@ -1031,6 +1031,129 @@ body::before {
   opacity: 0;
 }
 
+/* ── Participation Report ── */
+.participation-battle {
+  margin-bottom: 24px;
+}
+
+.participation-battle-header {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: var(--blue);
+  margin-bottom: 12px;
+}
+
+.participation-summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.participation-stat {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px;
+  text-align: center;
+}
+
+.participation-stat-value {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 1.4rem;
+  font-weight: 700;
+}
+
+.participation-stat-label {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-top: 2px;
+}
+
+.participation-role-section {
+  margin-bottom: 16px;
+}
+
+.participation-role-header {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--border);
+}
+
+.participation-server-group {
+  margin-bottom: 10px;
+}
+
+.participation-server-label {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+}
+
+.participation-team-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.participation-team-tag {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.75rem;
+  padding: 3px 10px;
+  border-radius: 4px;
+  letter-spacing: 1px;
+}
+
+.ptag-sat-out {
+  background: var(--red-dim);
+  color: var(--red);
+}
+
+.ptag-not-targeted {
+  background: rgba(255,255,255,0.05);
+  color: var(--text-muted);
+}
+
+.ptag-support {
+  background: var(--purple-dim);
+  color: var(--purple);
+}
+
+.participation-legend {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.participation-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.72rem;
+  color: var(--text-secondary);
+}
+
+.participation-legend-swatch {
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+}
+
 /* ── Footer ── */
 .footer {
   text-align: center;
@@ -1268,6 +1391,14 @@ body::before {
     </div>
   </div>
 
+  <!-- Participation Report -->
+  <div class="section">
+    <div class="section-title collapsible collapsed" onclick="toggleSection(this)" aria-expanded="false"><span class="icon" style="background:var(--purple)"></span> Participation Report <span class="toggle-icon">▼</span></div>
+    <div class="collapsible-content collapsed" style="max-height:0;">
+      <div id="participationReport"></div>
+    </div>
+  </div>
+
   <!-- Full Matchup Table -->
   <div class="section">
     <div class="section-title collapsible collapsed" onclick="toggleSection(this)" aria-expanded="false"><span class="icon" style="background:var(--blue)"></span> Full Matchup Table <span class="toggle-icon">▼</span></div>
@@ -1302,7 +1433,7 @@ body::before {
     </div>
   </div>
 
-  <div class="footer">Copper Wars Season Dashboard · Updated April 5, 2026 · Battle 2 of 8 · v1.8</div>
+  <div class="footer">Copper Wars Season Dashboard · Updated April 5, 2026 · Battle 2 of 8 · v1.9</div>
 </div>
 
 <div class="tooltip" id="tooltip"></div>
@@ -1354,25 +1485,25 @@ const battleData = [
   {battle:1,mid:"1-21",type:"1v1",atk:"CBT",asrv:1196,def:"TII",dsrv:1247,res:"W",copper:24.5},
   {battle:1,mid:"1-22",type:"1v1",atk:"KZQZ",asrv:1252,def:"WASS",dsrv:1220,res:"W",copper:22.2},
   {battle:1,mid:"1-23",type:"1v1",atk:"TEN1",asrv:1196,def:"ZONE",dsrv:1194,res:"W",copper:17.9},
-  {battle:1,mid:"1-24",type:"2v1",atk:"815K",asrv:1252,def:"NZM",dsrv:1194,res:"L",copper:17.9},
+  {battle:1,mid:"1-24",type:"2v1",atk:"815K",asrv:1252,def:"NZM",dsrv:1194,res:"L",copper:17.9,sup:"HOPE"},
   {battle:1,mid:"1-25",type:"1v1",atk:"LAZO",asrv:1196,def:"XESS",dsrv:1247,res:"W",copper:17.7},
-  {battle:1,mid:"1-26",type:"2v1",atk:"VODL",asrv:1252,def:"7VEK",dsrv:1247,res:"L",copper:14.5},
+  {battle:1,mid:"1-26",type:"2v1",atk:"VODL",asrv:1252,def:"7VEK",dsrv:1247,res:"L",copper:14.5,sup:"SANC"},
   {battle:1,mid:"1-27",type:"1v1",atk:"SPG1",asrv:1252,def:"SPRR",dsrv:1194,res:"W",copper:6.4},
-  {battle:1,mid:"1-26",type:"2v1",atk:"LEOI",asrv:1242,def:"7VEK",dsrv:1247,res:"L",copper:5.8},
+  {battle:1,mid:"1-26",type:"2v1",atk:"LEOI",asrv:1242,def:"7VEK",dsrv:1247,res:"L",copper:5.8,sup:"SANC"},
   {battle:1,mid:"1-26",type:"1v1",atk:"XUX",asrv:1196,def:"BOM8",dsrv:1247,res:"W",copper:3.3},
   {battle:1,mid:"1-28",type:"1v1",atk:"PIR4",asrv:1252,def:"ROKS",dsrv:1247,res:"L",copper:2.2},
   {battle:1,mid:"1-29",type:"1v1",atk:"KBM",asrv:1252,def:"BUNS",dsrv:1234,res:"W",copper:1.5},
   {battle:1,mid:"1-30",type:"1v1",atk:"FYDL",asrv:1252,def:"OCS",dsrv:1234,res:"W",copper:0.9},
   {battle:1,mid:"1-31",type:"1v1",atk:"E404",asrv:1237,def:"MXP",dsrv:1234,res:"L",copper:0},
-  {battle:1,mid:"1-24",type:"2v1",atk:"CLWN",asrv:1237,def:"NZM",dsrv:1194,res:"L",copper:0},
+  {battle:1,mid:"1-24",type:"2v1",atk:"CLWN",asrv:1237,def:"NZM",dsrv:1194,res:"L",copper:0,sup:"HOPE"},
   {battle:1,mid:"1-32",type:"2v1",atk:"RR6",asrv:1252,def:"UAC",dsrv:1220,res:"L",copper:0},
   {battle:1,mid:"1-32",type:"2v1",atk:"TDO",asrv:1242,def:"UAC",dsrv:1220,res:"L",copper:0},
-  {battle:1,mid:"1-33",type:"2v1",atk:"BRIC",asrv:1242,def:"VALR",dsrv:1194,res:"L",copper:0},
-  {battle:1,mid:"1-33",type:"2v1",atk:"OHMS",asrv:1237,def:"VALR",dsrv:1194,res:"L",copper:0},
-  {battle:1,mid:"1-34",type:"2v1",atk:"AO5",asrv:1242,def:"BTFC",dsrv:1194,res:"L",copper:0},
-  {battle:1,mid:"1-34",type:"2v1",atk:"WLLF",asrv:1237,def:"BTFC",dsrv:1194,res:"L",copper:0},
-  {battle:1,mid:"1-35",type:"2v1",atk:"GWN",asrv:1252,def:"340G",dsrv:1220,res:"L",copper:0},
-  {battle:1,mid:"1-35",type:"2v1",atk:"SAML",asrv:1242,def:"340G",dsrv:1220,res:"L",copper:0},
+  {battle:1,mid:"1-33",type:"2v1",atk:"BRIC",asrv:1242,def:"VALR",dsrv:1194,res:"L",copper:0,sup:"OGM"},
+  {battle:1,mid:"1-33",type:"2v1",atk:"OHMS",asrv:1237,def:"VALR",dsrv:1194,res:"L",copper:0,sup:"OGM"},
+  {battle:1,mid:"1-34",type:"2v1",atk:"AO5",asrv:1242,def:"BTFC",dsrv:1194,res:"L",copper:0,sup:"RISE"},
+  {battle:1,mid:"1-34",type:"2v1",atk:"WLLF",asrv:1237,def:"BTFC",dsrv:1194,res:"L",copper:0,sup:"RISE"},
+  {battle:1,mid:"1-35",type:"2v1",atk:"GWN",asrv:1252,def:"340G",dsrv:1220,res:"L",copper:0,sup:"RLPX"},
+  {battle:1,mid:"1-35",type:"2v1",atk:"SAML",asrv:1242,def:"340G",dsrv:1220,res:"L",copper:0,sup:"RLPX"},
   {battle:1,mid:"1-36",type:"DNF",atk:"EKOS",asrv:1237,def:"",dsrv:"",res:"DNF",copper:0},
   // Battle 2 — Koubutai attacking, Kage no Sato defending
   {battle:2,mid:"2-01",type:"1v1",atk:"FYER",asrv:1247,def:"ETOA",dsrv:1252,res:"W",copper:174.0},
@@ -1390,20 +1521,20 @@ const battleData = [
   {battle:2,mid:"2-13",type:"1v1",atk:"FEU",asrv:1234,def:"EKOS",dsrv:1237,res:"W",copper:136.5},
   {battle:2,mid:"2-14",type:"1v1",atk:"BTFC",asrv:1194,def:"815K",dsrv:1252,res:"L",copper:0},
   {battle:2,mid:"2-15",type:"1v1",atk:"HAVK",asrv:1247,def:"AO5",dsrv:1242,res:"W",copper:112.2},
-  {battle:2,mid:"2-16",type:"2v1",atk:"GDNS",asrv:1247,def:"BRIC",dsrv:1242,res:"W",copper:15.7},
-  {battle:2,mid:"2-16",type:"2v1",atk:"OPPA",asrv:1194,def:"BRIC",dsrv:1242,res:"W",copper:94.2},
+  {battle:2,mid:"2-16",type:"2v1",atk:"GDNS",asrv:1247,def:"BRIC",dsrv:1242,res:"W",copper:15.7,sup:"WARS"},
+  {battle:2,mid:"2-16",type:"2v1",atk:"OPPA",asrv:1194,def:"BRIC",dsrv:1242,res:"W",copper:94.2,sup:"WARS"},
   {battle:2,mid:"2-17",type:"2v1",atk:"VALR",asrv:1194,def:"CLWN",dsrv:1237,res:"W",copper:53.2},
   {battle:2,mid:"2-17",type:"2v1",atk:"NZM",asrv:1194,def:"CLWN",dsrv:1237,res:"W",copper:46.2},
   {battle:2,mid:"2-18",type:"1v1",atk:"B33",asrv:1194,def:"OHMS",dsrv:1237,res:"W",copper:94.8},
-  {battle:2,mid:"2-19",type:"2v1",atk:"340G",asrv:1220,def:"WLLF",dsrv:1237,res:"L",copper:0},
-  {battle:2,mid:"2-19",type:"2v1",atk:"RUNE",asrv:1220,def:"WLLF",dsrv:1237,res:"L",copper:0},
-  {battle:2,mid:"2-20",type:"2v1",atk:"SANC",asrv:1247,def:"W46",dsrv:1237,res:"W",copper:71.7},
-  {battle:2,mid:"2-20",type:"2v1",atk:"17GZ",asrv:1234,def:"W46",dsrv:1237,res:"W",copper:2.7},
-  {battle:2,mid:"2-21",type:"1v1",atk:"RLPX",asrv:1234,def:"A0A",dsrv:1196,res:"W",copper:74.2},
+  {battle:2,mid:"2-19",type:"2v1",atk:"340G",asrv:1220,def:"WLLF",dsrv:1237,res:"L",copper:0,sup:"OFFJ"},
+  {battle:2,mid:"2-19",type:"2v1",atk:"RUNE",asrv:1220,def:"WLLF",dsrv:1237,res:"L",copper:0,sup:"OFFJ"},
+  {battle:2,mid:"2-20",type:"2v1",atk:"SANC",asrv:1247,def:"W46",dsrv:1237,res:"W",copper:71.7,sup:"ROKG"},
+  {battle:2,mid:"2-20",type:"2v1",atk:"17GZ",asrv:1234,def:"W46",dsrv:1237,res:"W",copper:2.7,sup:"ROKG"},
+  {battle:2,mid:"2-21",type:"1v1",atk:"RLPX",asrv:1234,def:"a0a",dsrv:1196,res:"W",copper:74.2},
   {battle:2,mid:"2-22",type:"1v1",atk:"LYR",asrv:1220,def:"VODL",dsrv:1252,res:"W",copper:70.4},
   {battle:2,mid:"2-23",type:"1v1",atk:"UFFO",asrv:1247,def:"GWN",dsrv:1252,res:"W",copper:38.7},
-  {battle:2,mid:"2-24",type:"2v1",atk:"GONI",asrv:1247,def:"SAML",dsrv:1242,res:"L",copper:27.9},
-  {battle:2,mid:"2-24",type:"2v1",atk:"S700",asrv:1234,def:"SAML",dsrv:1242,res:"L",copper:5.1},
+  {battle:2,mid:"2-24",type:"2v1",atk:"GONI",asrv:1247,def:"SAML",dsrv:1242,res:"L",copper:27.9,sup:"LAUP"},
+  {battle:2,mid:"2-24",type:"2v1",atk:"S700",asrv:1234,def:"SAML",dsrv:1242,res:"L",copper:5.1,sup:"LAUP"},
   {battle:2,mid:"2-25",type:"1v1",atk:"V1PS",asrv:1220,def:"LEOI",dsrv:1242,res:"W",copper:21.9},
   {battle:2,mid:"2-26",type:"1v1",atk:"REVA",asrv:1234,def:"CBT",dsrv:1196,res:"W",copper:45.9},
   {battle:2,mid:"2-27",type:"1v1",atk:"NYXX",asrv:1220,def:"K1L",dsrv:1196,res:"W",copper:45.7},
@@ -1421,6 +1552,30 @@ const battleData = [
   {battle:2,mid:"2-38",type:"1v1",atk:"UAC",asrv:1220,def:"15N",dsrv:1196,res:"L",copper:0},
   {battle:2,mid:"2-39",type:"1v1",atk:"INTL",asrv:1234,def:"ROWW",dsrv:1237,res:"L",copper:0},
 ];
+
+// ── Server-Faction Mapping & Battle Roles ──
+const serverFaction = {1194:'Koubutai',1220:'Koubutai',1234:'Koubutai',1247:'Koubutai',1196:'Kage no Sato',1237:'Kage no Sato',1242:'Kage no Sato',1252:'Kage no Sato'};
+const battleAttacker = {1:'Kage no Sato',2:'Koubutai'}; // which faction attacked each battle
+
+// ── Full Roster (team → server) ──
+const roster = {
+  // Koubutai — S1194
+  "B33":1194,"BROD":1194,"BROO":1194,"BTFC":1194,"NZM":1194,"OPPA":1194,"PNAS":1194,"SPRR":1194,"VALR":1194,"YAN8":1194,"ZMBY":1194,"ZONE":1194,
+  // Koubutai — S1220
+  "340G":1220,"ATUM":1220,"AZI":1220,"LYR":1220,"NYXX":1220,"O815":1220,"RUNE":1220,"SPAS":1220,"TSOE":1220,"UAC":1220,"UPER":1220,"V1PS":1220,"WASS":1220,
+  // Koubutai — S1234
+  "17GZ":1234,"BUNS":1234,"FEU":1234,"HOPE":1234,"INTL":1234,"MXP":1234,"MXP2":1234,"OCS":1234,"OGM":1234,"REVA":1234,"RHCP":1234,"RISE":1234,"RLPX":1234,"S700":1234,
+  // Koubutai — S1247
+  "7VEK":1247,"BOM8":1247,"FYER":1247,"GDNS":1247,"GONI":1247,"HAVK":1247,"IU99":1247,"ROKS":1247,"SANC":1247,"TII":1247,"UFFO":1247,"WATT":1247,"WRC":1247,"XESS":1247,
+  // Kage no Sato — S1196
+  "15N":1196,"CBT":1196,"EVGS":1196,"FORG":1196,"HPRO":1196,"K1L":1196,"LAUP":1196,"LAZO":1196,"MAAX":1196,"NYMD":1196,"OFFJ":1196,"TEN1":1196,"UFO":1196,"XUX":1196,"a0a":1196,
+  // Kage no Sato — S1237
+  "CLWN":1237,"E404":1237,"EKOS":1237,"IRD2":1237,"MDNT":1237,"OHMS":1237,"OYK":1237,"QUAN":1237,"ROWW":1237,"TNTX":1237,"W46":1237,"WLLF":1237,
+  // Kage no Sato — S1242
+  "AO5":1242,"BAKS":1242,"BNCR":1242,"BRIC":1242,"LDRA":1242,"LEOI":1242,"MORT":1242,"ROKK":1242,"SAML":1242,"TDO":1242,"WARS":1242,
+  // Kage no Sato — S1252
+  "815K":1252,"ETRR":1252,"ETRE":1252,"ETOA":1252,"FYDL":1252,"GWN":1252,"KBM":1252,"KZQZ":1252,"OKM":1252,"PIR4":1252,"ROKG":1252,"RR6":1252,"SPG1":1252,"VODL":1252
+};
 
 // ── Global Server Filter State ──
 let selectedServers = new Set(); // empty = all
@@ -1454,6 +1609,7 @@ function renderAll() {
   renderLeaderboards();
   renderCopperChart(window._currentChartBattle || 2);
   renderCrossBattleTrends();
+  renderParticipation();
   renderMatchupTable();
   updateFilterNote();
 }
@@ -1844,6 +2000,116 @@ function renderCrossBattleTrends() {
       ${srvHtml}
     </div>
   `;
+}
+
+// ── Participation Report ──
+function renderParticipation() {
+  const data = getFilteredData();
+  const battles = [...new Set(data.map(d => d.battle))].sort();
+  let html = '';
+
+  html += '<div class="participation-legend">';
+  html += '<div class="participation-legend-item"><div class="participation-legend-swatch" style="background:var(--red-dim);border:1px solid var(--red)"></div>Sat out (did not declare)</div>';
+  html += '<div class="participation-legend-item"><div class="participation-legend-swatch" style="background:rgba(255,255,255,0.05);border:1px solid var(--text-muted)"></div>Not targeted (no attacker declared)</div>';
+  html += '<div class="participation-legend-item"><div class="participation-legend-swatch" style="background:var(--purple-dim);border:1px solid var(--purple)"></div>Support defender</div>';
+  html += '</div>';
+
+  battles.forEach(bNum => {
+    const bData = data.filter(d => d.battle === bNum);
+    const atkFaction = battleAttacker[bNum];
+    const defFaction = atkFaction === 'Koubutai' ? 'Kage no Sato' : 'Koubutai';
+
+    // Teams in each role this battle
+    const atkFactionTeams = {};
+    const defFactionTeams = {};
+    Object.entries(roster).forEach(([team, srv]) => {
+      // Apply server filter
+      if (selectedServers.size > 0 && !selectedServers.has(srv)) return;
+      if (serverFaction[srv] === atkFaction) atkFactionTeams[team] = srv;
+      else defFactionTeams[team] = srv;
+    });
+
+    // Who appeared
+    const attackers = new Set(bData.map(d => d.atk));
+    const defenders = new Set(bData.filter(d => d.def).map(d => d.def));
+
+    // Support defenders (deduplicated per match)
+    const supportDefs = new Set();
+    const seenMids = new Set();
+    bData.forEach(d => {
+      if (d.sup && !seenMids.has(d.mid)) {
+        d.sup.split(',').forEach(s => { s = s.trim(); if (s) supportDefs.add(s); });
+        seenMids.add(d.mid);
+      }
+    });
+
+    // Classify
+    const satOut = Object.entries(atkFactionTeams).filter(([t]) => !attackers.has(t));
+    const notTargeted = Object.entries(defFactionTeams).filter(([t]) => !defenders.has(t) && !supportDefs.has(t));
+    const supportList = Object.entries(defFactionTeams).filter(([t]) => !defenders.has(t) && supportDefs.has(t));
+
+    const totalAtk = Object.keys(atkFactionTeams).length;
+    const totalDef = Object.keys(defFactionTeams).length;
+    const declared = totalAtk - satOut.length;
+    const targeted = totalDef - notTargeted.length - supportList.length;
+
+    html += '<div class="participation-battle">';
+    html += '<div class="participation-battle-header">Battle ' + bNum + ' — ' + atkFaction + ' attacking</div>';
+
+    html += '<div class="participation-summary">';
+    html += '<div class="participation-stat"><div class="participation-stat-value" style="color:var(--green)">' + declared + '/' + totalAtk + '</div><div class="participation-stat-label">Declared ATK</div></div>';
+    html += '<div class="participation-stat"><div class="participation-stat-value" style="color:var(--red)">' + satOut.length + '</div><div class="participation-stat-label">Sat Out</div></div>';
+    html += '<div class="participation-stat"><div class="participation-stat-value" style="color:var(--text-primary)">' + targeted + '/' + totalDef + '</div><div class="participation-stat-label">Targeted DEF</div></div>';
+    html += '<div class="participation-stat"><div class="participation-stat-value" style="color:var(--purple)">' + supportList.length + '</div><div class="participation-stat-label">Support DEF</div></div>';
+    html += '<div class="participation-stat"><div class="participation-stat-value" style="color:var(--text-muted)">' + notTargeted.length + '</div><div class="participation-stat-label">Not Involved</div></div>';
+    html += '</div>';
+
+    // Sat out detail
+    if (satOut.length > 0) {
+      html += '<div class="participation-role-section">';
+      html += '<div class="participation-role-header" style="color:var(--red)">⚔ Did Not Declare — ' + atkFaction + '</div>';
+      const bySrv = {};
+      satOut.forEach(([t, s]) => { (bySrv[s] = bySrv[s] || []).push(t); });
+      Object.keys(bySrv).sort().forEach(s => {
+        html += '<div class="participation-server-group"><div class="participation-server-label">S' + s + '</div><div class="participation-team-list">';
+        bySrv[s].sort().forEach(t => { html += '<span class="participation-team-tag ptag-sat-out">' + t + '</span>'; });
+        html += '</div></div>';
+      });
+      html += '</div>';
+    }
+
+    // Support defenders
+    if (supportList.length > 0) {
+      html += '<div class="participation-role-section">';
+      html += '<div class="participation-role-header" style="color:var(--purple)">🛡 Support Defenders — ' + defFaction + '</div>';
+      const bySrv = {};
+      supportList.forEach(([t, s]) => { (bySrv[s] = bySrv[s] || []).push(t); });
+      Object.keys(bySrv).sort().forEach(s => {
+        html += '<div class="participation-server-group"><div class="participation-server-label">S' + s + '</div><div class="participation-team-list">';
+        bySrv[s].sort().forEach(t => { html += '<span class="participation-team-tag ptag-support">' + t + '</span>'; });
+        html += '</div></div>';
+      });
+      html += '</div>';
+    }
+
+    // Not targeted detail
+    if (notTargeted.length > 0) {
+      html += '<div class="participation-role-section">';
+      html += '<div class="participation-role-header" style="color:var(--text-muted)">🛡 Not Targeted — ' + defFaction + '</div>';
+      const bySrv = {};
+      notTargeted.forEach(([t, s]) => { (bySrv[s] = bySrv[s] || []).push(t); });
+      Object.keys(bySrv).sort().forEach(s => {
+        html += '<div class="participation-server-group"><div class="participation-server-label">S' + s + '</div><div class="participation-team-list">';
+        bySrv[s].sort().forEach(t => { html += '<span class="participation-team-tag ptag-not-targeted">' + t + '</span>'; });
+        html += '</div></div>';
+      });
+      html += '</div>';
+    }
+
+    html += '</div>';
+  });
+
+  document.getElementById('participationReport').innerHTML = html || '<div style="color:var(--text-muted);font-family:\'Share Tech Mono\',monospace;font-size:0.8rem;padding:16px">No participation data for selected servers</div>';
 }
 
 // ── Matchup Table ──
