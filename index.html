@@ -907,6 +907,97 @@ body::before {
   white-space: nowrap;
 }
 
+/* ── Server Filter Bar ── */
+.server-filter-bar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  margin: 24px 0;
+  flex-wrap: wrap;
+  padding: 16px 20px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+
+.server-filter-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.server-filter-label {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-right: 4px;
+}
+
+.server-filter-btn {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.78rem;
+  padding: 7px 14px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--bg-secondary);
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.2s;
+  letter-spacing: 1px;
+}
+
+.server-filter-btn:hover {
+  border-color: var(--blue);
+  color: var(--text-primary);
+}
+
+.server-filter-btn.active.koubutai {
+  background: rgba(0,229,160,0.2);
+  border-color: var(--green);
+  color: var(--green);
+}
+
+.server-filter-btn.active.kage {
+  background: rgba(34,211,238,0.2);
+  border-color: var(--cyan);
+  color: var(--cyan);
+}
+
+.server-filter-btn.all-btn.active {
+  background: var(--blue);
+  border-color: var(--blue);
+  color: #fff;
+}
+
+.server-filter-divider {
+  width: 1px;
+  height: 28px;
+  background: var(--border);
+}
+
+.filter-active-note {
+  text-align: center;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.72rem;
+  color: var(--blue);
+  letter-spacing: 1px;
+  margin: -8px 0 16px;
+  display: none;
+}
+
+.filter-active-note.visible { display: block; }
+
+@media (max-width: 768px) {
+  .server-filter-bar { gap: 12px; padding: 12px; }
+  .server-filter-btn { padding: 10px 12px; font-size: 0.72rem; }
+  .server-filter-divider { display: none; }
+  .server-filter-group { justify-content: center; }
+}
+
 /* ── Collapsible Sections ── */
 .section-title.collapsible {
   cursor: pointer;
@@ -1069,6 +1160,7 @@ body::before {
     <div class="subtitle">Season Dashboard — Battle 2 of 8</div>
   </div>
 
+
   <!-- Battle Tabs -->
   <div class="battle-tabs anim anim-d1">
     <div class="battle-tab active">B1</div>
@@ -1081,7 +1173,29 @@ body::before {
     <div class="battle-tab locked">B8</div>
   </div>
 
-  <!-- Faction Banner — Latest Battle (B2) -->
+  <!-- Server Filter -->
+  <div class="server-filter-bar anim anim-d1" id="serverFilterBar">
+    <button class="server-filter-btn all-btn active" data-server="all">ALL</button>
+    <div class="server-filter-divider"></div>
+    <div class="server-filter-group">
+      <span class="server-filter-label" style="color:var(--green)">Koubutai</span>
+      <button class="server-filter-btn koubutai" data-server="1194">S1194</button>
+      <button class="server-filter-btn koubutai" data-server="1220">S1220</button>
+      <button class="server-filter-btn koubutai" data-server="1234">S1234</button>
+      <button class="server-filter-btn koubutai" data-server="1247">S1247</button>
+    </div>
+    <div class="server-filter-divider"></div>
+    <div class="server-filter-group">
+      <span class="server-filter-label" style="color:var(--cyan)">Kage no Sato</span>
+      <button class="server-filter-btn kage" data-server="1196">S1196</button>
+      <button class="server-filter-btn kage" data-server="1237">S1237</button>
+      <button class="server-filter-btn kage" data-server="1242">S1242</button>
+      <button class="server-filter-btn kage" data-server="1252">S1252</button>
+    </div>
+  </div>
+  <div class="filter-active-note" id="filterActiveNote"></div>
+
+  <!-- Faction Banner -->
   <div class="faction-banner anim anim-d2">
     <div class="faction-side">
       <div class="faction-role attacker">⚔ Attackers — Battle 2</div>
@@ -1099,57 +1213,13 @@ body::before {
   </div>
 
   <!-- Summary Stats -->
-  <div class="stats-grid anim anim-d3">
-    <div class="stat-card">
-      <div class="stat-value" style="color:var(--blue)">2</div>
-      <div class="stat-label">Battles Played</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-value" style="color:var(--text-primary)">87</div>
-      <div class="stat-label">Total Matchups</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-value" style="color:var(--green)">57</div>
-      <div class="stat-label">Attacker Wins</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-value" style="color:var(--red)">30</div>
-      <div class="stat-label">Defender Holds</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-value" style="color:var(--green)">65.5%</div>
-      <div class="stat-label">Attacker Win Rate</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-value" style="color:var(--gold)">4,424.8</div>
-      <div class="stat-label">Total Copper</div>
-    </div>
-  </div>
+  <div class="stats-grid anim anim-d3" id="summaryStats"></div>
 
   <!-- Match Type Breakdown -->
   <div class="section anim anim-d4">
     <div class="section-title collapsible collapsed" onclick="toggleSection(this)" aria-expanded="false"><span class="icon" style="background:var(--blue)"></span> Match Type Breakdown <span class="toggle-icon">▼</span></div>
     <div class="collapsible-content collapsed" style="max-height:0;">
-    <div class="match-type-grid">
-      <div class="match-type-card">
-        <div class="mt-label" style="color:var(--blue)">1v1</div>
-        <div class="mt-stat">63 matchups</div>
-        <div class="mt-bar-wrap"><div class="mt-bar" style="width:77.8%;background:var(--green)"></div></div>
-        <div class="mt-stat">49W / 14L — <span style="color:var(--green)">77.8% win</span></div>
-      </div>
-      <div class="match-type-card">
-        <div class="mt-label" style="color:var(--orange)">2v1</div>
-        <div class="mt-stat">24 matchups (12 matches)</div>
-        <div class="mt-bar-wrap"><div class="mt-bar" style="width:33.3%;background:var(--orange)"></div></div>
-        <div class="mt-stat">8W / 16L — <span style="color:var(--orange)">33.3% win</span></div>
-      </div>
-      <div class="match-type-card">
-        <div class="mt-label" style="color:var(--text-muted)">DNF</div>
-        <div class="mt-stat">1 team</div>
-        <div class="mt-bar-wrap"><div class="mt-bar" style="width:0%;background:var(--text-muted)"></div></div>
-        <div class="mt-stat">No match played</div>
-      </div>
-    </div>
+      <div class="match-type-grid" id="matchTypeGrid"></div>
     </div>
   </div>
 
@@ -1157,232 +1227,12 @@ body::before {
   <div class="section anim anim-d5">
     <div class="section-title collapsible collapsed" onclick="toggleSection(this)" aria-expanded="false"><span class="icon" style="background:var(--orange)"></span> Multi-Attacker Match Details <span class="toggle-icon">▼</span></div>
     <div class="collapsible-content collapsed" id="multiContent" style="max-height:0;">
-    <div class="filter-bar" id="multiFilterBar">
-      <button class="filter-btn active" data-mfilter="all">All</button>
-      <button class="filter-btn" data-mfilter="1">Battle 1</button>
-      <button class="filter-btn" data-mfilter="2">Battle 2</button>
-    </div>
-    <div class="multi-cards" id="multiCards">
-
-      <!-- B1 Multi Cards -->
-      <div class="multi-card held" data-battle="1">
-        <div class="multi-header">
-          <span class="multi-match-id">B1 · Match 1-24 · 2v1</span>
-          <span class="multi-outcome outcome-held">HELD</span>
-        </div>
-        <div class="multi-defender">Defender: <strong>NZM</strong> (S1194)</div>
-        <div class="multi-row">
-          <span class="multi-team">815K <span style="color:var(--text-muted);font-size:0.7rem">(S1252)</span></span>
-          <span class="multi-result res-l">LOSS</span>
-          <span class="multi-copper">+17.9</span>
-        </div>
-        <div class="multi-row">
-          <span class="multi-team">CLWN <span style="color:var(--text-muted);font-size:0.7rem">(S1237)</span></span>
-          <span class="multi-result res-l">LOSS</span>
-          <span class="multi-copper">+0.0</span>
-        </div>
+      <div class="filter-bar" id="multiFilterBar">
+        <button class="filter-btn active" data-mfilter="all">All</button>
+        <button class="filter-btn" data-mfilter="1">Battle 1</button>
+        <button class="filter-btn" data-mfilter="2">Battle 2</button>
       </div>
-
-      <div class="multi-card held" data-battle="1">
-        <div class="multi-header">
-          <span class="multi-match-id">B1 · Match 1-26 · 2v1</span>
-          <span class="multi-outcome outcome-held">HELD</span>
-        </div>
-        <div class="multi-defender">Defender: <strong>7VEK</strong> (S1247)</div>
-        <div class="multi-row">
-          <span class="multi-team">VODL <span style="color:var(--text-muted);font-size:0.7rem">(S1252)</span></span>
-          <span class="multi-result res-l">LOSS</span>
-          <span class="multi-copper">+14.5</span>
-        </div>
-        <div class="multi-row">
-          <span class="multi-team">LEOI <span style="color:var(--text-muted);font-size:0.7rem">(S1242)</span></span>
-          <span class="multi-result res-l">LOSS</span>
-          <span class="multi-copper">+5.8</span>
-        </div>
-      </div>
-
-      <div class="multi-card held" data-battle="1">
-        <div class="multi-header">
-          <span class="multi-match-id">B1 · Match 1-32 · 2v1</span>
-          <span class="multi-outcome outcome-held">HELD</span>
-        </div>
-        <div class="multi-defender">Defender: <strong>UAC</strong> (S1220)</div>
-        <div class="multi-row">
-          <span class="multi-team">RR6 <span style="color:var(--text-muted);font-size:0.7rem">(S1252)</span></span>
-          <span class="multi-result res-l">LOSS</span>
-          <span class="multi-copper">+0.0</span>
-        </div>
-        <div class="multi-row">
-          <span class="multi-team">TDO <span style="color:var(--text-muted);font-size:0.7rem">(S1242)</span></span>
-          <span class="multi-result res-l">LOSS</span>
-          <span class="multi-copper">+0.0</span>
-        </div>
-      </div>
-
-      <div class="multi-card held" data-battle="1">
-        <div class="multi-header">
-          <span class="multi-match-id">B1 · Match 1-33 · 2v1</span>
-          <span class="multi-outcome outcome-held">HELD</span>
-        </div>
-        <div class="multi-defender">Defender: <strong>VALR</strong> (S1194)</div>
-        <div class="multi-row">
-          <span class="multi-team">BRIC <span style="color:var(--text-muted);font-size:0.7rem">(S1242)</span></span>
-          <span class="multi-result res-l">LOSS</span>
-          <span class="multi-copper">+0.0</span>
-        </div>
-        <div class="multi-row">
-          <span class="multi-team">OHMS <span style="color:var(--text-muted);font-size:0.7rem">(S1237)</span></span>
-          <span class="multi-result res-l">LOSS</span>
-          <span class="multi-copper">+0.0</span>
-        </div>
-      </div>
-
-      <div class="multi-card held" data-battle="1">
-        <div class="multi-header">
-          <span class="multi-match-id">B1 · Match 1-34 · 2v1</span>
-          <span class="multi-outcome outcome-held">HELD</span>
-        </div>
-        <div class="multi-defender">Defender: <strong>BTFC</strong> (S1194)</div>
-        <div class="multi-row">
-          <span class="multi-team">AO5 <span style="color:var(--text-muted);font-size:0.7rem">(S1242)</span></span>
-          <span class="multi-result res-l">LOSS</span>
-          <span class="multi-copper">+0.0</span>
-        </div>
-        <div class="multi-row">
-          <span class="multi-team">WLLF <span style="color:var(--text-muted);font-size:0.7rem">(S1237)</span></span>
-          <span class="multi-result res-l">LOSS</span>
-          <span class="multi-copper">+0.0</span>
-        </div>
-      </div>
-
-      <div class="multi-card held" data-battle="1">
-        <div class="multi-header">
-          <span class="multi-match-id">B1 · Match 1-35 · 2v1</span>
-          <span class="multi-outcome outcome-held">HELD</span>
-        </div>
-        <div class="multi-defender">Defender: <strong>340G</strong> (S1220)</div>
-        <div class="multi-row">
-          <span class="multi-team">GWN <span style="color:var(--text-muted);font-size:0.7rem">(S1252)</span></span>
-          <span class="multi-result res-l">LOSS</span>
-          <span class="multi-copper">+0.0</span>
-        </div>
-        <div class="multi-row">
-          <span class="multi-team">SAML <span style="color:var(--text-muted);font-size:0.7rem">(S1242)</span></span>
-          <span class="multi-result res-l">LOSS</span>
-          <span class="multi-copper">+0.0</span>
-        </div>
-      </div>
-
-      <!-- B2 Multi Cards -->
-      <div class="multi-card breached" data-battle="2">
-        <div class="multi-header">
-          <span class="multi-match-id">B2 · Match 2-16 · 2v1</span>
-          <span class="multi-outcome outcome-breached">BREACHED</span>
-        </div>
-        <div class="multi-defender">Defender: <strong>BRIC</strong> (S1242)</div>
-        <div class="multi-row">
-          <span class="multi-team">GDNS <span style="color:var(--text-muted);font-size:0.7rem">(S1247)</span></span>
-          <span class="multi-result res-w">WIN</span>
-          <span class="multi-copper">+15.7</span>
-        </div>
-        <div class="multi-row">
-          <span class="multi-team">OPPA <span style="color:var(--text-muted);font-size:0.7rem">(S1194)</span></span>
-          <span class="multi-result res-w">WIN</span>
-          <span class="multi-copper">+94.2</span>
-        </div>
-      </div>
-
-      <div class="multi-card breached" data-battle="2">
-        <div class="multi-header">
-          <span class="multi-match-id">B2 · Match 2-17 · 2v1</span>
-          <span class="multi-outcome outcome-breached">BREACHED</span>
-        </div>
-        <div class="multi-defender">Defender: <strong>CLWN</strong> (S1237)</div>
-        <div class="multi-row">
-          <span class="multi-team">VALR <span style="color:var(--text-muted);font-size:0.7rem">(S1194)</span></span>
-          <span class="multi-result res-w">WIN</span>
-          <span class="multi-copper">+53.2</span>
-        </div>
-        <div class="multi-row">
-          <span class="multi-team">NZM <span style="color:var(--text-muted);font-size:0.7rem">(S1194)</span></span>
-          <span class="multi-result res-w">WIN</span>
-          <span class="multi-copper">+46.2</span>
-        </div>
-      </div>
-
-      <div class="multi-card held" data-battle="2">
-        <div class="multi-header">
-          <span class="multi-match-id">B2 · Match 2-19 · 2v1</span>
-          <span class="multi-outcome outcome-held">HELD</span>
-        </div>
-        <div class="multi-defender">Defender: <strong>WLLF</strong> (S1237)</div>
-        <div class="multi-row">
-          <span class="multi-team">340G <span style="color:var(--text-muted);font-size:0.7rem">(S1220)</span></span>
-          <span class="multi-result res-l">LOSS</span>
-          <span class="multi-copper">+0.0</span>
-        </div>
-        <div class="multi-row">
-          <span class="multi-team">RUNE <span style="color:var(--text-muted);font-size:0.7rem">(S1220)</span></span>
-          <span class="multi-result res-l">LOSS</span>
-          <span class="multi-copper">+0.0</span>
-        </div>
-      </div>
-
-      <div class="multi-card breached" data-battle="2">
-        <div class="multi-header">
-          <span class="multi-match-id">B2 · Match 2-20 · 2v1</span>
-          <span class="multi-outcome outcome-breached">BREACHED</span>
-        </div>
-        <div class="multi-defender">Defender: <strong>W46</strong> (S1237)</div>
-        <div class="multi-row">
-          <span class="multi-team">SANC <span style="color:var(--text-muted);font-size:0.7rem">(S1247)</span></span>
-          <span class="multi-result res-w">WIN</span>
-          <span class="multi-copper">+71.7</span>
-        </div>
-        <div class="multi-row">
-          <span class="multi-team">17GZ <span style="color:var(--text-muted);font-size:0.7rem">(S1234)</span></span>
-          <span class="multi-result res-w">WIN</span>
-          <span class="multi-copper">+2.7</span>
-        </div>
-      </div>
-
-      <div class="multi-card held" data-battle="2">
-        <div class="multi-header">
-          <span class="multi-match-id">B2 · Match 2-24 · 2v1</span>
-          <span class="multi-outcome outcome-held">HELD</span>
-        </div>
-        <div class="multi-defender">Defender: <strong>SAML</strong> (S1242)</div>
-        <div class="multi-row">
-          <span class="multi-team">GONI <span style="color:var(--text-muted);font-size:0.7rem">(S1247)</span></span>
-          <span class="multi-result res-l">LOSS</span>
-          <span class="multi-copper">+27.9</span>
-        </div>
-        <div class="multi-row">
-          <span class="multi-team">S700 <span style="color:var(--text-muted);font-size:0.7rem">(S1234)</span></span>
-          <span class="multi-result res-l">LOSS</span>
-          <span class="multi-copper">+5.1</span>
-        </div>
-      </div>
-
-      <div class="multi-card breached" data-battle="2">
-        <div class="multi-header">
-          <span class="multi-match-id">B2 · Match 2-35 · 2v1</span>
-          <span class="multi-outcome outcome-breached">BREACHED</span>
-        </div>
-        <div class="multi-defender">Defender: <strong>IRD2</strong> (S1237)</div>
-        <div class="multi-row">
-          <span class="multi-team">ROKS <span style="color:var(--text-muted);font-size:0.7rem">(S1247)</span></span>
-          <span class="multi-result res-w">WIN</span>
-          <span class="multi-copper">+20.6</span>
-        </div>
-        <div class="multi-row">
-          <span class="multi-team">IU99 <span style="color:var(--text-muted);font-size:0.7rem">(S1247)</span></span>
-          <span class="multi-result res-w">WIN</span>
-          <span class="multi-copper">+1.1</span>
-        </div>
-      </div>
-
-    </div>
+      <div class="multi-cards" id="multiCards"></div>
     </div>
   </div>
 
@@ -1390,40 +1240,7 @@ body::before {
   <div class="section">
     <div class="section-title collapsible collapsed" onclick="toggleSection(this)" aria-expanded="false"><span class="icon" style="background:var(--cyan)"></span> Server Performance — Cumulative <span class="toggle-icon">▼</span></div>
     <div class="collapsible-content collapsed" style="max-height:0;">
-    <div class="two-col">
-      <div class="card">
-        <div class="card-title">Attacker Servers</div>
-        <table class="server-table">
-          <thead><tr><th>Server</th><th>Record</th><th>Win%</th><th>Copper</th></tr></thead>
-          <tbody>
-            <tr><td><span class="server-id">1196</span></td><td>13W / 0L</td><td style="color:var(--green)">100%</td><td style="color:var(--gold)">739.8</td></tr>
-            <tr><td><span class="server-id">1234</span></td><td>9W / 2L</td><td style="color:var(--green)">82%</td><td style="color:var(--gold)">925.5</td></tr>
-            <tr><td><span class="server-id">1247</span></td><td>9W / 2L</td><td style="color:var(--green)">82%</td><td style="color:var(--gold)">577.2</td></tr>
-            <tr><td><span class="server-id">1194</span></td><td>6W / 3L</td><td style="color:var(--green)">67%</td><td style="color:var(--gold)">579.8</td></tr>
-            <tr><td><span class="server-id">1252</span></td><td>9W / 5L</td><td style="color:var(--green)">64%</td><td style="color:var(--gold)">553.6</td></tr>
-            <tr><td><span class="server-id">1220</span></td><td>6W / 7L</td><td style="color:var(--red)">46%</td><td style="color:var(--gold)">584.9</td></tr>
-            <tr><td><span class="server-id">1242</span></td><td>4W / 6L</td><td style="color:var(--red)">40%</td><td style="color:var(--gold)">391.3</td></tr>
-            <tr><td><span class="server-id">1237</span></td><td>1W / 5L</td><td style="color:var(--red)">17%</td><td style="color:var(--gold)">72.7</td></tr>
-          </tbody>
-        </table>
-      </div>
-      <div class="card">
-        <div class="card-title">Defender Servers</div>
-        <table class="server-table">
-          <thead><tr><th>Server</th><th>Holds</th><th>Total</th><th>Hold%</th></tr></thead>
-          <tbody>
-            <tr><td><span class="server-id">1220</span></td><td>5</td><td>10</td><td style="color:var(--red)">50%</td></tr>
-            <tr><td><span class="server-id">1194</span></td><td>6</td><td>13</td><td style="color:var(--red)">46%</td></tr>
-            <tr><td><span class="server-id">1196</span></td><td>4</td><td>9</td><td style="color:var(--red)">44%</td></tr>
-            <tr><td><span class="server-id">1242</span></td><td>4</td><td>12</td><td>33%</td></tr>
-            <tr><td><span class="server-id">1247</span></td><td>3</td><td>11</td><td>27%</td></tr>
-            <tr><td><span class="server-id">1234</span></td><td>2</td><td>8</td><td>25%</td></tr>
-            <tr><td><span class="server-id">1237</span></td><td>4</td><td>16</td><td>25%</td></tr>
-            <tr><td><span class="server-id">1252</span></td><td>2</td><td>8</td><td>25%</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
+      <div class="two-col" id="serverPerformance"></div>
     </div>
   </div>
 
@@ -1431,44 +1248,7 @@ body::before {
   <div class="section">
     <div class="section-title collapsible collapsed" onclick="toggleSection(this)" aria-expanded="false"><span class="icon" style="background:var(--gold)"></span> Team Leaderboards — Cumulative <span class="toggle-icon">▼</span></div>
     <div class="collapsible-content collapsed" style="max-height:0;">
-    <div class="two-col">
-      <div class="card">
-        <div class="card-title">Top Attackers — Copper Earned</div>
-        <table class="leaderboard-table">
-          <thead><tr><th>#</th><th>Team</th><th class="col-lb-srv">Server</th><th>Copper</th><th>Record</th></tr></thead>
-          <tbody>
-            <tr><td><span class="rank rank-1">1</span></td><td><span class="team-tag">FYER</span></td><td class="col-lb-srv">1247</td><td style="color:var(--gold)">174.0</td><td class="res-w">1W</td></tr>
-            <tr><td><span class="rank rank-2">2</span></td><td><span class="team-tag">RISE</span></td><td class="col-lb-srv">1234</td><td style="color:var(--gold)">172.7</td><td class="res-w">1W</td></tr>
-            <tr><td><span class="rank rank-3">3</span></td><td><span class="team-tag">MXP</span></td><td class="col-lb-srv">1234</td><td style="color:var(--gold)">156.5</td><td class="res-w">1W</td></tr>
-            <tr><td><span class="rank">4</span></td><td><span class="team-tag">PNAS</span></td><td class="col-lb-srv">1194</td><td style="color:var(--gold)">155.1</td><td class="res-w">1W</td></tr>
-            <tr><td><span class="rank">5</span></td><td><span class="team-tag">OGM</span></td><td class="col-lb-srv">1234</td><td style="color:var(--gold)">148.6</td><td class="res-w">1W</td></tr>
-            <tr><td><span class="rank">6</span></td><td><span class="team-tag">UPER</span></td><td class="col-lb-srv">1220</td><td style="color:var(--gold)">146.1</td><td class="res-w">1W</td></tr>
-            <tr><td><span class="rank">7</span></td><td><span class="team-tag">HOPE</span></td><td class="col-lb-srv">1234</td><td style="color:var(--gold)">145.5</td><td class="res-w">1W</td></tr>
-            <tr><td><span class="rank">8</span></td><td><span class="team-tag">AZI</span></td><td class="col-lb-srv">1220</td><td style="color:var(--gold)">142.9</td><td class="res-w">1W</td></tr>
-            <tr><td><span class="rank">9</span></td><td><span class="team-tag">FEU</span></td><td class="col-lb-srv">1234</td><td style="color:var(--gold)">136.5</td><td class="res-w">1W</td></tr>
-            <tr><td><span class="rank">10</span></td><td><span class="team-tag">ETOA</span></td><td class="col-lb-srv">1252</td><td style="color:var(--gold)">122.7</td><td class="res-w">1W</td></tr>
-          </tbody>
-        </table>
-      </div>
-      <div class="card">
-        <div class="card-title">Top Defenders — Holds</div>
-        <table class="leaderboard-table">
-          <thead><tr><th>#</th><th>Team</th><th class="col-lb-srv">Server</th><th>Holds</th><th>Faced</th></tr></thead>
-          <tbody>
-            <tr><td><span class="rank rank-1">1</span></td><td><span class="team-tag">NZM</span></td><td class="col-lb-srv">1194</td><td style="color:var(--red)">2</td><td>2</td></tr>
-            <tr><td><span class="rank rank-1">1</span></td><td><span class="team-tag">7VEK</span></td><td class="col-lb-srv">1247</td><td style="color:var(--red)">2</td><td>2</td></tr>
-            <tr><td><span class="rank rank-1">1</span></td><td><span class="team-tag">UAC</span></td><td class="col-lb-srv">1220</td><td style="color:var(--red)">2</td><td>2</td></tr>
-            <tr><td><span class="rank rank-1">1</span></td><td><span class="team-tag">VALR</span></td><td class="col-lb-srv">1194</td><td style="color:var(--red)">2</td><td>2</td></tr>
-            <tr><td><span class="rank rank-1">1</span></td><td><span class="team-tag">BTFC</span></td><td class="col-lb-srv">1194</td><td style="color:var(--red)">2</td><td>2</td></tr>
-            <tr><td><span class="rank rank-1">1</span></td><td><span class="team-tag">340G</span></td><td class="col-lb-srv">1220</td><td style="color:var(--red)">2</td><td>2</td></tr>
-            <tr><td><span class="rank rank-1">1</span></td><td><span class="team-tag">WLLF</span></td><td class="col-lb-srv">1237</td><td style="color:var(--red)">2</td><td>2</td></tr>
-            <tr><td><span class="rank rank-1">1</span></td><td><span class="team-tag">SAML</span></td><td class="col-lb-srv">1242</td><td style="color:var(--red)">2</td><td>2</td></tr>
-            <tr><td><span class="rank">9</span></td><td><span class="team-tag">SPAS</span></td><td class="col-lb-srv">1220</td><td style="color:var(--red)">1</td><td>1</td></tr>
-            <tr><td><span class="rank">9</span></td><td><span class="team-tag">ROKS</span></td><td class="col-lb-srv">1247</td><td style="color:var(--red)">1</td><td>1</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
+      <div class="two-col" id="leaderboards"></div>
     </div>
   </div>
 
@@ -1476,7 +1256,7 @@ body::before {
   <div class="section">
     <div class="section-title collapsible collapsed" onclick="toggleSection(this)" aria-expanded="false"><span class="icon" style="background:var(--gold)"></span> Copper Distribution <span class="toggle-icon">▼</span></div>
     <div class="collapsible-content collapsed" style="max-height:0;">
-    <div class="chart-container" id="copperChart"></div>
+      <div class="chart-container" id="copperChart"></div>
     </div>
   </div>
 
@@ -1484,100 +1264,7 @@ body::before {
   <div class="section">
     <div class="section-title collapsible collapsed" onclick="toggleSection(this)" aria-expanded="false"><span class="icon" style="background:var(--purple)"></span> Cross-Battle Trends <span class="toggle-icon">▼</span></div>
     <div class="collapsible-content collapsed" style="max-height:0;">
-    <div class="trend-grid">
-
-      <div class="trend-card">
-        <div class="trend-card-title">Faction Records</div>
-        <div class="trend-row">
-          <span class="trend-label" style="color:var(--green)">Kage no Sato</span>
-          <span class="trend-value">ATK: <span style="color:var(--green)">26W</span>/<span style="color:var(--red)">16L</span> (61.9%)</span>
-        </div>
-        <div class="trend-row">
-          <span class="trend-label" style="color:var(--green)">Kage no Sato</span>
-          <span class="trend-value">DEF: <span style="color:var(--red)">14 holds</span> / 45 faced (31.1%)</span>
-        </div>
-        <div class="trend-row">
-          <span class="trend-label" style="color:var(--cyan)">Koubutai</span>
-          <span class="trend-value">ATK: <span style="color:var(--green)">31W</span>/<span style="color:var(--red)">14L</span> (68.9%)</span>
-        </div>
-        <div class="trend-row">
-          <span class="trend-label" style="color:var(--cyan)">Koubutai</span>
-          <span class="trend-value">DEF: <span style="color:var(--red)">16 holds</span> / 42 faced (38.1%)</span>
-        </div>
-      </div>
-
-      <div class="trend-card">
-        <div class="trend-card-title">Copper Flow By Battle</div>
-        <div class="copper-flow-row">
-          <span class="copper-flow-label">B1</span>
-          <div class="copper-flow-bar-wrap">
-            <div class="copper-flow-bar" style="background:var(--green);width:65%">Kage: 1,743.7</div>
-          </div>
-        </div>
-        <div style="font-family:'Share Tech Mono',monospace;font-size:0.7rem;color:var(--text-muted);padding:2px 0 8px 42px">Kage attacking → Koubutai defending</div>
-        <div class="copper-flow-row">
-          <span class="copper-flow-label">B2</span>
-          <div class="copper-flow-bar-wrap">
-            <div class="copper-flow-bar" style="background:var(--cyan);width:100%">Koubutai: 2,681.1</div>
-          </div>
-        </div>
-        <div style="font-family:'Share Tech Mono',monospace;font-size:0.7rem;color:var(--text-muted);padding:2px 0 8px 42px">Koubutai attacking → Kage defending</div>
-        <div class="trend-row" style="margin-top:8px">
-          <span class="trend-label">Total Copper Moved</span>
-          <span class="trend-value" style="color:var(--gold)">4,424.8</span>
-        </div>
-      </div>
-
-      <div class="trend-card">
-        <div class="trend-card-title">Battle-Over-Battle Win Rate</div>
-        <div class="trend-row">
-          <span class="trend-label">B1 — Attacker Win Rate</span>
-          <span class="trend-value" style="color:var(--green)">61.9% <span style="color:var(--text-muted)">(26/42)</span></span>
-        </div>
-        <div class="trend-row">
-          <span class="trend-label">B2 — Attacker Win Rate</span>
-          <span class="trend-value" style="color:var(--green)">68.9% <span style="color:var(--text-muted)">(31/45)</span></span>
-        </div>
-        <div class="trend-row">
-          <span class="trend-label">Trend</span>
-          <span class="trend-value" style="color:var(--green)">▲ +7.0%</span>
-        </div>
-        <div class="trend-row">
-          <span class="trend-label">B1 2v1 Outcome</span>
-          <span class="trend-value" style="color:var(--red)">0W / 12L (all held)</span>
-        </div>
-        <div class="trend-row">
-          <span class="trend-label">B2 2v1 Outcome</span>
-          <span class="trend-value" style="color:var(--orange)">8W / 4L (67% win)</span>
-        </div>
-      </div>
-
-      <div class="trend-card">
-        <div class="trend-card-title">Server Consistency</div>
-        <div style="font-family:'Share Tech Mono',monospace;font-size:0.72rem;color:var(--text-muted);margin-bottom:12px">Servers that attacked in B1 defended in B2 and vice versa</div>
-        <div class="trend-row">
-          <span class="trend-label"><span class="server-id">1196</span></span>
-          <span class="trend-value">ATK: <span style="color:var(--green)">100%</span> · DEF: <span style="color:var(--red)">44%</span></span>
-        </div>
-        <div class="trend-row">
-          <span class="trend-label"><span class="server-id">1234</span></span>
-          <span class="trend-value">ATK: <span style="color:var(--green)">82%</span> · DEF: 25%</span>
-        </div>
-        <div class="trend-row">
-          <span class="trend-label"><span class="server-id">1194</span></span>
-          <span class="trend-value">ATK: <span style="color:var(--green)">67%</span> · DEF: <span style="color:var(--red)">46%</span></span>
-        </div>
-        <div class="trend-row">
-          <span class="trend-label"><span class="server-id">1252</span></span>
-          <span class="trend-value">ATK: <span style="color:var(--green)">64%</span> · DEF: 25%</span>
-        </div>
-        <div class="trend-row">
-          <span class="trend-label"><span class="server-id">1237</span></span>
-          <span class="trend-value">ATK: <span style="color:var(--red)">17%</span> · DEF: 25%</span>
-        </div>
-      </div>
-
-    </div>
+      <div class="trend-grid" id="crossBattleTrends"></div>
     </div>
   </div>
 
@@ -1585,37 +1272,37 @@ body::before {
   <div class="section">
     <div class="section-title collapsible collapsed" onclick="toggleSection(this)" aria-expanded="false"><span class="icon" style="background:var(--blue)"></span> Full Matchup Table <span class="toggle-icon">▼</span></div>
     <div class="collapsible-content collapsed" style="max-height:0;">
-    <div class="filter-bar" id="filterBar">
-      <button class="filter-btn active" data-filter="all">All</button>
-      <button class="filter-btn" data-filter="B1">Battle 1</button>
-      <button class="filter-btn" data-filter="B2">Battle 2</button>
-      <button class="filter-btn" data-filter="1v1">1v1</button>
-      <button class="filter-btn" data-filter="2v1">2v1</button>
-      <button class="filter-btn" data-filter="W">Wins</button>
-      <button class="filter-btn" data-filter="L">Holds</button>
-    </div>
-    <div class="matchup-table-wrap" style="max-height:600px;overflow-y:auto">
-      <table class="matchup-table" id="matchupTable">
-        <thead>
-          <tr>
-            <th class="col-battle">Battle</th>
-            <th class="col-match">Match</th>
-            <th class="col-type">Type</th>
-            <th>Attacker</th>
-            <th class="col-srv">A.Srv</th>
-            <th>Defender</th>
-            <th class="col-srv">D.Srv</th>
-            <th>Result</th>
-            <th>Copper</th>
-          </tr>
-        </thead>
-        <tbody id="matchupBody"></tbody>
-      </table>
-    </div>
+      <div class="filter-bar" id="filterBar">
+        <button class="filter-btn active" data-filter="all">All</button>
+        <button class="filter-btn" data-filter="B1">Battle 1</button>
+        <button class="filter-btn" data-filter="B2">Battle 2</button>
+        <button class="filter-btn" data-filter="1v1">1v1</button>
+        <button class="filter-btn" data-filter="2v1">2v1</button>
+        <button class="filter-btn" data-filter="W">Wins</button>
+        <button class="filter-btn" data-filter="L">Holds</button>
+      </div>
+      <div class="matchup-table-wrap" style="max-height:600px;overflow-y:auto">
+        <table class="matchup-table" id="matchupTable">
+          <thead>
+            <tr>
+              <th class="col-battle">Battle</th>
+              <th class="col-match">Match</th>
+              <th class="col-type">Type</th>
+              <th>Attacker</th>
+              <th class="col-srv">A.Srv</th>
+              <th>Defender</th>
+              <th class="col-srv">D.Srv</th>
+              <th>Result</th>
+              <th>Copper</th>
+            </tr>
+          </thead>
+          <tbody id="matchupBody"></tbody>
+        </table>
+      </div>
     </div>
   </div>
 
-  <div class="footer">Copper Wars Season Dashboard · Updated April 4, 2026 · Battle 2 of 8 · v1.7</div>
+  <div class="footer">Copper Wars Season Dashboard · Updated April 5, 2026 · Battle 2 of 8 · v1.8</div>
 </div>
 
 <div class="tooltip" id="tooltip"></div>
@@ -1641,9 +1328,9 @@ function toggleSection(titleEl) {
   }
 }
 
-// ── Battle Data ──
+// ── Battle Data (updated: RHCP→S1234, V1PS→S1220) ──
 const battleData = [
-  // Battle 1
+  // Battle 1 — Kage no Sato attacking, Koubutai defending
   {battle:1,mid:"1-01",type:"1v1",atk:"ETOA",asrv:1252,def:"FYER",dsrv:1247,res:"W",copper:122.7},
   {battle:1,mid:"1-02",type:"1v1",atk:"ETRE",asrv:1252,def:"ATUM",dsrv:1220,res:"W",copper:117.3},
   {battle:1,mid:"1-03",type:"1v1",atk:"UFO",asrv:1196,def:"PNAS",dsrv:1194,res:"W",copper:112.5},
@@ -1655,7 +1342,7 @@ const battleData = [
   {battle:1,mid:"1-09",type:"1v1",atk:"WARS",asrv:1242,def:"OPPA",dsrv:1194,res:"W",copper:93.8},
   {battle:1,mid:"1-10",type:"1v1",atk:"BAKS",asrv:1242,def:"GDNS",dsrv:1247,res:"W",copper:91.8},
   {battle:1,mid:"1-11",type:"1v1",atk:"ROKG",asrv:1252,def:"S700",dsrv:1234,res:"W",copper:70.7},
-  {battle:1,mid:"1-12",type:"1v1",atk:"OFFJ",asrv:1196,def:"V1PS",dsrv:1234,res:"W",copper:70.4},
+  {battle:1,mid:"1-12",type:"1v1",atk:"OFFJ",asrv:1196,def:"V1PS",dsrv:1220,res:"W",copper:70.4},
   {battle:1,mid:"1-13",type:"1v1",atk:"LAUP",asrv:1196,def:"UFFO",dsrv:1247,res:"W",copper:67.9},
   {battle:1,mid:"1-14",type:"1v1",atk:"MORT",asrv:1242,def:"SPAS",dsrv:1220,res:"L",copper:66.4},
   {battle:1,mid:"1-15",type:"1v1",atk:"OKM",asrv:1252,def:"RUNE",dsrv:1220,res:"W",copper:66.2},
@@ -1687,7 +1374,7 @@ const battleData = [
   {battle:1,mid:"1-35",type:"2v1",atk:"GWN",asrv:1252,def:"340G",dsrv:1220,res:"L",copper:0},
   {battle:1,mid:"1-35",type:"2v1",atk:"SAML",asrv:1242,def:"340G",dsrv:1220,res:"L",copper:0},
   {battle:1,mid:"1-36",type:"DNF",atk:"EKOS",asrv:1237,def:"",dsrv:"",res:"DNF",copper:0},
-  // Battle 2
+  // Battle 2 — Koubutai attacking, Kage no Sato defending
   {battle:2,mid:"2-01",type:"1v1",atk:"FYER",asrv:1247,def:"ETOA",dsrv:1252,res:"W",copper:174.0},
   {battle:2,mid:"2-02",type:"1v1",atk:"RISE",asrv:1234,def:"ETRE",dsrv:1252,res:"W",copper:172.7},
   {battle:2,mid:"2-03",type:"1v1",atk:"SPAS",asrv:1220,def:"ROKK",dsrv:1242,res:"L",copper:0},
@@ -1730,189 +1417,552 @@ const battleData = [
   {battle:2,mid:"2-35",type:"2v1",atk:"ROKS",asrv:1247,def:"IRD2",dsrv:1237,res:"W",copper:20.6},
   {battle:2,mid:"2-35",type:"2v1",atk:"IU99",asrv:1247,def:"IRD2",dsrv:1237,res:"W",copper:1.1},
   {battle:2,mid:"2-36",type:"1v1",atk:"BROO",asrv:1194,def:"OYK",dsrv:1237,res:"L",copper:0},
-  {battle:2,mid:"2-37",type:"1v1",atk:"RHCP",asrv:1237,def:"FYDL",dsrv:1252,res:"W",copper:13.7},
+  {battle:2,mid:"2-37",type:"1v1",atk:"RHCP",asrv:1234,def:"FYDL",dsrv:1252,res:"W",copper:13.7},
   {battle:2,mid:"2-38",type:"1v1",atk:"UAC",asrv:1220,def:"15N",dsrv:1196,res:"L",copper:0},
   {battle:2,mid:"2-39",type:"1v1",atk:"INTL",asrv:1234,def:"ROWW",dsrv:1237,res:"L",copper:0},
 ];
 
-// ── Copper Bar Chart with Battle Tabs ──
-(function buildChart(){
+// ── Global Server Filter State ──
+let selectedServers = new Set(); // empty = all
+
+function getFilteredData() {
+  if (selectedServers.size === 0) return battleData;
+  return battleData.filter(d => selectedServers.has(d.asrv) || (d.dsrv && selectedServers.has(d.dsrv)));
+}
+
+function getFilteredCompleted() {
+  return getFilteredData().filter(d => d.type !== 'DNF');
+}
+
+function fmt(n) {
+  return n % 1 === 0 ? n.toFixed(0) : n.toFixed(1);
+}
+
+function fmtComma(n) {
+  const s = fmt(n);
+  const parts = s.split('.');
+  parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  return parts.join('.');
+}
+
+// ── Render All Sections ──
+function renderAll() {
+  renderSummaryStats();
+  renderMatchTypes();
+  renderMultiCards();
+  renderServerPerformance();
+  renderLeaderboards();
+  renderCopperChart(window._currentChartBattle || 2);
+  renderCrossBattleTrends();
+  renderMatchupTable();
+  updateFilterNote();
+}
+
+function updateFilterNote() {
+  const note = document.getElementById('filterActiveNote');
+  if (selectedServers.size === 0) {
+    note.classList.remove('visible');
+  } else {
+    const srvList = [...selectedServers].sort().map(s => 'S' + s).join(', ');
+    note.textContent = 'Filtered by: ' + srvList + ' — showing matches involving selected servers';
+    note.classList.add('visible');
+  }
+}
+
+// ── Summary Stats ──
+function renderSummaryStats() {
+  const data = getFilteredCompleted();
+  const battles = new Set(data.map(d => d.battle));
+  const wins = data.filter(d => d.res === 'W').length;
+  const losses = data.filter(d => d.res === 'L').length;
+  const total = wins + losses;
+  const winRate = total > 0 ? (wins / total * 100).toFixed(1) : '0.0';
+  const copper = data.reduce((s, d) => s + d.copper, 0);
+
+  document.getElementById('summaryStats').innerHTML = `
+    <div class="stat-card"><div class="stat-value" style="color:var(--blue)">${battles.size}</div><div class="stat-label">Battles Played</div></div>
+    <div class="stat-card"><div class="stat-value" style="color:var(--text-primary)">${total}</div><div class="stat-label">Total Matchups</div></div>
+    <div class="stat-card"><div class="stat-value" style="color:var(--green)">${wins}</div><div class="stat-label">Attacker Wins</div></div>
+    <div class="stat-card"><div class="stat-value" style="color:var(--red)">${losses}</div><div class="stat-label">Defender Holds</div></div>
+    <div class="stat-card"><div class="stat-value" style="color:var(--green)">${winRate}%</div><div class="stat-label">Attacker Win Rate</div></div>
+    <div class="stat-card"><div class="stat-value" style="color:var(--gold)">${fmtComma(copper)}</div><div class="stat-label">Total Copper</div></div>
+  `;
+}
+
+// ── Match Type Breakdown ──
+function renderMatchTypes() {
+  const data = getFilteredData();
+  const types = ['1v1', '2v1', '3v1', 'DNF'];
+  const colors = { '1v1': 'var(--blue)', '2v1': 'var(--orange)', '3v1': 'var(--purple)', 'DNF': 'var(--text-muted)' };
+  const barColors = { '1v1': 'var(--green)', '2v1': 'var(--orange)', '3v1': 'var(--purple)', 'DNF': 'var(--text-muted)' };
+  let html = '';
+
+  types.forEach(t => {
+    const rows = data.filter(d => d.type === t);
+    if (rows.length === 0) return;
+    if (t === 'DNF') {
+      html += `<div class="match-type-card">
+        <div class="mt-label" style="color:${colors[t]}">${t}</div>
+        <div class="mt-stat">${rows.length} team${rows.length !== 1 ? 's' : ''}</div>
+        <div class="mt-bar-wrap"><div class="mt-bar" style="width:0%;background:${barColors[t]}"></div></div>
+        <div class="mt-stat">No match played</div>
+      </div>`;
+      return;
+    }
+    const wins = rows.filter(d => d.res === 'W').length;
+    const losses = rows.filter(d => d.res === 'L').length;
+    const total = wins + losses;
+    const pct = total > 0 ? (wins / total * 100).toFixed(1) : '0.0';
+    const matchCount = t !== '1v1' ? ` (${new Set(rows.map(d => d.mid)).size} matches)` : '';
+    html += `<div class="match-type-card">
+      <div class="mt-label" style="color:${colors[t]}">${t}</div>
+      <div class="mt-stat">${total} matchups${matchCount}</div>
+      <div class="mt-bar-wrap"><div class="mt-bar" style="width:${pct}%;background:${barColors[t]}"></div></div>
+      <div class="mt-stat">${wins}W / ${losses}L — <span style="color:${barColors[t]}">${pct}% win</span></div>
+    </div>`;
+  });
+
+  document.getElementById('matchTypeGrid').innerHTML = html;
+}
+
+// ── Multi-Attacker Cards ──
+function renderMultiCards() {
+  const data = getFilteredData().filter(d => d.type === '2v1' || d.type === '3v1');
+  // Group by match ID
+  const matches = {};
+  data.forEach(d => {
+    if (!matches[d.mid]) matches[d.mid] = [];
+    matches[d.mid].push(d);
+  });
+
+  let html = '';
+  Object.keys(matches).sort().forEach(mid => {
+    const rows = matches[mid];
+    const allWin = rows.every(r => r.res === 'W');
+    const allLoss = rows.every(r => r.res === 'L');
+    const outcome = allLoss ? 'held' : (allWin ? 'breached' : 'split');
+    const outcomeLabel = outcome.toUpperCase();
+    const outcomeClass = 'outcome-' + outcome;
+    const d0 = rows[0];
+
+    html += `<div class="multi-card ${outcome}" data-battle="${d0.battle}">
+      <div class="multi-header">
+        <span class="multi-match-id">B${d0.battle} · Match ${mid} · ${d0.type}</span>
+        <span class="multi-outcome ${outcomeClass}">${outcomeLabel}</span>
+      </div>
+      <div class="multi-defender">Defender: <strong>${d0.def}</strong> (S${d0.dsrv})</div>`;
+    rows.forEach(r => {
+      html += `<div class="multi-row">
+        <span class="multi-team">${r.atk} <span style="color:var(--text-muted);font-size:0.7rem">(S${r.asrv})</span></span>
+        <span class="multi-result res-${r.res.toLowerCase()}">${r.res === 'W' ? 'WIN' : 'LOSS'}</span>
+        <span class="multi-copper">+${fmt(r.copper)}</span>
+      </div>`;
+    });
+    html += '</div>';
+  });
+
+  document.getElementById('multiCards').innerHTML = html || '<div style="color:var(--text-muted);font-family:\'Share Tech Mono\',monospace;font-size:0.8rem;padding:16px">No multi-attacker matches for selected servers</div>';
+}
+
+// ── Server Performance ──
+function renderServerPerformance() {
+  const data = getFilteredCompleted();
+
+  // Attacker stats by server
+  const atkStats = {};
+  data.forEach(d => {
+    if (!atkStats[d.asrv]) atkStats[d.asrv] = { w: 0, l: 0, copper: 0 };
+    if (d.res === 'W') atkStats[d.asrv].w++;
+    else atkStats[d.asrv].l++;
+    atkStats[d.asrv].copper += d.copper;
+  });
+
+  // Defender stats by server
+  const defStats = {};
+  data.forEach(d => {
+    if (!d.dsrv) return;
+    if (!defStats[d.dsrv]) defStats[d.dsrv] = { holds: 0, total: 0 };
+    defStats[d.dsrv].total++;
+    if (d.res === 'L') defStats[d.dsrv].holds++;
+  });
+
+  const atkSorted = Object.entries(atkStats).sort((a, b) => {
+    const pctA = a[1].w / (a[1].w + a[1].l);
+    const pctB = b[1].w / (b[1].w + b[1].l);
+    return pctB - pctA;
+  });
+
+  const defSorted = Object.entries(defStats).sort((a, b) => {
+    const pctA = a[1].holds / a[1].total;
+    const pctB = b[1].holds / b[1].total;
+    return pctB - pctA;
+  });
+
+  let html = '<div class="card"><div class="card-title">Attacker Servers</div><table class="server-table"><thead><tr><th>Server</th><th>Record</th><th>Win%</th><th>Copper</th></tr></thead><tbody>';
+  atkSorted.forEach(([srv, s]) => {
+    const pct = Math.round(s.w / (s.w + s.l) * 100);
+    const color = pct >= 50 ? 'var(--green)' : 'var(--red)';
+    html += `<tr><td><span class="server-id">${srv}</span></td><td>${s.w}W / ${s.l}L</td><td style="color:${color}">${pct}%</td><td style="color:var(--gold)">${fmtComma(s.copper)}</td></tr>`;
+  });
+  html += '</tbody></table></div>';
+
+  html += '<div class="card"><div class="card-title">Defender Servers</div><table class="server-table"><thead><tr><th>Server</th><th>Holds</th><th>Total</th><th>Hold%</th></tr></thead><tbody>';
+  defSorted.forEach(([srv, s]) => {
+    const pct = Math.round(s.holds / s.total * 100);
+    const color = pct >= 40 ? 'var(--red)' : '';
+    html += `<tr><td><span class="server-id">${srv}</span></td><td>${s.holds}</td><td>${s.total}</td><td style="color:${color}">${pct}%</td></tr>`;
+  });
+  html += '</tbody></table></div>';
+
+  document.getElementById('serverPerformance').innerHTML = html;
+}
+
+// ── Team Leaderboards ──
+function renderLeaderboards() {
+  const data = getFilteredCompleted();
+
+  // Top attackers by copper
+  const atkTeams = {};
+  data.forEach(d => {
+    if (!atkTeams[d.atk]) atkTeams[d.atk] = { srv: d.asrv, copper: 0, w: 0, l: 0 };
+    atkTeams[d.atk].copper += d.copper;
+    if (d.res === 'W') atkTeams[d.atk].w++; else atkTeams[d.atk].l++;
+  });
+  const atkSorted = Object.entries(atkTeams).sort((a, b) => b[1].copper - a[1].copper).slice(0, 10);
+
+  // Top defenders by holds
+  const defTeams = {};
+  data.forEach(d => {
+    if (!d.def) return;
+    if (!defTeams[d.def]) defTeams[d.def] = { srv: d.dsrv, holds: 0, faced: 0 };
+    defTeams[d.def].faced++;
+    if (d.res === 'L') defTeams[d.def].holds++;
+  });
+  const defSorted = Object.entries(defTeams).sort((a, b) => b[1].holds - a[1].holds || a[1].faced - b[1].faced).slice(0, 10);
+
+  const rankClass = i => i === 0 ? 'rank-1' : i === 1 ? 'rank-2' : i === 2 ? 'rank-3' : '';
+
+  let html = '<div class="card"><div class="card-title">Top Attackers — Copper Earned</div><table class="leaderboard-table"><thead><tr><th>#</th><th>Team</th><th class="col-lb-srv">Server</th><th>Copper</th><th>Record</th></tr></thead><tbody>';
+  atkSorted.forEach(([team, s], i) => {
+    const record = s.w > 0 && s.l > 0 ? `${s.w}W/${s.l}L` : s.w > 0 ? `${s.w}W` : `${s.l}L`;
+    const recColor = s.w >= s.l ? 'res-w' : 'res-l';
+    html += `<tr><td><span class="rank ${rankClass(i)}">${i + 1}</span></td><td><span class="team-tag">${team}</span></td><td class="col-lb-srv">${s.srv}</td><td style="color:var(--gold)">${fmtComma(s.copper)}</td><td class="${recColor}">${record}</td></tr>`;
+  });
+  html += '</tbody></table></div>';
+
+  html += '<div class="card"><div class="card-title">Top Defenders — Holds</div><table class="leaderboard-table"><thead><tr><th>#</th><th>Team</th><th class="col-lb-srv">Server</th><th>Holds</th><th>Faced</th></tr></thead><tbody>';
+  defSorted.forEach(([team, s], i) => {
+    html += `<tr><td><span class="rank ${rankClass(i)}">${i + 1}</span></td><td><span class="team-tag">${team}</span></td><td class="col-lb-srv">${s.srv}</td><td style="color:var(--red)">${s.holds}</td><td>${s.faced}</td></tr>`;
+  });
+  html += '</tbody></table></div>';
+
+  document.getElementById('leaderboards').innerHTML = html;
+}
+
+// ── Copper Distribution Chart ──
+function renderCopperChart(battleNum) {
+  window._currentChartBattle = battleNum;
   const container = document.getElementById('copperChart');
   const MOBILE_BP = 768;
+  const isMobile = () => window.innerWidth <= MOBILE_BP;
 
-  function isMobile() {
-    return window.innerWidth <= MOBILE_BP;
-  }
+  const filtered = getFilteredData().filter(d => d.battle === battleNum && d.type !== 'DNF');
+  const sorted = [...filtered].sort((a, b) => b.copper - a.copper);
+  const maxCopper = sorted.length > 0 ? sorted[0].copper : 1;
 
-  function renderChart(battleNum) {
-    const filtered = battleData.filter(d => d.battle === battleNum && d.type !== 'DNF');
-    const sorted = [...filtered].sort((a,b) => b.copper - a.copper);
-    const maxCopper = sorted.length > 0 ? sorted[0].copper : 1;
+  let html = '<div class="chart-tabs">';
+  html += `<div class="chart-tab ${battleNum === 1 ? 'active' : ''}" onclick="renderCopperChart(1)">Battle 1</div>`;
+  html += `<div class="chart-tab ${battleNum === 2 ? 'active' : ''}" onclick="renderCopperChart(2)">Battle 2</div>`;
+  html += '</div>';
 
-    // Tabs (shared)
-    let html = '<div class="chart-tabs">';
-    html += `<div class="chart-tab ${battleNum===1?'active':''}" onclick="window._renderChart(1)">Battle 1</div>`;
-    html += `<div class="chart-tab ${battleNum===2?'active':''}" onclick="window._renderChart(2)">Battle 2</div>`;
+  if (isMobile()) {
+    html += '<div class="hbar-chart">';
+    sorted.forEach((d, i) => {
+      const pct = maxCopper > 0 ? (d.copper / maxCopper * 100) : 0;
+      const cls = d.type !== '1v1' ? 'multi' : (d.res === 'W' ? 'win' : 'loss');
+      const valStr = d.copper > 0 ? fmt(d.copper) : '—';
+      html += `<div class="hbar-row" data-idx="${i}">
+        <span class="hbar-team">${d.atk}</span>
+        <div class="hbar-track"><div class="hbar-fill ${cls}" style="width:${Math.max(pct, 0.5)}%"></div></div>
+        <span class="hbar-value">${valStr}</span>
+      </div>
+      <div class="hbar-detail" id="hbar-detail-${i}">
+        <strong>${d.atk}</strong> vs ${d.def} · <span style="color:${d.res === 'W' ? 'var(--green)' : 'var(--red)'}">${d.res === 'W' ? 'Win' : 'Loss'}</span> · ${d.type}<br>
+        Copper: <span style="color:var(--gold)">${parseFloat(d.copper).toFixed(1)}</span>
+      </div>`;
+    });
     html += '</div>';
-
-    if (isMobile()) {
-      // ── Mobile: horizontal bars ──
-      html += '<div class="hbar-chart">';
-      sorted.forEach((d, i) => {
-        const pct = maxCopper > 0 ? (d.copper / maxCopper * 100) : 0;
-        const cls = d.type !== '1v1' ? 'multi' : (d.res === 'W' ? 'win' : 'loss');
-        const valStr = d.copper > 0 ? (d.copper % 1 === 0 ? d.copper.toFixed(0) : d.copper.toFixed(1)) : '—';
-        html += `<div class="hbar-row" data-idx="${i}"
-          data-team="${d.atk}" data-def="${d.def}" data-copper="${d.copper}" data-res="${d.res}" data-type="${d.type}">
-          <span class="hbar-team">${d.atk}</span>
-          <div class="hbar-track"><div class="hbar-fill ${cls}" style="width:${Math.max(pct,0.5)}%"></div></div>
-          <span class="hbar-value">${valStr}</span>
-        </div>
-        <div class="hbar-detail" id="hbar-detail-${i}">
-          <strong>${d.atk}</strong> vs ${d.def} · <span style="color:${d.res==='W'?'var(--green)':'var(--red)'}">${d.res==='W'?'Win':'Loss'}</span> · ${d.type}<br>
-          Copper: <span style="color:var(--gold)">${parseFloat(d.copper).toFixed(1)}</span>
-        </div>`;
-      });
-      html += '</div>';
-    } else {
-      // ── Desktop: vertical bars (unchanged) ──
-      html += '<div class="bar-chart">';
-      sorted.forEach(d => {
-        const h = maxCopper > 0 ? (d.copper / maxCopper * 240) : 0;
-        const cls = d.type !== '1v1' ? 'multi' : (d.res === 'W' ? 'win' : 'loss');
-        html += `<div class="bar-wrap">
-          <div class="bar-value">${d.copper > 0 ? (d.copper % 1 === 0 ? d.copper.toFixed(0) : d.copper.toFixed(1)) : ''}</div>
-          <div class="bar ${cls}" style="height:${Math.max(h,2)}px"
-            data-team="${d.atk}" data-def="${d.def}" data-copper="${d.copper}" data-res="${d.res}" data-type="${d.type}"></div>
-          <div class="bar-label">${d.atk}</div>
-        </div>`;
-      });
-      html += '</div>';
-    }
-
-    // Legend (shared)
-    html += `<div class="chart-legend">
-      <div class="legend-item"><div class="legend-swatch" style="background:var(--green)"></div>Attacker Win</div>
-      <div class="legend-item"><div class="legend-swatch" style="background:var(--red)"></div>Defender Hold</div>
-      <div class="legend-item"><div class="legend-swatch" style="background:repeating-linear-gradient(45deg,#ff9f43,#ff9f43 3px,rgba(255,159,67,0.6) 3px,rgba(255,159,67,0.6) 6px)"></div>Multi-Attacker</div>
-    </div>`;
-    container.innerHTML = html;
-
-    if (isMobile()) {
-      // ── Mobile: tap to expand detail ──
-      let openIdx = null;
-      container.querySelectorAll('.hbar-row').forEach(row => {
-        row.style.cursor = 'pointer';
-        row.addEventListener('click', () => {
-          const idx = row.dataset.idx;
-          const detail = document.getElementById('hbar-detail-' + idx);
-          if (openIdx !== null && openIdx !== idx) {
-            const prev = document.getElementById('hbar-detail-' + openIdx);
-            if (prev) prev.classList.remove('visible');
-          }
-          detail.classList.toggle('visible');
-          openIdx = detail.classList.contains('visible') ? idx : null;
-        });
-      });
-    } else {
-      // ── Desktop: hover tooltip (unchanged) ──
-      const tooltip = document.getElementById('tooltip');
-      container.querySelectorAll('.bar').forEach(bar => {
-        bar.addEventListener('mouseenter', e => {
-          const d = bar.dataset;
-          tooltip.innerHTML = `<strong>${d.team}</strong> vs ${d.def}<br>Copper: <span style="color:var(--gold)">${parseFloat(d.copper).toFixed(1)}</span><br>Result: <span style="color:${d.res==='W'?'var(--green)':'var(--red)'}">${d.res==='W'?'Win':'Loss'}</span><br>Type: ${d.type}`;
-          tooltip.style.display = 'block';
-        });
-        bar.addEventListener('mousemove', e => {
-          tooltip.style.left = e.clientX + 12 + 'px';
-          tooltip.style.top = e.clientY - 10 + 'px';
-        });
-        bar.addEventListener('mouseleave', () => { tooltip.style.display = 'none'; });
-      });
-    }
+  } else {
+    html += '<div class="bar-chart">';
+    sorted.forEach(d => {
+      const h = maxCopper > 0 ? (d.copper / maxCopper * 240) : 0;
+      const cls = d.type !== '1v1' ? 'multi' : (d.res === 'W' ? 'win' : 'loss');
+      html += `<div class="bar-wrap">
+        <div class="bar-value">${d.copper > 0 ? fmt(d.copper) : ''}</div>
+        <div class="bar ${cls}" style="height:${Math.max(h, 2)}px"
+          data-team="${d.atk}" data-def="${d.def}" data-copper="${d.copper}" data-res="${d.res}" data-type="${d.type}"></div>
+        <div class="bar-label">${d.atk}</div>
+      </div>`;
+    });
+    html += '</div>';
   }
 
-  window._renderChart = renderChart;
-  renderChart(2); // default to latest battle
+  html += `<div class="chart-legend">
+    <div class="legend-item"><div class="legend-swatch" style="background:var(--green)"></div>Attacker Win</div>
+    <div class="legend-item"><div class="legend-swatch" style="background:var(--red)"></div>Defender Hold</div>
+    <div class="legend-item"><div class="legend-swatch" style="background:repeating-linear-gradient(45deg,#ff9f43,#ff9f43 3px,rgba(255,159,67,0.6) 3px,rgba(255,159,67,0.6) 6px)"></div>Multi-Attacker</div>
+  </div>`;
 
-  // Re-render on resize if crossing the breakpoint
-  let wasMobile = isMobile();
-  window.addEventListener('resize', () => {
-    const nowMobile = isMobile();
-    if (nowMobile !== wasMobile) {
-      wasMobile = nowMobile;
-      // Determine which battle tab is active
-      const activeTab = container.querySelector('.chart-tab.active');
-      const battleNum = activeTab ? parseInt(activeTab.textContent.replace('Battle ','')) : 2;
-      renderChart(battleNum);
-    }
+  if (sorted.length === 0) {
+    html += '<div style="text-align:center;color:var(--text-muted);font-family:\'Share Tech Mono\',monospace;font-size:0.8rem;padding:32px">No matches for selected servers in this battle</div>';
+  }
+
+  container.innerHTML = html;
+
+  if (isMobile()) {
+    let openIdx = null;
+    container.querySelectorAll('.hbar-row').forEach(row => {
+      row.style.cursor = 'pointer';
+      row.addEventListener('click', () => {
+        const idx = row.dataset.idx;
+        const detail = document.getElementById('hbar-detail-' + idx);
+        if (openIdx !== null && openIdx !== idx) {
+          const prev = document.getElementById('hbar-detail-' + openIdx);
+          if (prev) prev.classList.remove('visible');
+        }
+        detail.classList.toggle('visible');
+        openIdx = detail.classList.contains('visible') ? idx : null;
+      });
+    });
+  } else {
+    const tooltip = document.getElementById('tooltip');
+    container.querySelectorAll('.bar').forEach(bar => {
+      bar.addEventListener('mouseenter', e => {
+        const d = bar.dataset;
+        tooltip.innerHTML = `<strong>${d.team}</strong> vs ${d.def}<br>Copper: <span style="color:var(--gold)">${parseFloat(d.copper).toFixed(1)}</span><br>Result: <span style="color:${d.res === 'W' ? 'var(--green)' : 'var(--red)'}">${d.res === 'W' ? 'Win' : 'Loss'}</span><br>Type: ${d.type}`;
+        tooltip.style.display = 'block';
+      });
+      bar.addEventListener('mousemove', e => {
+        tooltip.style.left = e.clientX + 12 + 'px';
+        tooltip.style.top = e.clientY - 10 + 'px';
+      });
+      bar.addEventListener('mouseleave', () => { tooltip.style.display = 'none'; });
+    });
+  }
+}
+
+// ── Cross-Battle Trends ──
+function renderCrossBattleTrends() {
+  const data = getFilteredCompleted();
+
+  // Faction records — Kage attacked B1, Koubutai attacked B2
+  const kageAtk = data.filter(d => d.battle === 1);
+  const kageAtkW = kageAtk.filter(d => d.res === 'W').length;
+  const kageAtkL = kageAtk.filter(d => d.res === 'L').length;
+  const kageDef = data.filter(d => d.battle === 2);
+  const kageDefHolds = kageDef.filter(d => d.res === 'L').length;
+
+  const kouAtk = data.filter(d => d.battle === 2);
+  const kouAtkW = kouAtk.filter(d => d.res === 'W').length;
+  const kouAtkL = kouAtk.filter(d => d.res === 'L').length;
+  const kouDef = data.filter(d => d.battle === 1);
+  const kouDefHolds = kouDef.filter(d => d.res === 'L').length;
+
+  const kagePct = (kageAtkW + kageAtkL) > 0 ? (kageAtkW / (kageAtkW + kageAtkL) * 100).toFixed(1) : '0.0';
+  const kageDefPct = kageDef.length > 0 ? (kageDefHolds / kageDef.length * 100).toFixed(1) : '0.0';
+  const kouPct = (kouAtkW + kouAtkL) > 0 ? (kouAtkW / (kouAtkW + kouAtkL) * 100).toFixed(1) : '0.0';
+  const kouDefPct = kouDef.length > 0 ? (kouDefHolds / kouDef.length * 100).toFixed(1) : '0.0';
+
+  // Copper flow
+  const b1Copper = data.filter(d => d.battle === 1).reduce((s, d) => s + d.copper, 0);
+  const b2Copper = data.filter(d => d.battle === 2).reduce((s, d) => s + d.copper, 0);
+  const maxCopperFlow = Math.max(b1Copper, b2Copper, 1);
+
+  // Battle-over-battle
+  const b1Data = data.filter(d => d.battle === 1);
+  const b2Data = data.filter(d => d.battle === 2);
+  const b1WinRate = b1Data.length > 0 ? (b1Data.filter(d => d.res === 'W').length / b1Data.length * 100).toFixed(1) : '0.0';
+  const b2WinRate = b2Data.length > 0 ? (b2Data.filter(d => d.res === 'W').length / b2Data.length * 100).toFixed(1) : '0.0';
+  const trend = (parseFloat(b2WinRate) - parseFloat(b1WinRate)).toFixed(1);
+  const trendSign = parseFloat(trend) >= 0 ? '▲ +' : '▼ ';
+
+  // 2v1 breakdown per battle
+  const b1_2v1 = data.filter(d => d.battle === 1 && d.type === '2v1');
+  const b1_2v1W = b1_2v1.filter(d => d.res === 'W').length;
+  const b1_2v1L = b1_2v1.filter(d => d.res === 'L').length;
+  const b2_2v1 = data.filter(d => d.battle === 2 && d.type === '2v1');
+  const b2_2v1W = b2_2v1.filter(d => d.res === 'W').length;
+  const b2_2v1L = b2_2v1.filter(d => d.res === 'L').length;
+  const b2_2v1Pct = (b2_2v1W + b2_2v1L) > 0 ? Math.round(b2_2v1W / (b2_2v1W + b2_2v1L) * 100) + '% win' : 'n/a';
+
+  // Server consistency
+  const allSrvs = new Set([...data.map(d => d.asrv), ...data.filter(d => d.dsrv).map(d => d.dsrv)]);
+  let srvHtml = '';
+  [...allSrvs].sort().forEach(srv => {
+    const atkRows = data.filter(d => d.asrv === srv);
+    const defRows = data.filter(d => d.dsrv === srv);
+    const atkW = atkRows.filter(d => d.res === 'W').length;
+    const atkTotal = atkRows.length;
+    const defHolds = defRows.filter(d => d.res === 'L').length;
+    const defTotal = defRows.length;
+    const atkPct = atkTotal > 0 ? Math.round(atkW / atkTotal * 100) + '%' : '—';
+    const defPct = defTotal > 0 ? Math.round(defHolds / defTotal * 100) + '%' : '—';
+    const atkColor = atkTotal > 0 && atkW / atkTotal >= 0.5 ? 'color:var(--green)' : atkTotal > 0 ? 'color:var(--red)' : '';
+    srvHtml += `<div class="trend-row">
+      <span class="trend-label"><span class="server-id">${srv}</span></span>
+      <span class="trend-value">ATK: <span style="${atkColor}">${atkPct}</span> · DEF: ${defPct}</span>
+    </div>`;
   });
-})();
+
+  document.getElementById('crossBattleTrends').innerHTML = `
+    <div class="trend-card">
+      <div class="trend-card-title">Faction Records</div>
+      <div class="trend-row"><span class="trend-label" style="color:var(--green)">Kage no Sato</span><span class="trend-value">ATK: <span style="color:var(--green)">${kageAtkW}W</span>/<span style="color:var(--red)">${kageAtkL}L</span> (${kagePct}%)</span></div>
+      <div class="trend-row"><span class="trend-label" style="color:var(--green)">Kage no Sato</span><span class="trend-value">DEF: <span style="color:var(--red)">${kageDefHolds} holds</span> / ${kageDef.length} faced (${kageDefPct}%)</span></div>
+      <div class="trend-row"><span class="trend-label" style="color:var(--cyan)">Koubutai</span><span class="trend-value">ATK: <span style="color:var(--green)">${kouAtkW}W</span>/<span style="color:var(--red)">${kouAtkL}L</span> (${kouPct}%)</span></div>
+      <div class="trend-row"><span class="trend-label" style="color:var(--cyan)">Koubutai</span><span class="trend-value">DEF: <span style="color:var(--red)">${kouDefHolds} holds</span> / ${kouDef.length} faced (${kouDefPct}%)</span></div>
+    </div>
+    <div class="trend-card">
+      <div class="trend-card-title">Copper Flow By Battle</div>
+      <div class="copper-flow-row"><span class="copper-flow-label">B1</span><div class="copper-flow-bar-wrap"><div class="copper-flow-bar" style="background:var(--green);width:${b1Copper / maxCopperFlow * 100}%">Kage: ${fmtComma(b1Copper)}</div></div></div>
+      <div style="font-family:'Share Tech Mono',monospace;font-size:0.7rem;color:var(--text-muted);padding:2px 0 8px 42px">Kage attacking → Koubutai defending</div>
+      <div class="copper-flow-row"><span class="copper-flow-label">B2</span><div class="copper-flow-bar-wrap"><div class="copper-flow-bar" style="background:var(--cyan);width:${b2Copper / maxCopperFlow * 100}%">Koubutai: ${fmtComma(b2Copper)}</div></div></div>
+      <div style="font-family:'Share Tech Mono',monospace;font-size:0.7rem;color:var(--text-muted);padding:2px 0 8px 42px">Koubutai attacking → Kage defending</div>
+      <div class="trend-row" style="margin-top:8px"><span class="trend-label">Total Copper Moved</span><span class="trend-value" style="color:var(--gold)">${fmtComma(b1Copper + b2Copper)}</span></div>
+    </div>
+    <div class="trend-card">
+      <div class="trend-card-title">Battle-Over-Battle Win Rate</div>
+      <div class="trend-row"><span class="trend-label">B1 — Attacker Win Rate</span><span class="trend-value" style="color:var(--green)">${b1WinRate}% <span style="color:var(--text-muted)">(${b1Data.filter(d => d.res === 'W').length}/${b1Data.length})</span></span></div>
+      <div class="trend-row"><span class="trend-label">B2 — Attacker Win Rate</span><span class="trend-value" style="color:var(--green)">${b2WinRate}% <span style="color:var(--text-muted)">(${b2Data.filter(d => d.res === 'W').length}/${b2Data.length})</span></span></div>
+      <div class="trend-row"><span class="trend-label">Trend</span><span class="trend-value" style="color:${parseFloat(trend) >= 0 ? 'var(--green)' : 'var(--red)'}">${trendSign}${Math.abs(parseFloat(trend)).toFixed(1)}%</span></div>
+      <div class="trend-row"><span class="trend-label">B1 2v1 Outcome</span><span class="trend-value" style="color:var(--red)">${b1_2v1W}W / ${b1_2v1L}L${b1_2v1.length > 0 ? (b1_2v1W === 0 ? ' (all held)' : '') : ''}</span></div>
+      <div class="trend-row"><span class="trend-label">B2 2v1 Outcome</span><span class="trend-value" style="color:var(--orange)">${b2_2v1W}W / ${b2_2v1L}L (${b2_2v1Pct})</span></div>
+    </div>
+    <div class="trend-card">
+      <div class="trend-card-title">Server Consistency</div>
+      <div style="font-family:'Share Tech Mono',monospace;font-size:0.72rem;color:var(--text-muted);margin-bottom:12px">Servers that attacked in B1 defended in B2 and vice versa</div>
+      ${srvHtml}
+    </div>
+  `;
+}
 
 // ── Matchup Table ──
-(function buildTable(){
+function renderMatchupTable() {
   const body = document.getElementById('matchupBody');
-  const typeClass = t => t==='1v1'?'type-1v1':t==='2v1'?'type-2v1':t==='3v1'?'type-3v1':'type-dnf';
-  const resClass = r => r==='W'?'win':r==='L'?'loss':'dnf';
+  const typeClass = t => t === '1v1' ? 'type-1v1' : t === '2v1' ? 'type-2v1' : t === '3v1' ? 'type-3v1' : 'type-dnf';
+  const resClass = r => r === 'W' ? 'win' : r === 'L' ? 'loss' : 'dnf';
 
-  function render(filter){
-    let filtered = battleData;
-    if(filter==='B1') filtered = battleData.filter(d=>d.battle===1);
-    else if(filter==='B2') filtered = battleData.filter(d=>d.battle===2);
-    else if(filter==='1v1') filtered = battleData.filter(d=>d.type==='1v1');
-    else if(filter==='2v1') filtered = battleData.filter(d=>d.type==='2v1'||d.type==='3v1');
-    else if(filter==='W') filtered = battleData.filter(d=>d.res==='W');
-    else if(filter==='L') filtered = battleData.filter(d=>d.res==='L');
+  // Get active matchup filter
+  const activeBtn = document.querySelector('#filterBar .filter-btn.active');
+  const filter = activeBtn ? activeBtn.dataset.filter : 'all';
 
-    body.innerHTML = filtered.map(d => `<tr>
-      <td class="col-battle" style="font-family:'Orbitron',sans-serif;font-size:0.7rem;font-weight:600;color:var(--blue)">B${d.battle}</td>
-      <td class="col-match" style="font-family:'Share Tech Mono',monospace;font-size:0.8rem;color:var(--text-muted)">${d.mid}</td>
-      <td class="col-type"><span class="type-badge ${typeClass(d.type)}">${d.type}</span></td>
-      <td><span class="team-tag">${d.atk}</span></td>
-      <td class="col-srv" style="color:var(--text-muted)">${d.asrv}</td>
-      <td><span class="team-tag">${d.def||'—'}</span></td>
-      <td class="col-srv" style="color:var(--text-muted)">${d.dsrv||'—'}</td>
-      <td><span class="result-badge ${resClass(d.res)}">${d.res}</span></td>
-      <td style="color:var(--gold);font-family:'Share Tech Mono',monospace">${d.copper>0?(d.copper%1===0?d.copper.toFixed(0):d.copper.toFixed(1)):'—'}</td>
-    </tr>`).join('');
-  }
+  let data = getFilteredData();
+  if (filter === 'B1') data = data.filter(d => d.battle === 1);
+  else if (filter === 'B2') data = data.filter(d => d.battle === 2);
+  else if (filter === '1v1') data = data.filter(d => d.type === '1v1');
+  else if (filter === '2v1') data = data.filter(d => d.type === '2v1' || d.type === '3v1');
+  else if (filter === 'W') data = data.filter(d => d.res === 'W');
+  else if (filter === 'L') data = data.filter(d => d.res === 'L');
 
-  render('all');
+  body.innerHTML = data.map(d => `<tr>
+    <td class="col-battle" style="font-family:'Orbitron',sans-serif;font-size:0.7rem;font-weight:600;color:var(--blue)">B${d.battle}</td>
+    <td class="col-match" style="font-family:'Share Tech Mono',monospace;font-size:0.8rem;color:var(--text-muted)">${d.mid}</td>
+    <td class="col-type"><span class="type-badge ${typeClass(d.type)}">${d.type}</span></td>
+    <td><span class="team-tag">${d.atk}</span></td>
+    <td class="col-srv" style="color:var(--text-muted)">${d.asrv}</td>
+    <td><span class="team-tag">${d.def || '—'}</span></td>
+    <td class="col-srv" style="color:var(--text-muted)">${d.dsrv || '—'}</td>
+    <td><span class="result-badge ${resClass(d.res)}">${d.res}</span></td>
+    <td style="color:var(--gold);font-family:'Share Tech Mono',monospace">${d.copper > 0 ? fmt(d.copper) : '—'}</td>
+  </tr>`).join('');
+}
 
-  document.getElementById('filterBar').addEventListener('click', e => {
-    if(!e.target.classList.contains('filter-btn')) return;
-    document.querySelectorAll('#filterBar .filter-btn').forEach(b=>b.classList.remove('active'));
-    e.target.classList.add('active');
-    render(e.target.dataset.filter);
+// ── Server Filter Logic ──
+(function initServerFilter() {
+  const bar = document.getElementById('serverFilterBar');
+
+  bar.addEventListener('click', e => {
+    const btn = e.target.closest('.server-filter-btn');
+    if (!btn) return;
+
+    const srv = btn.dataset.server;
+
+    if (srv === 'all') {
+      // Clear all selections
+      selectedServers.clear();
+      bar.querySelectorAll('.server-filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    } else {
+      // Toggle this server
+      const allBtn = bar.querySelector('[data-server="all"]');
+      allBtn.classList.remove('active');
+
+      if (btn.classList.contains('active')) {
+        btn.classList.remove('active');
+        selectedServers.delete(parseInt(srv));
+      } else {
+        btn.classList.add('active');
+        selectedServers.add(parseInt(srv));
+      }
+
+      // If nothing selected, re-activate ALL
+      if (selectedServers.size === 0) {
+        allBtn.classList.add('active');
+      }
+    }
+
+    renderAll();
   });
 })();
 
-// ── Multi-Attacker Card Filters ──
-(function buildMultiFilter(){
-  const bar = document.getElementById('multiFilterBar');
-  const cards = document.querySelectorAll('#multiCards .multi-card');
-
-  bar.addEventListener('click', e => {
-    if(!e.target.classList.contains('filter-btn')) return;
-    bar.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+// ── Multi-Attacker Battle Filter ──
+(function initMultiFilter() {
+  document.getElementById('multiFilterBar').addEventListener('click', e => {
+    if (!e.target.classList.contains('filter-btn')) return;
+    document.querySelectorAll('#multiFilterBar .filter-btn').forEach(b => b.classList.remove('active'));
     e.target.classList.add('active');
     const f = e.target.dataset.mfilter;
-    cards.forEach(card => {
+    document.querySelectorAll('#multiCards .multi-card').forEach(card => {
       card.style.display = (f === 'all' || card.dataset.battle === f) ? '' : 'none';
     });
   });
 })();
 
-// ── Back to Top Button ──
-(function buildBackToTop(){
+// ── Matchup Table Filter ──
+(function initTableFilter() {
+  document.getElementById('filterBar').addEventListener('click', e => {
+    if (!e.target.classList.contains('filter-btn')) return;
+    document.querySelectorAll('#filterBar .filter-btn').forEach(b => b.classList.remove('active'));
+    e.target.classList.add('active');
+    renderMatchupTable();
+  });
+})();
+
+// ── Resize handler for chart ──
+(function initResize() {
+  let wasMobile = window.innerWidth <= 768;
+  window.addEventListener('resize', () => {
+    const nowMobile = window.innerWidth <= 768;
+    if (nowMobile !== wasMobile) {
+      wasMobile = nowMobile;
+      renderCopperChart(window._currentChartBattle || 2);
+    }
+  });
+})();
+
+// ── Back to Top ──
+(function initBackToTop() {
   const btn = document.getElementById('backToTop');
   window.addEventListener('scroll', () => {
     btn.classList.toggle('visible', window.scrollY > 600);
-  }, {passive: true});
+  }, { passive: true });
   btn.addEventListener('click', () => {
-    window.scrollTo({top: 0, behavior: 'smooth'});
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   });
 })();
+
+// ── Initial Render ──
+renderAll();
 </script>
 </body>
 </html>
