@@ -689,6 +689,159 @@ body::before {
   margin-bottom: 16px;
 }
 
+/* ── Monte Carlo Simulator ── */
+.mc-controls {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.mc-run-btn {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  padding: 10px 24px;
+  border: 1px solid var(--purple);
+  border-radius: 6px;
+  background: var(--purple-dim);
+  color: var(--purple);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.mc-run-btn:hover {
+  background: var(--purple);
+  color: #fff;
+  box-shadow: 0 0 20px rgba(168,85,247,0.3);
+}
+
+.mc-run-btn:disabled { opacity: 0.4; cursor: default; }
+.mc-run-btn:disabled:hover { background: var(--purple-dim); color: var(--purple); box-shadow: none; }
+
+.mc-status {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  letter-spacing: 1px;
+}
+
+.mc-results-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-bottom: 24px;
+}
+
+@media (max-width: 900px) { .mc-results-grid { grid-template-columns: 1fr; } }
+
+.mc-ranking-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.mc-ranking-table th {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.62rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  text-align: left;
+  padding: 10px 8px;
+  border-bottom: 1px solid var(--border);
+}
+
+.mc-ranking-table td {
+  padding: 8px 8px;
+  font-size: 0.88rem;
+  border-bottom: 1px solid rgba(255,255,255,0.03);
+}
+
+.mc-ranking-table tbody tr:hover td { background: rgba(61,139,253,0.04); }
+
+.mc-range-track {
+  height: 8px;
+  background: rgba(255,255,255,0.04);
+  border-radius: 4px;
+  position: relative;
+  min-width: 100px;
+}
+
+.mc-range-fill {
+  position: absolute;
+  height: 100%;
+  border-radius: 4px;
+  opacity: 0.5;
+}
+
+.mc-range-median {
+  position: absolute;
+  width: 3px;
+  height: 14px;
+  top: -3px;
+  border-radius: 2px;
+}
+
+.mc-top5-bar {
+  height: 18px;
+  background: rgba(255,255,255,0.04);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.mc-top5-fill {
+  height: 100%;
+  border-radius: 3px;
+  display: flex;
+  align-items: center;
+  padding-left: 6px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.62rem;
+  color: #fff;
+  min-width: 28px;
+}
+
+.mc-faction-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 20px;
+}
+
+.mc-faction-title {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+
+.mc-insight {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px 20px;
+  margin-bottom: 12px;
+}
+
+.mc-insight-label {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.mc-insight-value {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
 .coming-soon {
   text-align: center;
   padding: 40px 20px;
@@ -797,18 +950,25 @@ body::before {
       <div id="battlePredictor"></div>
     </div>
 
-    <!-- Coming Soon: Phase 3 -->
-    <div class="section">
-      <div class="section-title"><span class="icon" style="background:var(--blue)"></span> Coming Soon</div>
-      <div class="coming-soon">
-        <div class="coming-soon-title">Phase 3 — Monte Carlo Simulator</div>
-        <div class="coming-soon-desc">1,000+ season simulations with probabilistic outcomes.<br>Confidence ranges & swing match analysis.</div>
+    <!-- Monte Carlo Simulator -->
+    <div class="section anim anim-d3">
+      <span class="phase-label">Phase 3 — Monte Carlo Season Simulator</span>
+      <div class="section-title"><span class="icon" style="background:var(--purple)"></span> Season Outcome Simulator</div>
+      <p style="font-family:'Share Tech Mono',monospace;font-size:0.78rem;color:var(--text-muted);margin-bottom:16px;letter-spacing:1px">
+        Simulates 1,000 possible season outcomes. Models production, matchmaking, attacker choice, and battle outcomes probabilistically.
+      </p>
+      <div id="monteCarlo">
+        <div class="mc-controls">
+          <button class="mc-run-btn" id="mcRunBtn" onclick="runMonteCarlo()">▶ RUN SIMULATION</button>
+          <span class="mc-status" id="mcStatus">Ready — click to simulate 1,000 seasons</span>
+        </div>
+        <div id="mcResults"></div>
       </div>
     </div>
 
   </div>
 
-  <div class="footer">Copper Wars Season Projector · Phase 2 · v0.2</div>
+  <div class="footer">Copper Wars Season Projector · Phase 3 · v0.3</div>
 </div>
 
 <script>
@@ -976,6 +1136,7 @@ async function loadData() {
     renderProjectionChart(standings, hoursToEnd);
     renderMatchmaking(standings, hoursToEnd);
     renderBattlePredictor(declarations, teamStats, standings, completedBattles);
+    storeMCData(standings, teamStats, completedBattles);
 
   } catch (err) {
     document.getElementById('loadingIndicator').innerHTML =
@@ -1344,6 +1505,286 @@ function renderMatchmaking(standings, hoursToEnd) {
   });
 
   document.getElementById('mmGrid').innerHTML = html;
+}
+
+// ── Monte Carlo Season Simulator ──
+let _mcData = null; // stored from loadData
+
+function storeMCData(standings, teamStats, completedBattles) {
+  _mcData = { standings, teamStats, completedBattles };
+}
+
+function runMonteCarlo() {
+  if (!_mcData) return;
+  const btn = document.getElementById('mcRunBtn');
+  const status = document.getElementById('mcStatus');
+  btn.disabled = true;
+  status.textContent = 'Running 1,000 simulations...';
+
+  // Use setTimeout to let UI update before heavy computation
+  setTimeout(() => {
+    const results = simulateSeasons(1000);
+    renderMCResults(results);
+    btn.disabled = false;
+    status.textContent = 'Complete — 1,000 seasons simulated';
+  }, 50);
+}
+
+function simulateSeasons(numSims) {
+  const { standings, teamStats, completedBattles } = _mcData;
+  const tracked = standings.filter(s => s.genRate > 0);
+  const STEAL_PCT = 0.15;
+  const BASELINE_WIN = 0.655;
+
+  // Remaining battles
+  const remaining = battleSchedule.filter(b => b.num > completedBattles);
+
+  // Calculate hours between consecutive battles
+  const battleTimes = [];
+  const snapshotTime = new Date('2026-04-06T12:00:00');
+  let prevTime = snapshotTime;
+  remaining.forEach(b => {
+    const bt = new Date(b.date + 'T09:30:00');
+    battleTimes.push({ ...b, hours: (bt - prevTime) / 3600000 });
+    prevTime = bt;
+  });
+
+  // Quick win prob (simplified for speed)
+  function quickWinProb(atk, def, atkCopper, defCopper) {
+    const as = teamStats[atk] || { atkW: 0, atkL: 0, defHold: 0, defBreached: 0 };
+    const ds = teamStats[def] || { atkW: 0, atkL: 0, defHold: 0, defBreached: 0 };
+    const pw = 2;
+    const atkStr = (as.atkW + pw * BASELINE_WIN) / (as.atkW + as.atkL + pw);
+    const defStr = (ds.defHold + pw * (1 - BASELINE_WIN)) / (ds.defHold + ds.defBreached + pw);
+    let prob = atkStr * (1 - defStr) / (atkStr * (1 - defStr) + (1 - atkStr) * defStr);
+    // Copper factor
+    if (atkCopper > 0 && defCopper > 0) {
+      prob -= (defCopper / atkCopper - 1) * 0.05;
+    }
+    return Math.max(0.2, Math.min(0.8, prob));
+  }
+
+  // Track results per team across all sims
+  const teamResults = {};
+  tracked.forEach(t => {
+    teamResults[t.team] = { finalCoppers: [], ranks: [], top5: 0, top10: 0, first: 0 };
+  });
+
+  for (let sim = 0; sim < numSims; sim++) {
+    // Copy starting copper
+    const copper = {};
+    tracked.forEach(t => { copper[t.team] = t.copper; });
+
+    // Simulate each remaining battle
+    battleTimes.forEach(battle => {
+      // Add production
+      tracked.forEach(t => { copper[t.team] += t.genRate * battle.hours; });
+
+      // Determine who attacks/defends
+      const kouAttacks = battle.kouRole === 'ATK';
+      const atkFaction = kouAttacks ? 'Koubutai' : 'Kage no Sato';
+
+      // Rank teams by copper for matchmaking
+      const ranked = tracked.map(t => ({ ...t, copper: copper[t.team] })).sort((a, b) => b.copper - a.copper);
+      const attackers = ranked.filter(t => t.faction === atkFaction);
+      const defenders = ranked.filter(t => t.faction !== atkFaction);
+
+      // Matchmaking groups
+      const week = battle.week;
+      const gs = groupSizes[week];
+
+      // Simulate attacker choices within groups
+      const usedDefs = new Set();
+      const fights = [];
+
+      for (let g = 0; ; g++) {
+        const atkGroup = attackers.slice(g * gs, (g + 1) * gs);
+        const defGroup = defenders.slice(g * gs, (g + 1) * gs);
+        if (atkGroup.length === 0) break;
+        if (defGroup.length === 0) break;
+
+        // Each attacker picks a defender from their group
+        // Heuristic: prefer highest copper defender not yet chosen (greedy)
+        const availDefs = [...defGroup].sort((a, b) => b.copper - a.copper);
+
+        atkGroup.forEach(atk => {
+          // Pick highest copper available defender, with some randomness
+          let target = null;
+          for (const def of availDefs) {
+            if (!usedDefs.has(def.team)) {
+              // 70% chance to pick the optimal target, 30% random
+              if (Math.random() < 0.7 || availDefs.filter(d => !usedDefs.has(d.team)).length === 1) {
+                target = def;
+                break;
+              }
+            }
+          }
+          // Fallback: pick any available
+          if (!target) {
+            const avail = availDefs.filter(d => !usedDefs.has(d.team));
+            if (avail.length > 0) target = avail[Math.floor(Math.random() * avail.length)];
+          }
+          // If still no target (more attackers than defenders in group), allow doubling up
+          if (!target) {
+            target = defGroup[Math.floor(Math.random() * defGroup.length)];
+          }
+
+          if (target) {
+            fights.push({ atk: atk.team, def: target.team });
+            usedDefs.add(target.team);
+          }
+        });
+      }
+
+      // Resolve fights
+      fights.forEach(f => {
+        const prob = quickWinProb(f.atk, f.def, copper[f.atk], copper[f.def]);
+        if (Math.random() < prob) {
+          // Attacker wins
+          const stolen = copper[f.def] * STEAL_PCT;
+          copper[f.atk] += stolen;
+          copper[f.def] -= stolen;
+        }
+        // If defender wins, nothing changes (copper stays)
+      });
+    });
+
+    // Record final standings
+    const finalRanked = tracked.map(t => ({ team: t.team, copper: copper[t.team] }))
+      .sort((a, b) => b.copper - a.copper);
+
+    finalRanked.forEach((t, i) => {
+      const rank = i + 1;
+      teamResults[t.team].finalCoppers.push(t.copper);
+      teamResults[t.team].ranks.push(rank);
+      if (rank <= 5) teamResults[t.team].top5++;
+      if (rank <= 10) teamResults[t.team].top10++;
+      if (rank === 1) teamResults[t.team].first++;
+    });
+  }
+
+  return { teamResults, numSims, tracked };
+}
+
+function renderMCResults(results) {
+  const { teamResults, numSims, tracked } = results;
+  const container = document.getElementById('mcResults');
+
+  // Build summary for each team
+  const summary = tracked.map(t => {
+    const tr = teamResults[t.team];
+    const coppers = [...tr.finalCoppers].sort((a, b) => a - b);
+    const ranks = [...tr.ranks].sort((a, b) => a - b);
+    return {
+      team: t.team,
+      faction: t.faction,
+      server: t.server,
+      currentCopper: t.copper,
+      medianCopper: coppers[Math.floor(coppers.length / 2)],
+      p10Copper: coppers[Math.floor(coppers.length * 0.1)],
+      p90Copper: coppers[Math.floor(coppers.length * 0.9)],
+      medianRank: ranks[Math.floor(ranks.length / 2)],
+      bestRank: ranks[0],
+      worstRank: ranks[ranks.length - 1],
+      top5Pct: (tr.top5 / numSims * 100),
+      top10Pct: (tr.top10 / numSims * 100),
+      firstPct: (tr.first / numSims * 100),
+    };
+  });
+
+  // Sort by median copper
+  summary.sort((a, b) => b.medianCopper - a.medianCopper);
+
+  const maxCopper = summary[0].p90Copper;
+
+  // ── Rankings Table ──
+  let html = '<div class="mc-faction-card" style="margin-bottom:20px">';
+  html += '<div class="mc-faction-title" style="color:var(--purple)">Projected Final Rankings (Median)</div>';
+  html += '<div style="overflow-x:auto"><table class="mc-ranking-table"><thead><tr>';
+  html += '<th>#</th><th>Team</th><th>Fac</th><th>Median Copper</th><th>Range (10th–90th)</th><th>Rank Range</th><th>Top 5</th><th>Top 10</th><th>1st</th>';
+  html += '</tr></thead><tbody>';
+
+  summary.forEach((s, i) => {
+    const facClass = s.faction === 'Koubutai' ? 'faction-kou' : 'faction-kag';
+    const facShort = s.faction === 'Koubutai' ? 'KOU' : 'KAG';
+    const facColor = s.faction === 'Koubutai' ? 'var(--green)' : 'var(--cyan)';
+    const rankClass = i < 3 ? ' rank-' + (i + 1) : '';
+
+    // Range bar
+    const p10Pct = (s.p10Copper / maxCopper * 100).toFixed(1);
+    const p90Pct = (s.p90Copper / maxCopper * 100).toFixed(1);
+    const medPct = (s.medianCopper / maxCopper * 100).toFixed(1);
+    const leftPct = p10Pct;
+    const widthPct = (p90Pct - p10Pct).toFixed(1);
+
+    const rangeBar = '<div class="mc-range-track">' +
+      '<div class="mc-range-fill" style="left:' + leftPct + '%;width:' + widthPct + '%;background:' + facColor + '"></div>' +
+      '<div class="mc-range-median" style="left:' + medPct + '%;background:' + facColor + '"></div>' +
+      '</div>';
+
+    // Top5 bar
+    const top5Color = s.top5Pct >= 50 ? 'var(--green)' : s.top5Pct >= 20 ? 'var(--orange)' : 'var(--red)';
+
+    html += '<tr>';
+    html += '<td><span class="rank' + rankClass + '">' + (i + 1) + '</span></td>';
+    html += '<td><span class="team-tag">' + s.team + '</span></td>';
+    html += '<td><span class="' + facClass + '" style="font-family:\'Share Tech Mono\',monospace;font-size:0.75rem">' + facShort + '</span></td>';
+    html += '<td style="color:var(--gold);font-family:\'Share Tech Mono\',monospace">' + fmtK(s.medianCopper) + '</td>';
+    html += '<td style="min-width:140px">' + rangeBar + '<div style="display:flex;justify-content:space-between;font-family:\'Share Tech Mono\',monospace;font-size:0.58rem;color:var(--text-muted);margin-top:2px"><span>' + fmtK(s.p10Copper) + '</span><span>' + fmtK(s.p90Copper) + '</span></div></td>';
+    html += '<td style="font-family:\'Share Tech Mono\',monospace;font-size:0.78rem;color:var(--text-secondary)">' + s.bestRank + '–' + s.worstRank + '</td>';
+    html += '<td><div class="mc-top5-bar" style="width:80px"><div class="mc-top5-fill" style="width:' + s.top5Pct + '%;background:' + top5Color + '">' + Math.round(s.top5Pct) + '%</div></div></td>';
+    html += '<td style="font-family:\'Share Tech Mono\',monospace;font-size:0.78rem;color:var(--text-secondary)">' + Math.round(s.top10Pct) + '%</td>';
+    html += '<td style="font-family:\'Share Tech Mono\',monospace;font-size:0.78rem;color:' + (s.firstPct > 0 ? 'var(--gold)' : 'var(--text-muted)') + '">' + (s.firstPct > 0 ? s.firstPct.toFixed(1) + '%' : '—') + '</td>';
+    html += '</tr>';
+  });
+  html += '</tbody></table></div></div>';
+
+  // ── Faction Summary ──
+  const kouTeams = summary.filter(s => s.faction === 'Koubutai');
+  const kagTeams = summary.filter(s => s.faction === 'Kage no Sato');
+  const kouMedianTotal = kouTeams.reduce((s, t) => s + t.medianCopper, 0);
+  const kagMedianTotal = kagTeams.reduce((s, t) => s + t.medianCopper, 0);
+  const kouTop5Avg = kouTeams.reduce((s, t) => s + t.top5Pct, 0) / kouTeams.length;
+  const kagTop5Avg = kagTeams.reduce((s, t) => s + t.top5Pct, 0) / kagTeams.length;
+
+  // Count how many sims each faction had the #1 spot
+  const kouFirstTotal = kouTeams.reduce((s, t) => s + t.firstPct, 0);
+  const kagFirstTotal = kagTeams.reduce((s, t) => s + t.firstPct, 0);
+
+  html += '<div class="mc-results-grid">';
+  html += '<div class="mc-faction-card">';
+  html += '<div class="mc-faction-title" style="color:var(--green)">Koubutai</div>';
+  html += '<div class="mc-insight"><div class="mc-insight-label">Combined Median Copper</div><div class="mc-insight-value" style="color:var(--gold)">' + fmtCopper(kouMedianTotal) + '</div></div>';
+  html += '<div class="mc-insight"><div class="mc-insight-label">Avg Top 5 Probability</div><div class="mc-insight-value" style="color:var(--green)">' + kouTop5Avg.toFixed(1) + '%</div></div>';
+  html += '<div class="mc-insight"><div class="mc-insight-label">Chance of #1 Overall</div><div class="mc-insight-value" style="color:var(--gold)">' + kouFirstTotal.toFixed(1) + '%</div></div>';
+  html += '</div>';
+
+  html += '<div class="mc-faction-card">';
+  html += '<div class="mc-faction-title" style="color:var(--cyan)">Kage no Sato</div>';
+  html += '<div class="mc-insight"><div class="mc-insight-label">Combined Median Copper</div><div class="mc-insight-value" style="color:var(--gold)">' + fmtCopper(kagMedianTotal) + '</div></div>';
+  html += '<div class="mc-insight"><div class="mc-insight-label">Avg Top 5 Probability</div><div class="mc-insight-value" style="color:var(--cyan)">' + kagTop5Avg.toFixed(1) + '%</div></div>';
+  html += '<div class="mc-insight"><div class="mc-insight-label">Chance of #1 Overall</div><div class="mc-insight-value" style="color:var(--gold)">' + kagFirstTotal.toFixed(1) + '%</div></div>';
+  html += '</div>';
+  html += '</div>';
+
+  // ── Key Insights ──
+  const mostLikelyFirst = summary.reduce((a, b) => a.firstPct > b.firstPct ? a : b);
+  const biggestMover = summary.reduce((a, b) => {
+    const aMove = Math.abs(tracked.findIndex(t => t.team === a.team) + 1 - a.medianRank);
+    const bMove = Math.abs(tracked.findIndex(t => t.team === b.team) + 1 - b.medianRank);
+    return aMove > bMove ? a : b;
+  });
+  const tightestRace = summary.slice(0, 5);
+  const copperGap = tightestRace[0].medianCopper - tightestRace[tightestRace.length - 1].medianCopper;
+
+  html += '<div class="mc-faction-card" style="margin-top:0">';
+  html += '<div class="mc-faction-title" style="color:var(--gold)">Key Insights</div>';
+  html += '<div class="mc-insight"><div class="mc-insight-label">Most Likely #1</div><div class="mc-insight-value" style="color:var(--gold)">' + mostLikelyFirst.team + ' (' + mostLikelyFirst.firstPct.toFixed(1) + '% of simulations)</div></div>';
+  html += '<div class="mc-insight"><div class="mc-insight-label">Top 5 Copper Gap (Median)</div><div class="mc-insight-value" style="color:var(--text-secondary)">' + fmtCopper(copperGap) + ' between #1 and #5</div></div>';
+  html += '<div class="mc-insight"><div class="mc-insight-label">Simulation Notes</div><div style="font-family:\'Share Tech Mono\',monospace;font-size:0.72rem;color:var(--text-muted);letter-spacing:1px;margin-top:4px">Models production + matchmaking groups + attacker target selection + probabilistic battle outcomes. Attacker win baseline: 65.5%. Each sim runs all remaining battles independently.</div></div>';
+  html += '</div>';
+
+  container.innerHTML = html;
 }
 
 // ── Init ──
