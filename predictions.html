@@ -1,0 +1,910 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Copper Wars — Season Projector</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg-primary: #0a0e17;
+  --bg-secondary: #111827;
+  --bg-card: #151d2e;
+  --bg-card-hover: #1a2540;
+  --border: #1e2d4a;
+  --text-primary: #e8ecf4;
+  --text-secondary: #8899b4;
+  --text-muted: #5a6a84;
+  --green: #00e5a0;
+  --green-dim: rgba(0,229,160,0.12);
+  --red: #ff3d5a;
+  --red-dim: rgba(255,61,90,0.12);
+  --orange: #ff9f43;
+  --orange-dim: rgba(255,159,67,0.12);
+  --purple: #a855f7;
+  --purple-dim: rgba(168,85,247,0.12);
+  --blue: #3d8bfd;
+  --blue-dim: rgba(61,139,253,0.12);
+  --gold: #ffd700;
+  --gold-dim: rgba(255,215,0,0.12);
+  --cyan: #22d3ee;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: 'Rajdhani', sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background:
+    linear-gradient(rgba(168,85,247,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(168,85,247,0.03) 1px, transparent 1px);
+  background-size: 60px 60px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 24px;
+  position: relative;
+  z-index: 1;
+}
+
+/* ── Header ── */
+.header {
+  text-align: center;
+  padding: 48px 0 24px;
+  position: relative;
+}
+
+.header::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 200px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--purple), transparent);
+}
+
+.header h1 {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 2.4rem;
+  font-weight: 900;
+  letter-spacing: 6px;
+  text-transform: uppercase;
+  background: linear-gradient(135deg, var(--purple), var(--cyan), var(--gold));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 8px;
+}
+
+.header .subtitle {
+  font-family: 'Share Tech Mono', monospace;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+}
+
+.nav-link {
+  display: inline-block;
+  margin-top: 16px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.78rem;
+  color: var(--blue);
+  text-decoration: none;
+  letter-spacing: 2px;
+  padding: 6px 16px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  transition: all 0.2s;
+}
+
+.nav-link:hover {
+  border-color: var(--blue);
+  background: var(--blue-dim);
+}
+
+/* ── Loading ── */
+.loading {
+  text-align: center;
+  padding: 48px 0;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  letter-spacing: 2px;
+}
+
+/* ── Info Bar ── */
+.info-bar {
+  display: flex;
+  justify-content: center;
+  gap: 32px;
+  flex-wrap: wrap;
+  margin: 32px 0;
+  padding: 16px 24px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+
+.info-item {
+  text-align: center;
+}
+
+.info-value {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.info-label {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-top: 2px;
+}
+
+/* ── Battle Timeline ── */
+.timeline {
+  display: flex;
+  justify-content: center;
+  gap: 4px;
+  margin: 32px 0;
+  flex-wrap: wrap;
+}
+
+.tl-battle {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10px 14px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg-card);
+  min-width: 80px;
+  transition: all 0.2s;
+}
+
+.tl-battle.completed {
+  opacity: 0.5;
+}
+
+.tl-battle.current {
+  border-color: var(--gold);
+  box-shadow: 0 0 16px rgba(255,215,0,0.15);
+}
+
+.tl-battle.future {
+  border-color: var(--border);
+}
+
+.tl-num {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  margin-bottom: 2px;
+}
+
+.tl-date {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.6rem;
+  color: var(--text-muted);
+}
+
+.tl-role-kou, .tl-role-kag {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.6rem;
+  margin-top: 4px;
+  letter-spacing: 1px;
+}
+
+.tl-role-kou { color: var(--green); }
+.tl-role-kag { color: var(--cyan); }
+
+/* ── Section ── */
+.section {
+  margin: 40px 0 20px;
+}
+
+.section-title {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--text-primary);
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.section-title .icon {
+  width: 6px;
+  height: 22px;
+  border-radius: 3px;
+  display: inline-block;
+}
+
+/* ── Projection Table ── */
+.proj-table-wrap {
+  overflow-x: auto;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+}
+
+.proj-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 700px;
+  font-family: 'Rajdhani', sans-serif;
+}
+
+.proj-table th {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.65rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  text-align: left;
+  padding: 12px 10px;
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.proj-table th:hover {
+  color: var(--blue);
+}
+
+.proj-table th.sorted-asc::after { content: ' ▲'; color: var(--blue); }
+.proj-table th.sorted-desc::after { content: ' ▼'; color: var(--blue); }
+
+.proj-table td {
+  padding: 10px 10px;
+  font-size: 0.9rem;
+  border-bottom: 1px solid rgba(255,255,255,0.03);
+}
+
+.proj-table tbody tr:hover td {
+  background: rgba(61,139,253,0.04);
+}
+
+.rank {
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 700;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.rank-1 { color: var(--gold); }
+.rank-2 { color: #c0c0c0; }
+.rank-3 { color: #cd7f32; }
+
+.team-tag {
+  font-family: 'Share Tech Mono', monospace;
+  font-weight: 600;
+  letter-spacing: 1px;
+}
+
+.faction-kou { color: var(--green); }
+.faction-kag { color: var(--cyan); }
+
+.change-up { color: var(--green); font-family: 'Share Tech Mono', monospace; font-size: 0.78rem; }
+.change-down { color: var(--red); font-family: 'Share Tech Mono', monospace; font-size: 0.78rem; }
+.change-none { color: var(--text-muted); font-family: 'Share Tech Mono', monospace; font-size: 0.78rem; }
+
+/* ── Projection Bar Chart ── */
+.proj-chart {
+  margin-top: 24px;
+  padding: 24px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+
+.proj-bar-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.proj-bar-rank {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  width: 20px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.proj-bar-team {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.75rem;
+  width: 50px;
+  flex-shrink: 0;
+  text-align: right;
+}
+
+.proj-bar-track {
+  flex: 1;
+  height: 24px;
+  background: rgba(255,255,255,0.03);
+  border-radius: 3px;
+  overflow: hidden;
+  position: relative;
+}
+
+.proj-bar-current {
+  height: 100%;
+  position: absolute;
+  left: 0;
+  top: 0;
+  opacity: 0.35;
+  border-radius: 3px;
+}
+
+.proj-bar-projected {
+  height: 100%;
+  position: absolute;
+  left: 0;
+  top: 0;
+  border-radius: 3px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 8px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.65rem;
+  color: #fff;
+}
+
+.proj-bar-value {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.72rem;
+  color: var(--text-secondary);
+  width: 65px;
+  flex-shrink: 0;
+  text-align: right;
+}
+
+/* ── Matchmaking Preview ── */
+.mm-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 16px;
+}
+
+.mm-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 20px;
+}
+
+.mm-week {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: var(--purple);
+  margin-bottom: 4px;
+}
+
+.mm-group-size {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  margin-bottom: 12px;
+}
+
+.mm-tier {
+  margin-bottom: 12px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+
+.mm-tier:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+
+.mm-tier-label {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  letter-spacing: 2px;
+  margin-bottom: 6px;
+}
+
+.mm-teams {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.mm-team-tag {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.72rem;
+  padding: 3px 8px;
+  border-radius: 4px;
+  letter-spacing: 1px;
+}
+
+.mm-team-kou { background: var(--green-dim); color: var(--green); }
+.mm-team-kag { background: rgba(34,211,238,0.12); color: var(--cyan); }
+
+/* ── Phase Labels ── */
+.phase-label {
+  display: inline-block;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.65rem;
+  letter-spacing: 2px;
+  padding: 3px 10px;
+  border-radius: 4px;
+  background: var(--purple-dim);
+  color: var(--purple);
+  margin-bottom: 16px;
+}
+
+.coming-soon {
+  text-align: center;
+  padding: 40px 20px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+
+.coming-soon-title {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 700;
+  letter-spacing: 3px;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+
+.coming-soon-desc {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  letter-spacing: 1px;
+}
+
+/* ── Footer ── */
+.footer {
+  text-align: center;
+  padding: 48px 0 32px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  letter-spacing: 2px;
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .header h1 { font-size: 1.6rem; letter-spacing: 3px; }
+  .container { padding: 0 12px; }
+  .info-bar { gap: 16px; padding: 12px; }
+  .tl-battle { min-width: 60px; padding: 8px 8px; }
+  .tl-num { font-size: 0.6rem; }
+  .section-title { font-size: 0.9rem; }
+  .mm-grid { grid-template-columns: 1fr; }
+  .proj-table { min-width: 600px; }
+}
+
+/* ── Animations ── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.anim { animation: fadeUp 0.6s ease both; }
+.anim-d1 { animation-delay: 0.1s; }
+.anim-d2 { animation-delay: 0.2s; }
+.anim-d3 { animation-delay: 0.3s; }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="header anim">
+    <h1>Season Projector</h1>
+    <div class="subtitle">Copper Wars — Predictions & Analysis</div>
+    <a href="index.html" class="nav-link">← Back to Dashboard</a>
+  </div>
+
+  <div id="loadingIndicator" class="loading">Loading data files...</div>
+
+  <div id="content" style="display:none;">
+
+    <!-- Battle Timeline -->
+    <div id="timeline" class="anim anim-d1"></div>
+
+    <!-- Info Bar -->
+    <div id="infoBar" class="info-bar anim anim-d1"></div>
+
+    <!-- Production Projection -->
+    <div class="section anim anim-d2">
+      <span class="phase-label">Phase 1 — Production Projections</span>
+      <div class="section-title"><span class="icon" style="background:var(--gold)"></span> Projected Final Standings — Production Only</div>
+      <p style="font-family:'Share Tech Mono',monospace;font-size:0.78rem;color:var(--text-muted);margin-bottom:16px;letter-spacing:1px">
+        Projection based on current copper + generation rate × hours remaining. Does not include battle gains/losses.
+      </p>
+      <div class="proj-table-wrap" id="projTableWrap"></div>
+      <div class="proj-chart" id="projChart"></div>
+    </div>
+
+    <!-- Matchmaking Preview -->
+    <div class="section anim anim-d3">
+      <div class="section-title"><span class="icon" style="background:var(--purple)"></span> Matchmaking Groups — Projected</div>
+      <p style="font-family:'Share Tech Mono',monospace;font-size:0.78rem;color:var(--text-muted);margin-bottom:16px;letter-spacing:1px">
+        Groups based on projected rankings at each week. Rankings shift as production compounds.
+      </p>
+      <div class="mm-grid" id="mmGrid"></div>
+    </div>
+
+    <!-- Coming Soon: Phase 2 & 3 -->
+    <div class="section">
+      <div class="section-title"><span class="icon" style="background:var(--blue)"></span> Coming Soon</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+        <div class="coming-soon">
+          <div class="coming-soon-title">Phase 2 — Battle Predictor</div>
+          <div class="coming-soon-desc">Input confirmed declarations 24hrs before battle.<br>Win probabilities & expected copper impact.</div>
+        </div>
+        <div class="coming-soon">
+          <div class="coming-soon-title">Phase 3 — Monte Carlo Simulator</div>
+          <div class="coming-soon-desc">1,000+ season simulations with probabilistic outcomes.<br>Confidence ranges & swing match analysis.</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="footer">Copper Wars Season Projector · Phase 1 · v0.1</div>
+</div>
+
+<script>
+// ── Battle Schedule ──
+const battleSchedule = [
+  { num: 1, date: '2026-04-01', day: 'Wed', week: 1, kouRole: 'DEF', kagRole: 'ATK' },
+  { num: 2, date: '2026-04-04', day: 'Sat', week: 1, kouRole: 'ATK', kagRole: 'DEF' },
+  { num: 3, date: '2026-04-08', day: 'Wed', week: 2, kouRole: 'ATK', kagRole: 'DEF' },
+  { num: 4, date: '2026-04-11', day: 'Sat', week: 2, kouRole: 'ATK', kagRole: 'DEF' },
+  { num: 5, date: '2026-04-15', day: 'Wed', week: 3, kouRole: 'ATK', kagRole: 'DEF' },
+  { num: 6, date: '2026-04-18', day: 'Sat', week: 3, kouRole: 'ATK', kagRole: 'DEF' },
+  { num: 7, date: '2026-04-22', day: 'Wed', week: 4, kouRole: 'DEF', kagRole: 'ATK' },
+  { num: 8, date: '2026-04-25', day: 'Sat', week: 4, kouRole: 'ATK', kagRole: 'DEF' },
+];
+
+// Correct roles from screenshot
+// B1: Kage ATK, Kou DEF | B2: Kou ATK, Kage DEF | B3: Kou ATK, Kage DEF
+// B4: Kage ATK, Kou DEF | B5: Kou ATK, Kage DEF | B6: Kage ATK, Kou DEF
+// B7: Kage ATK, Kou DEF | B8: Kou ATK, Kage DEF
+battleSchedule[0].kouRole = 'DEF'; battleSchedule[0].kagRole = 'ATK';
+battleSchedule[1].kouRole = 'ATK'; battleSchedule[1].kagRole = 'DEF';
+battleSchedule[2].kouRole = 'ATK'; battleSchedule[2].kagRole = 'DEF';
+battleSchedule[3].kouRole = 'ATK'; battleSchedule[3].kagRole = 'DEF';
+battleSchedule[4].kouRole = 'ATK'; battleSchedule[4].kagRole = 'DEF';
+battleSchedule[5].kouRole = 'ATK'; battleSchedule[5].kagRole = 'DEF';
+battleSchedule[6].kouRole = 'DEF'; battleSchedule[6].kagRole = 'ATK';
+battleSchedule[7].kouRole = 'ATK'; battleSchedule[7].kagRole = 'DEF';
+
+// Wait — let me re-read the screenshot more carefully
+// B1 4/1: Kage=swords(ATK), Kou=shield(DEF)
+// B2 4/4: Kage=shield(DEF), Kou=swords(ATK)
+// B3 4/8: Kage=shield(DEF), Kou=swords(ATK)
+// B4 4/11: Kage=swords(ATK), Kou=shield(DEF)
+// B5 4/15: Kage=shield(DEF), Kou=swords(ATK)
+// B6 4/18: Kage=swords(ATK), Kou=shield(DEF)
+// B7 4/22: Kage=swords(ATK), Kou=shield(DEF)
+// B8 4/25: Kage=shield(DEF), Kou=swords(ATK)
+battleSchedule[0].kouRole = 'DEF'; battleSchedule[0].kagRole = 'ATK';
+battleSchedule[1].kouRole = 'ATK'; battleSchedule[1].kagRole = 'DEF';
+battleSchedule[2].kouRole = 'ATK'; battleSchedule[2].kagRole = 'DEF';
+battleSchedule[3].kouRole = 'DEF'; battleSchedule[3].kagRole = 'ATK';
+battleSchedule[4].kouRole = 'ATK'; battleSchedule[4].kagRole = 'DEF';
+battleSchedule[5].kouRole = 'DEF'; battleSchedule[5].kagRole = 'ATK';
+battleSchedule[6].kouRole = 'DEF'; battleSchedule[6].kagRole = 'ATK';
+battleSchedule[7].kouRole = 'ATK'; battleSchedule[7].kagRole = 'DEF';
+
+const groupSizes = { 1: 10, 2: 6, 3: 3, 4: 3 };
+const serverFaction = {1194:'Koubutai',1220:'Koubutai',1234:'Koubutai',1247:'Koubutai',1196:'Kage no Sato',1237:'Kage no Sato',1242:'Kage no Sato',1252:'Kage no Sato'};
+const seasonEnd = new Date('2026-04-25T09:30:00');
+
+// ── CSV Parser ──
+function parseCSV(text) {
+  const lines = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n').split('\n');
+  if (lines.length === 0) return [];
+  const headers = lines[0].split(',').map(h => h.trim());
+  const rows = [];
+  for (let i = 1; i < lines.length; i++) {
+    const line = lines[i].trim();
+    if (!line) continue;
+    const vals = line.split(',').map(v => v.trim());
+    const obj = {};
+    headers.forEach((h, idx) => { obj[h] = vals[idx] || ''; });
+    rows.push(obj);
+  }
+  return rows;
+}
+
+function fmtCopper(n) {
+  return Math.round(n).toLocaleString();
+}
+
+function fmtK(n) {
+  return (n / 1000).toFixed(0) + 'k';
+}
+
+// ── Data Loading ──
+async function loadData() {
+  try {
+    const [genRes, standingsRes] = await Promise.all([
+      fetch('copper_generation.csv'),
+      fetch('copper_standings.csv')
+    ]);
+
+    if (!genRes.ok || !standingsRes.ok) throw new Error('CSV load failed');
+
+    const genRows = parseCSV(await genRes.text());
+    const standingsRows = parseCSV(await standingsRes.text());
+
+    // Parse generation rates
+    const genRates = {};
+    genRows.forEach(r => { genRates[r['Team']] = parseInt(r['Copper Per Hour']); });
+
+    // Parse standings
+    const standings = [];
+    const snapshotDate = standingsRows[0] ? standingsRows[0]['Snapshot Date'] : '2026-04-06';
+    standingsRows.forEach(r => {
+      const team = r['Team'];
+      const srv = parseInt(r['Server']);
+      const copper = parseInt(r['Copper']);
+      const faction = serverFaction[srv] || 'Unknown';
+      const genRate = genRates[team] || 0;
+      standings.push({ team, server: srv, faction, copper, genRate });
+    });
+
+    // Sort by current copper
+    standings.sort((a, b) => b.copper - a.copper);
+
+    // Calculate projections
+    const now = new Date();
+    const snapshotTime = new Date(snapshotDate + 'T12:00:00');
+    const hoursToEnd = (seasonEnd - snapshotTime) / 3600000;
+    const hoursFromNow = (seasonEnd - now) / 3600000;
+
+    // Determine current battle
+    const today = now.toISOString().slice(0, 10);
+    let completedBattles = 0;
+    battleSchedule.forEach(b => {
+      if (b.date < today) completedBattles = b.num;
+    });
+
+    document.getElementById('loadingIndicator').style.display = 'none';
+    document.getElementById('content').style.display = '';
+
+    renderTimeline(completedBattles);
+    renderInfoBar(standings, hoursToEnd, snapshotDate, completedBattles);
+    renderProjectionTable(standings, hoursToEnd);
+    renderProjectionChart(standings, hoursToEnd);
+    renderMatchmaking(standings, hoursToEnd);
+
+  } catch (err) {
+    document.getElementById('loadingIndicator').innerHTML =
+      '<span style="color:var(--red)">⚠ Failed to load data. Make sure copper_generation.csv and copper_standings.csv are in the same directory.</span>';
+    console.error(err);
+  }
+}
+
+// ── Timeline ──
+function renderTimeline(completedBattles) {
+  let html = '<div class="timeline">';
+  battleSchedule.forEach(b => {
+    const cls = b.num <= completedBattles ? 'completed' : (b.num === completedBattles + 1 ? 'current' : 'future');
+    const dateShort = b.date.slice(5).replace('-', '/');
+    html += '<div class="tl-battle ' + cls + '">';
+    html += '<div class="tl-num">B' + b.num + '</div>';
+    html += '<div class="tl-date">' + dateShort + ' ' + b.day + '</div>';
+    html += '<div class="tl-role-kou">' + (b.kouRole === 'ATK' ? '⚔' : '🛡') + '</div>';
+    html += '<div class="tl-role-kag">' + (b.kagRole === 'ATK' ? '⚔' : '🛡') + '</div>';
+    html += '</div>';
+  });
+  html += '</div>';
+  document.getElementById('timeline').innerHTML = html;
+}
+
+// ── Info Bar ──
+function renderInfoBar(standings, hoursToEnd, snapshotDate, completedBattles) {
+  const tracked = standings.filter(s => s.genRate > 0);
+  const kouTeams = tracked.filter(s => s.faction === 'Koubutai');
+  const kagTeams = tracked.filter(s => s.faction === 'Kage no Sato');
+
+  document.getElementById('infoBar').innerHTML = `
+    <div class="info-item"><div class="info-value" style="color:var(--text-primary)">${tracked.length}</div><div class="info-label">Teams Tracked</div></div>
+    <div class="info-item"><div class="info-value" style="color:var(--green)">${kouTeams.length}</div><div class="info-label">Koubutai</div></div>
+    <div class="info-item"><div class="info-value" style="color:var(--cyan)">${kagTeams.length}</div><div class="info-label">Kage no Sato</div></div>
+    <div class="info-item"><div class="info-value" style="color:var(--blue)">${completedBattles}/8</div><div class="info-label">Battles Done</div></div>
+    <div class="info-item"><div class="info-value" style="color:var(--gold)">${Math.round(hoursToEnd)}h</div><div class="info-label">Hrs to Final</div></div>
+    <div class="info-item"><div class="info-value" style="color:var(--text-muted)">${snapshotDate.slice(5)}</div><div class="info-label">Snapshot</div></div>
+  `;
+}
+
+// ── Projection Table ──
+function renderProjectionTable(standings, hoursToEnd) {
+  // Only show teams with generation rates
+  const tracked = standings.filter(s => s.genRate > 0);
+
+  // Calculate projections
+  const projections = tracked.map((s, i) => {
+    const currentRank = i + 1;
+    const produced = s.genRate * hoursToEnd;
+    const projected = s.copper + produced;
+    return { ...s, currentRank, produced, projected };
+  });
+
+  // Sort by projected
+  projections.sort((a, b) => b.projected - a.projected);
+
+  // Assign projected rank
+  projections.forEach((p, i) => { p.projectedRank = i + 1; });
+
+  let html = '<table class="proj-table"><thead><tr>';
+  html += '<th>Now</th><th>Proj</th><th>Team</th><th>Faction</th>';
+  html += '<th>Current Copper</th><th>Gen/hr</th><th>Production</th>';
+  html += '<th>Projected Final</th><th>Change</th>';
+  html += '</tr></thead><tbody>';
+
+  projections.forEach(p => {
+    const facClass = p.faction === 'Koubutai' ? 'faction-kou' : 'faction-kag';
+    const facShort = p.faction === 'Koubutai' ? 'KOU' : 'KAG';
+    const rankChange = p.currentRank - p.projectedRank;
+    let changeHtml;
+    if (rankChange > 0) changeHtml = '<span class="change-up">▲' + rankChange + '</span>';
+    else if (rankChange < 0) changeHtml = '<span class="change-down">▼' + Math.abs(rankChange) + '</span>';
+    else changeHtml = '<span class="change-none">—</span>';
+
+    const rankClass = p.projectedRank <= 3 ? ' rank-' + p.projectedRank : '';
+
+    html += '<tr>';
+    html += '<td><span class="rank">' + p.currentRank + '</span></td>';
+    html += '<td><span class="rank' + rankClass + '">' + p.projectedRank + '</span></td>';
+    html += '<td><span class="team-tag">' + p.team + '</span></td>';
+    html += '<td><span class="' + facClass + '" style="font-family:\'Share Tech Mono\',monospace;font-size:0.78rem">' + facShort + '</span></td>';
+    html += '<td style="color:var(--text-secondary);font-family:\'Share Tech Mono\',monospace">' + fmtCopper(p.copper) + '</td>';
+    html += '<td style="color:var(--text-muted);font-family:\'Share Tech Mono\',monospace">' + p.genRate.toLocaleString() + '</td>';
+    html += '<td style="color:var(--green);font-family:\'Share Tech Mono\',monospace">+' + fmtCopper(p.produced) + '</td>';
+    html += '<td style="color:var(--gold);font-family:\'Share Tech Mono\',monospace;font-weight:600">' + fmtCopper(p.projected) + '</td>';
+    html += '<td>' + changeHtml + '</td>';
+    html += '</tr>';
+  });
+
+  html += '</tbody></table>';
+  document.getElementById('projTableWrap').innerHTML = html;
+
+  // Store for chart
+  window._projections = projections;
+}
+
+// ── Projection Bar Chart ──
+function renderProjectionChart(standings, hoursToEnd) {
+  const projections = window._projections;
+  if (!projections) return;
+
+  const maxProjected = projections[0].projected;
+  let html = '';
+
+  projections.forEach((p, i) => {
+    const currentPct = (p.copper / maxProjected) * 100;
+    const projPct = (p.projected / maxProjected) * 100;
+    const facColor = p.faction === 'Koubutai' ? 'var(--green)' : 'var(--cyan)';
+    const rankClass = i < 3 ? ' rank-' + (i + 1) : '';
+
+    html += '<div class="proj-bar-row">';
+    html += '<span class="proj-bar-rank' + rankClass + '">' + (i + 1) + '</span>';
+    html += '<span class="proj-bar-team" style="color:' + facColor + '">' + p.team + '</span>';
+    html += '<div class="proj-bar-track">';
+    html += '<div class="proj-bar-current" style="width:' + currentPct + '%;background:' + facColor + '"></div>';
+    html += '<div class="proj-bar-projected" style="width:' + projPct + '%;background:' + facColor + '">' + fmtK(p.projected) + '</div>';
+    html += '</div>';
+    html += '<span class="proj-bar-value" style="color:var(--gold)">' + fmtK(p.projected) + '</span>';
+    html += '</div>';
+  });
+
+  html += '<div style="display:flex;gap:24px;justify-content:center;margin-top:16px;font-family:\'Share Tech Mono\',monospace;font-size:0.72rem;color:var(--text-muted)">';
+  html += '<span><span style="display:inline-block;width:12px;height:12px;border-radius:2px;background:var(--green);opacity:0.35;vertical-align:middle;margin-right:4px"></span>Current</span>';
+  html += '<span><span style="display:inline-block;width:12px;height:12px;border-radius:2px;background:var(--green);vertical-align:middle;margin-right:4px"></span>Projected (Kou)</span>';
+  html += '<span><span style="display:inline-block;width:12px;height:12px;border-radius:2px;background:var(--cyan);vertical-align:middle;margin-right:4px"></span>Projected (Kag)</span>';
+  html += '</div>';
+
+  document.getElementById('projChart').innerHTML = html;
+}
+
+// ── Matchmaking Preview ──
+function renderMatchmaking(standings, hoursToEnd) {
+  const tracked = standings.filter(s => s.genRate > 0);
+
+  // For each remaining week, project rankings at that week's start and show groups
+  const weeks = [
+    { num: 2, label: 'Week 2 (B3–B4)', battles: [3, 4], groupSize: 6, hoursFromSnapshot: 0 },
+    { num: 3, label: 'Week 3 (B5–B6)', battles: [5, 6], groupSize: 3, hoursFromSnapshot: null },
+    { num: 4, label: 'Week 4 (B7–B8)', battles: [7, 8], groupSize: 3, hoursFromSnapshot: null },
+  ];
+
+  // Calculate hours from snapshot to each week start
+  const snapshotTime = new Date('2026-04-06T12:00:00');
+  weeks[0].hoursFromSnapshot = (new Date('2026-04-08T09:30:00') - snapshotTime) / 3600000;
+  weeks[1].hoursFromSnapshot = (new Date('2026-04-15T09:30:00') - snapshotTime) / 3600000;
+  weeks[2].hoursFromSnapshot = (new Date('2026-04-22T09:30:00') - snapshotTime) / 3600000;
+
+  let html = '';
+
+  weeks.forEach(week => {
+    // Project copper at this week's start
+    const projected = tracked.map(s => ({
+      ...s,
+      projCopper: s.copper + (s.genRate * week.hoursFromSnapshot)
+    }));
+
+    // Rank by projected copper
+    projected.sort((a, b) => b.projCopper - a.projCopper);
+
+    // Split by faction
+    const kouTeams = projected.filter(s => s.faction === 'Koubutai');
+    const kagTeams = projected.filter(s => s.faction === 'Kage no Sato');
+
+    // Form groups
+    const gs = week.groupSize;
+    const numGroups = Math.ceil(Math.max(kouTeams.length, kagTeams.length) / gs);
+
+    html += '<div class="mm-card">';
+    html += '<div class="mm-week">' + week.label + '</div>';
+    html += '<div class="mm-group-size">Groups of ' + gs + ' per faction</div>';
+
+    for (let g = 0; g < numGroups; g++) {
+      const kouSlice = kouTeams.slice(g * gs, (g + 1) * gs);
+      const kagSlice = kagTeams.slice(g * gs, (g + 1) * gs);
+      if (kouSlice.length === 0 && kagSlice.length === 0) break;
+
+      html += '<div class="mm-tier">';
+      html += '<div class="mm-tier-label">Tier ' + (g + 1) + '</div>';
+      html += '<div class="mm-teams">';
+      kouSlice.forEach(t => { html += '<span class="mm-team-tag mm-team-kou">' + t.team + '</span>'; });
+      kagSlice.forEach(t => { html += '<span class="mm-team-tag mm-team-kag">' + t.team + '</span>'; });
+      html += '</div></div>';
+    }
+
+    html += '</div>';
+  });
+
+  document.getElementById('mmGrid').innerHTML = html;
+}
+
+// ── Init ──
+loadData();
+</script>
+</body>
+</html>
