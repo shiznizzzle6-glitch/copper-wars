@@ -842,6 +842,205 @@ body::before {
   font-weight: 700;
 }
 
+/* ── What-If Scenario Builder ── */
+.wi-team-select {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.wi-team-btn {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.78rem;
+  padding: 7px 14px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--bg-secondary);
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.2s;
+  letter-spacing: 1px;
+}
+
+.wi-team-btn:hover { border-color: var(--gold); color: var(--text-primary); }
+.wi-team-btn.active { background: var(--gold-dim); border-color: var(--gold); color: var(--gold); }
+
+.wi-scenario-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 8px;
+  margin-bottom: 24px;
+}
+
+.wi-battle-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  user-select: none;
+}
+
+.wi-battle-card:hover { border-color: var(--blue); }
+.wi-battle-card.completed { opacity: 0.4; cursor: default; }
+
+.wi-battle-card.win { border-color: var(--green); background: var(--green-dim); }
+.wi-battle-card.loss { border-color: var(--red); background: var(--red-dim); }
+.wi-battle-card.hold { border-color: var(--green); background: var(--green-dim); }
+.wi-battle-card.breached { border-color: var(--red); background: var(--red-dim); }
+.wi-battle-card.neutral { border-color: var(--border); }
+
+.wi-battle-num {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  margin-bottom: 2px;
+}
+
+.wi-battle-date {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.6rem;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+}
+
+.wi-battle-role {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.62rem;
+  letter-spacing: 1px;
+  margin-bottom: 4px;
+}
+
+.wi-battle-outcome {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+}
+
+.wi-result-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 20px;
+  margin-bottom: 16px;
+}
+
+.wi-result-title {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+
+.wi-result-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.wi-result-stat {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px;
+  text-align: center;
+}
+
+.wi-result-value {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+
+.wi-result-label {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.62rem;
+  color: var(--text-muted);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-top: 2px;
+}
+
+.wi-timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.wi-tl-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.03);
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.78rem;
+}
+
+.wi-tl-battle {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 0.65rem;
+  font-weight: 600;
+  width: 24px;
+  color: var(--blue);
+}
+
+.wi-tl-role {
+  width: 40px;
+  font-size: 0.68rem;
+}
+
+.wi-tl-outcome {
+  width: 50px;
+  font-size: 0.68rem;
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.wi-tl-copper {
+  flex: 1;
+  text-align: right;
+  color: var(--gold);
+}
+
+.wi-tl-change {
+  width: 80px;
+  text-align: right;
+  font-size: 0.72rem;
+}
+
+.wi-presets {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.wi-preset-btn {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.72rem;
+  padding: 5px 12px;
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  background: var(--bg-secondary);
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.2s;
+  letter-spacing: 1px;
+}
+
+.wi-preset-btn:hover { border-color: var(--gold); color: var(--text-primary); }
+
 .coming-soon {
   text-align: center;
   padding: 40px 20px;
@@ -966,9 +1165,19 @@ body::before {
       </div>
     </div>
 
+    <!-- What-If Scenario Builder -->
+    <div class="section anim anim-d3">
+      <span class="phase-label">Phase 4 — What-If Scenarios</span>
+      <div class="section-title"><span class="icon" style="background:var(--gold)"></span> What-If Scenario Builder</div>
+      <p style="font-family:'Share Tech Mono',monospace;font-size:0.78rem;color:var(--text-muted);margin-bottom:16px;letter-spacing:1px">
+        Select a team and toggle battle outcomes to see how their season plays out. Click each future battle to cycle through outcomes.
+      </p>
+      <div id="whatIf"></div>
+    </div>
+
   </div>
 
-  <div class="footer">Copper Wars Season Projector · Phase 3 · v0.3</div>
+  <div class="footer">Copper Wars Season Projector · Phase 4 · v0.4</div>
 </div>
 
 <script>
@@ -1137,6 +1346,7 @@ async function loadData() {
     renderMatchmaking(standings, hoursToEnd);
     renderBattlePredictor(declarations, teamStats, standings, completedBattles);
     storeMCData(standings, teamStats, completedBattles);
+    initWhatIf(standings, completedBattles);
 
   } catch (err) {
     document.getElementById('loadingIndicator').innerHTML =
@@ -1785,6 +1995,284 @@ function renderMCResults(results) {
   html += '</div>';
 
   container.innerHTML = html;
+}
+
+// ── What-If Scenario Builder ──
+let _wiSelectedTeam = null;
+let _wiOutcomes = {}; // battleNum -> 'win'|'loss'|'hold'|'breached'|null
+let _wiStandings = null;
+
+function initWhatIf(standings, completedBattles) {
+  _wiStandings = standings;
+  const tracked = standings.filter(s => s.genRate > 0);
+  const container = document.getElementById('whatIf');
+
+  // Team selector
+  let html = '<div class="wi-team-select">';
+  html += '<span style="font-family:\'Share Tech Mono\',monospace;font-size:0.75rem;color:var(--text-muted);letter-spacing:1px">Select team:</span>';
+
+  // Sort by current copper
+  const sorted = [...tracked].sort((a, b) => b.copper - a.copper);
+  sorted.forEach(t => {
+    const facColor = t.faction === 'Koubutai' ? 'var(--green)' : 'var(--cyan)';
+    html += '<button class="wi-team-btn" data-team="' + t.team + '" onclick="selectWITeam(\'' + t.team + '\')" style="border-left:3px solid ' + facColor + '">' + t.team + '</button>';
+  });
+  html += '</div>';
+  html += '<div id="wiScenario"></div>';
+
+  container.innerHTML = html;
+}
+
+function selectWITeam(team) {
+  _wiSelectedTeam = team;
+  _wiOutcomes = {};
+
+  // Update button states
+  document.querySelectorAll('.wi-team-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.team === team);
+  });
+
+  renderWIScenario();
+}
+
+function renderWIScenario() {
+  const team = _wiSelectedTeam;
+  if (!team) return;
+  const container = document.getElementById('wiScenario');
+  const standings = _wiStandings;
+  const teamData = standings.find(s => s.team === team);
+  if (!teamData) return;
+
+  const faction = teamData.faction;
+  const isKou = faction === 'Koubutai';
+
+  // Determine role for each remaining battle
+  const remaining = battleSchedule.filter(b => b.num > (_mcData ? _mcData.completedBattles : 2));
+
+  // Presets
+  let html = '<div class="wi-presets">';
+  html += '<button class="wi-preset-btn" onclick="wiPreset(\'best\')">Best Case (all wins/holds)</button>';
+  html += '<button class="wi-preset-btn" onclick="wiPreset(\'worst\')">Worst Case (all losses)</button>';
+  html += '<button class="wi-preset-btn" onclick="wiPreset(\'realistic\')">Realistic (65% ATK win)</button>';
+  html += '<button class="wi-preset-btn" onclick="wiPreset(\'clear\')">Clear All</button>';
+  html += '</div>';
+
+  // Battle cards
+  html += '<div class="wi-scenario-grid">';
+  remaining.forEach(b => {
+    const role = isKou ? b.kouRole : b.kagRole;
+    const isAtk = role === 'ATK';
+    const outcome = _wiOutcomes[b.num] || null;
+    const dateShort = b.date.slice(5).replace('-', '/');
+
+    let cls = 'neutral';
+    let outcomeLabel = 'CLICK';
+    let outcomeColor = 'var(--text-muted)';
+
+    if (outcome === 'win') { cls = 'win'; outcomeLabel = 'WIN'; outcomeColor = 'var(--green)'; }
+    else if (outcome === 'loss') { cls = 'loss'; outcomeLabel = 'LOSS'; outcomeColor = 'var(--red)'; }
+    else if (outcome === 'hold') { cls = 'hold'; outcomeLabel = 'HOLD'; outcomeColor = 'var(--green)'; }
+    else if (outcome === 'breached') { cls = 'breached'; outcomeLabel = 'BREACH'; outcomeColor = 'var(--red)'; }
+
+    html += '<div class="wi-battle-card ' + cls + '" onclick="cycleWIOutcome(' + b.num + ',\'' + role + '\')">';
+    html += '<div class="wi-battle-num">B' + b.num + '</div>';
+    html += '<div class="wi-battle-date">' + dateShort + ' ' + b.day + '</div>';
+    html += '<div class="wi-battle-role" style="color:' + (isAtk ? 'var(--green)' : 'var(--red)') + '">' + (isAtk ? '⚔ ATK' : '🛡 DEF') + '</div>';
+    html += '<div class="wi-battle-outcome" style="color:' + outcomeColor + '">' + outcomeLabel + '</div>';
+    html += '</div>';
+  });
+  html += '</div>';
+
+  // Calculate results if any outcomes set
+  const setOutcomes = Object.keys(_wiOutcomes).length;
+  if (setOutcomes > 0) {
+    const result = simulateWhatIf(team, teamData, remaining);
+    html += renderWIResults(team, teamData, result, remaining);
+  } else {
+    html += '<div style="text-align:center;font-family:\'Share Tech Mono\',monospace;font-size:0.8rem;color:var(--text-muted);padding:24px;letter-spacing:1px">Click each battle to set an outcome, or use a preset above</div>';
+  }
+
+  container.innerHTML = html;
+}
+
+function cycleWIOutcome(battleNum, role) {
+  const isAtk = role === 'ATK';
+  const current = _wiOutcomes[battleNum] || null;
+
+  if (isAtk) {
+    // Cycle: null -> win -> loss -> null
+    if (current === null) _wiOutcomes[battleNum] = 'win';
+    else if (current === 'win') _wiOutcomes[battleNum] = 'loss';
+    else { delete _wiOutcomes[battleNum]; }
+  } else {
+    // Cycle: null -> hold -> breached -> null
+    if (current === null) _wiOutcomes[battleNum] = 'hold';
+    else if (current === 'hold') _wiOutcomes[battleNum] = 'breached';
+    else { delete _wiOutcomes[battleNum]; }
+  }
+
+  renderWIScenario();
+}
+
+function wiPreset(type) {
+  const team = _wiSelectedTeam;
+  if (!team) return;
+  const teamData = _wiStandings.find(s => s.team === team);
+  const isKou = teamData.faction === 'Koubutai';
+  const remaining = battleSchedule.filter(b => b.num > (_mcData ? _mcData.completedBattles : 2));
+
+  _wiOutcomes = {};
+
+  if (type === 'clear') {
+    renderWIScenario();
+    return;
+  }
+
+  remaining.forEach(b => {
+    const role = isKou ? b.kouRole : b.kagRole;
+    if (type === 'best') {
+      _wiOutcomes[b.num] = role === 'ATK' ? 'win' : 'hold';
+    } else if (type === 'worst') {
+      _wiOutcomes[b.num] = role === 'ATK' ? 'loss' : 'breached';
+    } else if (type === 'realistic') {
+      // 65% attacker win rate
+      if (role === 'ATK') {
+        _wiOutcomes[b.num] = Math.random() < 0.655 ? 'win' : 'loss';
+      } else {
+        _wiOutcomes[b.num] = Math.random() < 0.655 ? 'breached' : 'hold';
+      }
+    }
+  });
+
+  renderWIScenario();
+}
+
+function simulateWhatIf(team, teamData, remaining) {
+  const STEAL_PCT = 0.15;
+  let copper = teamData.copper;
+  const snapshotTime = new Date('2026-04-06T12:00:00');
+  let prevTime = snapshotTime;
+  const timeline = [];
+
+  // Estimate avg opponent copper for steal calculations
+  const tracked = _wiStandings.filter(s => s.genRate > 0);
+  const avgOpponentCopper = tracked.reduce((s, t) => s + t.copper, 0) / tracked.length;
+
+  remaining.forEach(b => {
+    const battleTime = new Date(b.date + 'T09:30:00');
+    const hours = (battleTime - prevTime) / 3600000;
+    const produced = teamData.genRate * hours;
+    copper += produced;
+
+    const isKou = teamData.faction === 'Koubutai';
+    const role = isKou ? b.kouRole : b.kagRole;
+    const outcome = _wiOutcomes[b.num] || null;
+
+    let change = 0;
+    let changeLabel = '';
+
+    if (outcome === 'win') {
+      // Estimate steal: 15% of a projected opponent copper
+      const estOppCopper = avgOpponentCopper + (teamData.genRate * hours); // rough estimate
+      change = estOppCopper * STEAL_PCT;
+      copper += change;
+      changeLabel = '+' + fmtK(change);
+    } else if (outcome === 'loss') {
+      // Failed attack, no copper change
+      change = 0;
+      changeLabel = '—';
+    } else if (outcome === 'hold') {
+      change = 0;
+      changeLabel = '—';
+    } else if (outcome === 'breached') {
+      change = copper * STEAL_PCT;
+      copper -= change;
+      changeLabel = '-' + fmtK(change);
+      change = -change;
+    } else {
+      // Unset — skip
+      changeLabel = '?';
+    }
+
+    timeline.push({
+      battle: b.num, date: b.date.slice(5).replace('-', '/'), day: b.day,
+      role, outcome, produced, change, copper, changeLabel
+    });
+
+    prevTime = battleTime;
+  });
+
+  return { finalCopper: copper, timeline };
+}
+
+function renderWIResults(team, teamData, result, remaining) {
+  const isKou = teamData.faction === 'Koubutai';
+  const facColor = isKou ? 'var(--green)' : 'var(--cyan)';
+
+  // Count outcomes
+  const wins = result.timeline.filter(t => t.outcome === 'win').length;
+  const losses = result.timeline.filter(t => t.outcome === 'loss').length;
+  const holds = result.timeline.filter(t => t.outcome === 'hold').length;
+  const breaches = result.timeline.filter(t => t.outcome === 'breached').length;
+  const copperGained = result.timeline.filter(t => t.change > 0).reduce((s, t) => s + t.change, 0);
+  const copperLost = result.timeline.filter(t => t.change < 0).reduce((s, t) => s + Math.abs(t.change), 0);
+  const netBattle = copperGained - copperLost;
+  const totalProduced = result.timeline.reduce((s, t) => s + t.produced, 0);
+
+  let html = '<div class="wi-result-card">';
+  html += '<div class="wi-result-title" style="color:' + facColor + '">' + team + ' — Season Projection</div>';
+
+  // Summary stats
+  html += '<div class="wi-result-grid">';
+  html += '<div class="wi-result-stat"><div class="wi-result-value" style="color:var(--gold)">' + fmtCopper(result.finalCopper) + '</div><div class="wi-result-label">Final Copper</div></div>';
+  html += '<div class="wi-result-stat"><div class="wi-result-value" style="color:var(--green)">' + fmtCopper(totalProduced) + '</div><div class="wi-result-label">Production</div></div>';
+  html += '<div class="wi-result-stat"><div class="wi-result-value" style="color:' + (netBattle >= 0 ? 'var(--green)' : 'var(--red)') + '">' + (netBattle >= 0 ? '+' : '') + fmtCopper(netBattle) + '</div><div class="wi-result-label">Net Battle</div></div>';
+  html += '<div class="wi-result-stat"><div class="wi-result-value" style="color:var(--green)">' + wins + 'W/' + losses + 'L</div><div class="wi-result-label">Attack Record</div></div>';
+  html += '<div class="wi-result-stat"><div class="wi-result-value" style="color:var(--red)">' + holds + 'H/' + breaches + 'B</div><div class="wi-result-label">Defense Record</div></div>';
+  html += '</div>';
+
+  // Battle-by-battle timeline
+  html += '<div class="wi-timeline">';
+  html += '<div class="wi-tl-row" style="border-bottom:1px solid var(--border);padding-bottom:4px;margin-bottom:4px">';
+  html += '<span class="wi-tl-battle" style="color:var(--text-muted)"></span>';
+  html += '<span class="wi-tl-role" style="color:var(--text-muted);font-size:0.6rem;letter-spacing:1px">ROLE</span>';
+  html += '<span class="wi-tl-outcome" style="color:var(--text-muted);font-size:0.6rem;letter-spacing:1px">RESULT</span>';
+  html += '<span style="flex:1;font-family:\'Share Tech Mono\',monospace;font-size:0.6rem;color:var(--text-muted);letter-spacing:1px">PRODUCED</span>';
+  html += '<span class="wi-tl-change" style="color:var(--text-muted);font-size:0.6rem;letter-spacing:1px">BATTLE</span>';
+  html += '<span class="wi-tl-copper" style="color:var(--text-muted);font-size:0.6rem;letter-spacing:1px">BALANCE</span>';
+  html += '</div>';
+
+  // Starting balance row
+  html += '<div class="wi-tl-row">';
+  html += '<span class="wi-tl-battle"></span><span class="wi-tl-role"></span><span class="wi-tl-outcome"></span>';
+  html += '<span style="flex:1;font-family:\'Share Tech Mono\',monospace;font-size:0.75rem;color:var(--text-muted)">Starting</span>';
+  html += '<span class="wi-tl-change"></span>';
+  html += '<span class="wi-tl-copper">' + fmtCopper(teamData.copper) + '</span>';
+  html += '</div>';
+
+  result.timeline.forEach(t => {
+    const roleColor = t.role === 'ATK' ? 'var(--green)' : 'var(--red)';
+    let outColor = 'var(--text-muted)';
+    let outLabel = '—';
+    if (t.outcome === 'win') { outColor = 'var(--green)'; outLabel = 'WIN'; }
+    else if (t.outcome === 'loss') { outColor = 'var(--red)'; outLabel = 'LOSS'; }
+    else if (t.outcome === 'hold') { outColor = 'var(--green)'; outLabel = 'HOLD'; }
+    else if (t.outcome === 'breached') { outColor = 'var(--red)'; outLabel = 'BRCH'; }
+
+    const changeColor = t.change > 0 ? 'var(--green)' : t.change < 0 ? 'var(--red)' : 'var(--text-muted)';
+
+    html += '<div class="wi-tl-row">';
+    html += '<span class="wi-tl-battle">B' + t.battle + '</span>';
+    html += '<span class="wi-tl-role" style="color:' + roleColor + '">' + (t.role === 'ATK' ? '⚔ ATK' : '🛡 DEF') + '</span>';
+    html += '<span class="wi-tl-outcome" style="color:' + outColor + '">' + outLabel + '</span>';
+    html += '<span style="flex:1;font-family:\'Share Tech Mono\',monospace;font-size:0.75rem;color:var(--green)">+' + fmtCopper(t.produced) + '</span>';
+    html += '<span class="wi-tl-change" style="color:' + changeColor + '">' + t.changeLabel + '</span>';
+    html += '<span class="wi-tl-copper">' + fmtCopper(t.copper) + '</span>';
+    html += '</div>';
+  });
+  html += '</div></div>';
+
+  return html;
 }
 
 // ── Init ──
