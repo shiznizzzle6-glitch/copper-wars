@@ -427,6 +427,15 @@ body::before {
   color: var(--gold);
 }
 
+.multi-support {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.78rem;
+  color: var(--purple);
+  margin-top: 6px;
+  padding-top: 6px;
+  border-top: 1px solid rgba(255,255,255,0.04);
+}
+
 /* ── Server Performance Table ── */
 .server-table {
   width: 100%;
@@ -1252,7 +1261,8 @@ body::before {
   .col-battle,
   .col-match,
   .col-type,
-  .col-srv { display: none; }
+  .col-srv,
+  .col-sup { display: none; }
   .matchup-table th,
   .matchup-table td { padding: 9px 8px; }
 
@@ -1418,6 +1428,7 @@ body::before {
               <th class="col-srv">D.Srv</th>
               <th>Result</th>
               <th>Copper</th>
+              <th class="col-sup">Support</th>
             </tr>
           </thead>
           <tbody id="matchupBody"></tbody>
@@ -1426,7 +1437,7 @@ body::before {
     </div>
   </div>
 
-  <div class="footer">Copper Wars Season Dashboard · Updated April 5, 2026 · Battle 2 of 8 · v2.0</div>
+  <div class="footer">Copper Wars Season Dashboard · Updated April 5, 2026 · Battle 2 of 8 · v2.1</div>
 </div>
 
 <div class="tooltip" id="tooltip"></div>
@@ -1743,6 +1754,15 @@ function renderMultiCards() {
         <span class="multi-copper">+${fmt(r.copper)}</span>
       </div>`;
     });
+    // Show support defender (deduplicated from rows)
+    const sups = [...new Set(rows.map(r => r.sup).filter(s => s))];
+    if (sups.length > 0) {
+      const supTags = sups.map(s => {
+        const sSrv = roster[s] ? ' (S' + roster[s] + ')' : '';
+        return s + sSrv;
+      }).join(', ');
+      html += '<div class="multi-support">🛡 Support: ' + supTags + '</div>';
+    }
     html += '</div>';
   });
 
@@ -2184,6 +2204,7 @@ function renderMatchupTable() {
     <td class="col-srv" style="color:var(--text-muted)">${d.dsrv || '—'}</td>
     <td><span class="result-badge ${resClass(d.res)}">${d.res}</span></td>
     <td style="color:var(--gold);font-family:'Share Tech Mono',monospace">${d.copper > 0 ? fmt(d.copper) : '—'}</td>
+    <td class="col-sup" style="color:var(--purple);font-family:'Share Tech Mono',monospace">${d.sup || '—'}</td>
   </tr>`).join('');
 }
 
