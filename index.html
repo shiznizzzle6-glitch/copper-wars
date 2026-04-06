@@ -1335,6 +1335,11 @@ body::before {
     </div>
   </div>
 
+  <!-- Loading Indicator -->
+  <div id="loadingIndicator" style="text-align:center;padding:48px 0;font-family:'Share Tech Mono',monospace;font-size:0.9rem;color:var(--text-muted);letter-spacing:2px">
+    Loading battle data...
+  </div>
+
   <!-- Summary Stats -->
   <div class="stats-grid anim anim-d3" id="summaryStats"></div>
 
@@ -1350,11 +1355,7 @@ body::before {
   <div class="section anim anim-d5">
     <div class="section-title collapsible collapsed" onclick="toggleSection(this)" aria-expanded="false"><span class="icon" style="background:var(--orange)"></span> Multi-Attacker Match Details <span class="toggle-icon">▼</span></div>
     <div class="collapsible-content collapsed" id="multiContent" style="max-height:0;">
-      <div class="filter-bar" id="multiFilterBar">
-        <button class="filter-btn active" data-mfilter="all">All</button>
-        <button class="filter-btn" data-mfilter="1">Battle 1</button>
-        <button class="filter-btn" data-mfilter="2">Battle 2</button>
-      </div>
+      <div class="filter-bar" id="multiFilterBar"></div>
       <div class="multi-cards" id="multiCards"></div>
     </div>
   </div>
@@ -1403,15 +1404,7 @@ body::before {
   <div class="section">
     <div class="section-title collapsible collapsed" onclick="toggleSection(this)" aria-expanded="false"><span class="icon" style="background:var(--blue)"></span> Full Matchup Table <span class="toggle-icon">▼</span></div>
     <div class="collapsible-content collapsed" style="max-height:0;">
-      <div class="filter-bar" id="filterBar">
-        <button class="filter-btn active" data-filter="all">All</button>
-        <button class="filter-btn" data-filter="B1">Battle 1</button>
-        <button class="filter-btn" data-filter="B2">Battle 2</button>
-        <button class="filter-btn" data-filter="1v1">1v1</button>
-        <button class="filter-btn" data-filter="2v1">2v1</button>
-        <button class="filter-btn" data-filter="W">Wins</button>
-        <button class="filter-btn" data-filter="L">Holds</button>
-      </div>
+      <div class="filter-bar" id="filterBar"></div>
       <div class="matchup-table-wrap" style="max-height:600px;overflow-y:auto">
         <table class="matchup-table" id="matchupTable">
           <thead>
@@ -1433,7 +1426,7 @@ body::before {
     </div>
   </div>
 
-  <div class="footer">Copper Wars Season Dashboard · Updated April 5, 2026 · Battle 2 of 8 · v1.9</div>
+  <div class="footer">Copper Wars Season Dashboard · Updated April 5, 2026 · Battle 2 of 8 · v2.0</div>
 </div>
 
 <div class="tooltip" id="tooltip"></div>
@@ -1459,123 +1452,152 @@ function toggleSection(titleEl) {
   }
 }
 
-// ── Battle Data (updated: RHCP→S1234, V1PS→S1220) ──
-const battleData = [
-  // Battle 1 — Kage no Sato attacking, Koubutai defending
-  {battle:1,mid:"1-01",type:"1v1",atk:"ETOA",asrv:1252,def:"FYER",dsrv:1247,res:"W",copper:122.7},
-  {battle:1,mid:"1-02",type:"1v1",atk:"ETRE",asrv:1252,def:"ATUM",dsrv:1220,res:"W",copper:117.3},
-  {battle:1,mid:"1-03",type:"1v1",atk:"UFO",asrv:1196,def:"PNAS",dsrv:1194,res:"W",copper:112.5},
-  {battle:1,mid:"1-04",type:"1v1",atk:"ETRR",asrv:1252,def:"UPER",dsrv:1220,res:"W",copper:111.1},
-  {battle:1,mid:"1-05",type:"1v1",atk:"ROKK",asrv:1242,def:"ZMBY",dsrv:1194,res:"W",copper:108.9},
-  {battle:1,mid:"1-06",type:"1v1",atk:"EVGS",asrv:1196,def:"AZI",dsrv:1220,res:"W",copper:103.4},
-  {battle:1,mid:"1-07",type:"1v1",atk:"HPRO",asrv:1196,def:"HAVK",dsrv:1247,res:"W",copper:93.9},
-  {battle:1,mid:"1-08",type:"1v1",atk:"MAAX",asrv:1196,def:"B33",dsrv:1194,res:"W",copper:93.9},
-  {battle:1,mid:"1-09",type:"1v1",atk:"WARS",asrv:1242,def:"OPPA",dsrv:1194,res:"W",copper:93.8},
-  {battle:1,mid:"1-10",type:"1v1",atk:"BAKS",asrv:1242,def:"GDNS",dsrv:1247,res:"W",copper:91.8},
-  {battle:1,mid:"1-11",type:"1v1",atk:"ROKG",asrv:1252,def:"S700",dsrv:1234,res:"W",copper:70.7},
-  {battle:1,mid:"1-12",type:"1v1",atk:"OFFJ",asrv:1196,def:"V1PS",dsrv:1220,res:"W",copper:70.4},
-  {battle:1,mid:"1-13",type:"1v1",atk:"LAUP",asrv:1196,def:"UFFO",dsrv:1247,res:"W",copper:67.9},
-  {battle:1,mid:"1-14",type:"1v1",atk:"MORT",asrv:1242,def:"SPAS",dsrv:1220,res:"L",copper:66.4},
-  {battle:1,mid:"1-15",type:"1v1",atk:"OKM",asrv:1252,def:"RUNE",dsrv:1220,res:"W",copper:66.2},
-  {battle:1,mid:"1-16",type:"1v1",atk:"TNTX",asrv:1237,def:"FEU",dsrv:1234,res:"L",copper:59.0},
-  {battle:1,mid:"1-17",type:"1v1",atk:"a0a",asrv:1196,def:"17GZ",dsrv:1234,res:"W",copper:53.0},
-  {battle:1,mid:"1-18",type:"1v1",atk:"FORG",asrv:1196,def:"WATT",dsrv:1247,res:"W",copper:50.0},
-  {battle:1,mid:"1-19",type:"1v1",atk:"K1L",asrv:1196,def:"MXP2",dsrv:1234,res:"W",copper:31.4},
-  {battle:1,mid:"1-20",type:"1v1",atk:"BNCR",asrv:1242,def:"BROD",dsrv:1194,res:"W",copper:24.6},
-  {battle:1,mid:"1-21",type:"1v1",atk:"CBT",asrv:1196,def:"TII",dsrv:1247,res:"W",copper:24.5},
-  {battle:1,mid:"1-22",type:"1v1",atk:"KZQZ",asrv:1252,def:"WASS",dsrv:1220,res:"W",copper:22.2},
-  {battle:1,mid:"1-23",type:"1v1",atk:"TEN1",asrv:1196,def:"ZONE",dsrv:1194,res:"W",copper:17.9},
-  {battle:1,mid:"1-24",type:"2v1",atk:"815K",asrv:1252,def:"NZM",dsrv:1194,res:"L",copper:17.9,sup:"HOPE"},
-  {battle:1,mid:"1-25",type:"1v1",atk:"LAZO",asrv:1196,def:"XESS",dsrv:1247,res:"W",copper:17.7},
-  {battle:1,mid:"1-26",type:"2v1",atk:"VODL",asrv:1252,def:"7VEK",dsrv:1247,res:"L",copper:14.5,sup:"SANC"},
-  {battle:1,mid:"1-27",type:"1v1",atk:"SPG1",asrv:1252,def:"SPRR",dsrv:1194,res:"W",copper:6.4},
-  {battle:1,mid:"1-26",type:"2v1",atk:"LEOI",asrv:1242,def:"7VEK",dsrv:1247,res:"L",copper:5.8,sup:"SANC"},
-  {battle:1,mid:"1-26",type:"1v1",atk:"XUX",asrv:1196,def:"BOM8",dsrv:1247,res:"W",copper:3.3},
-  {battle:1,mid:"1-28",type:"1v1",atk:"PIR4",asrv:1252,def:"ROKS",dsrv:1247,res:"L",copper:2.2},
-  {battle:1,mid:"1-29",type:"1v1",atk:"KBM",asrv:1252,def:"BUNS",dsrv:1234,res:"W",copper:1.5},
-  {battle:1,mid:"1-30",type:"1v1",atk:"FYDL",asrv:1252,def:"OCS",dsrv:1234,res:"W",copper:0.9},
-  {battle:1,mid:"1-31",type:"1v1",atk:"E404",asrv:1237,def:"MXP",dsrv:1234,res:"L",copper:0},
-  {battle:1,mid:"1-24",type:"2v1",atk:"CLWN",asrv:1237,def:"NZM",dsrv:1194,res:"L",copper:0,sup:"HOPE"},
-  {battle:1,mid:"1-32",type:"2v1",atk:"RR6",asrv:1252,def:"UAC",dsrv:1220,res:"L",copper:0},
-  {battle:1,mid:"1-32",type:"2v1",atk:"TDO",asrv:1242,def:"UAC",dsrv:1220,res:"L",copper:0},
-  {battle:1,mid:"1-33",type:"2v1",atk:"BRIC",asrv:1242,def:"VALR",dsrv:1194,res:"L",copper:0,sup:"OGM"},
-  {battle:1,mid:"1-33",type:"2v1",atk:"OHMS",asrv:1237,def:"VALR",dsrv:1194,res:"L",copper:0,sup:"OGM"},
-  {battle:1,mid:"1-34",type:"2v1",atk:"AO5",asrv:1242,def:"BTFC",dsrv:1194,res:"L",copper:0,sup:"RISE"},
-  {battle:1,mid:"1-34",type:"2v1",atk:"WLLF",asrv:1237,def:"BTFC",dsrv:1194,res:"L",copper:0,sup:"RISE"},
-  {battle:1,mid:"1-35",type:"2v1",atk:"GWN",asrv:1252,def:"340G",dsrv:1220,res:"L",copper:0,sup:"RLPX"},
-  {battle:1,mid:"1-35",type:"2v1",atk:"SAML",asrv:1242,def:"340G",dsrv:1220,res:"L",copper:0,sup:"RLPX"},
-  {battle:1,mid:"1-36",type:"DNF",atk:"EKOS",asrv:1237,def:"",dsrv:"",res:"DNF",copper:0},
-  // Battle 2 — Koubutai attacking, Kage no Sato defending
-  {battle:2,mid:"2-01",type:"1v1",atk:"FYER",asrv:1247,def:"ETOA",dsrv:1252,res:"W",copper:174.0},
-  {battle:2,mid:"2-02",type:"1v1",atk:"RISE",asrv:1234,def:"ETRE",dsrv:1252,res:"W",copper:172.7},
-  {battle:2,mid:"2-03",type:"1v1",atk:"SPAS",asrv:1220,def:"ROKK",dsrv:1242,res:"L",copper:0},
-  {battle:2,mid:"2-04",type:"1v1",atk:"ATUM",asrv:1220,def:"UFO",dsrv:1196,res:"L",copper:94.5},
-  {battle:2,mid:"2-05",type:"1v1",atk:"MXP",asrv:1234,def:"E404",dsrv:1237,res:"W",copper:156.5},
-  {battle:2,mid:"2-06",type:"1v1",atk:"PNAS",asrv:1194,def:"TNTX",dsrv:1237,res:"W",copper:155.1},
-  {battle:2,mid:"2-07",type:"1v1",atk:"ZMBY",asrv:1194,def:"EVGS",dsrv:1196,res:"L",copper:92.9},
-  {battle:2,mid:"2-08",type:"1v1",atk:"WRC",asrv:1247,def:"ETRR",dsrv:1252,res:"L",copper:30.7},
-  {battle:2,mid:"2-09",type:"1v1",atk:"OGM",asrv:1234,def:"HPRO",dsrv:1196,res:"W",copper:148.6},
-  {battle:2,mid:"2-10",type:"1v1",atk:"UPER",asrv:1220,def:"BAKS",dsrv:1242,res:"W",copper:146.1},
-  {battle:2,mid:"2-11",type:"1v1",atk:"HOPE",asrv:1234,def:"MAAX",dsrv:1196,res:"W",copper:145.5},
-  {battle:2,mid:"2-12",type:"1v1",atk:"AZI",asrv:1220,def:"MORT",dsrv:1242,res:"W",copper:142.9},
-  {battle:2,mid:"2-13",type:"1v1",atk:"FEU",asrv:1234,def:"EKOS",dsrv:1237,res:"W",copper:136.5},
-  {battle:2,mid:"2-14",type:"1v1",atk:"BTFC",asrv:1194,def:"815K",dsrv:1252,res:"L",copper:0},
-  {battle:2,mid:"2-15",type:"1v1",atk:"HAVK",asrv:1247,def:"AO5",dsrv:1242,res:"W",copper:112.2},
-  {battle:2,mid:"2-16",type:"2v1",atk:"GDNS",asrv:1247,def:"BRIC",dsrv:1242,res:"W",copper:15.7,sup:"WARS"},
-  {battle:2,mid:"2-16",type:"2v1",atk:"OPPA",asrv:1194,def:"BRIC",dsrv:1242,res:"W",copper:94.2,sup:"WARS"},
-  {battle:2,mid:"2-17",type:"2v1",atk:"VALR",asrv:1194,def:"CLWN",dsrv:1237,res:"W",copper:53.2},
-  {battle:2,mid:"2-17",type:"2v1",atk:"NZM",asrv:1194,def:"CLWN",dsrv:1237,res:"W",copper:46.2},
-  {battle:2,mid:"2-18",type:"1v1",atk:"B33",asrv:1194,def:"OHMS",dsrv:1237,res:"W",copper:94.8},
-  {battle:2,mid:"2-19",type:"2v1",atk:"340G",asrv:1220,def:"WLLF",dsrv:1237,res:"L",copper:0,sup:"OFFJ"},
-  {battle:2,mid:"2-19",type:"2v1",atk:"RUNE",asrv:1220,def:"WLLF",dsrv:1237,res:"L",copper:0,sup:"OFFJ"},
-  {battle:2,mid:"2-20",type:"2v1",atk:"SANC",asrv:1247,def:"W46",dsrv:1237,res:"W",copper:71.7,sup:"ROKG"},
-  {battle:2,mid:"2-20",type:"2v1",atk:"17GZ",asrv:1234,def:"W46",dsrv:1237,res:"W",copper:2.7,sup:"ROKG"},
-  {battle:2,mid:"2-21",type:"1v1",atk:"RLPX",asrv:1234,def:"a0a",dsrv:1196,res:"W",copper:74.2},
-  {battle:2,mid:"2-22",type:"1v1",atk:"LYR",asrv:1220,def:"VODL",dsrv:1252,res:"W",copper:70.4},
-  {battle:2,mid:"2-23",type:"1v1",atk:"UFFO",asrv:1247,def:"GWN",dsrv:1252,res:"W",copper:38.7},
-  {battle:2,mid:"2-24",type:"2v1",atk:"GONI",asrv:1247,def:"SAML",dsrv:1242,res:"L",copper:27.9,sup:"LAUP"},
-  {battle:2,mid:"2-24",type:"2v1",atk:"S700",asrv:1234,def:"SAML",dsrv:1242,res:"L",copper:5.1,sup:"LAUP"},
-  {battle:2,mid:"2-25",type:"1v1",atk:"V1PS",asrv:1220,def:"LEOI",dsrv:1242,res:"W",copper:21.9},
-  {battle:2,mid:"2-26",type:"1v1",atk:"REVA",asrv:1234,def:"CBT",dsrv:1196,res:"W",copper:45.9},
-  {battle:2,mid:"2-27",type:"1v1",atk:"NYXX",asrv:1220,def:"K1L",dsrv:1196,res:"W",copper:45.7},
-  {battle:2,mid:"2-28",type:"1v1",atk:"YAN8",asrv:1194,def:"MDNT",dsrv:1237,res:"W",copper:43.4},
-  {battle:2,mid:"2-29",type:"1v1",atk:"7VEK",asrv:1247,def:"LDRA",dsrv:1242,res:"W",copper:43.2},
-  {battle:2,mid:"2-30",type:"1v1",atk:"TSOE",asrv:1220,def:"BNCR",dsrv:1242,res:"L",copper:8.5},
-  {battle:2,mid:"2-31",type:"1v1",atk:"WATT",asrv:1247,def:"TDO",dsrv:1242,res:"W",copper:41.4},
-  {battle:2,mid:"2-32",type:"1v1",atk:"WASS",asrv:1220,def:"NYMD",dsrv:1196,res:"L",copper:24.2},
-  {battle:2,mid:"2-33",type:"1v1",atk:"O815",asrv:1220,def:"SPG1",dsrv:1252,res:"W",copper:30.7},
-  {battle:2,mid:"2-34",type:"1v1",atk:"MXP2",asrv:1234,def:"QUAN",dsrv:1237,res:"W",copper:37.8},
-  {battle:2,mid:"2-35",type:"2v1",atk:"ROKS",asrv:1247,def:"IRD2",dsrv:1237,res:"W",copper:20.6},
-  {battle:2,mid:"2-35",type:"2v1",atk:"IU99",asrv:1247,def:"IRD2",dsrv:1237,res:"W",copper:1.1},
-  {battle:2,mid:"2-36",type:"1v1",atk:"BROO",asrv:1194,def:"OYK",dsrv:1237,res:"L",copper:0},
-  {battle:2,mid:"2-37",type:"1v1",atk:"RHCP",asrv:1234,def:"FYDL",dsrv:1252,res:"W",copper:13.7},
-  {battle:2,mid:"2-38",type:"1v1",atk:"UAC",asrv:1220,def:"15N",dsrv:1196,res:"L",copper:0},
-  {battle:2,mid:"2-39",type:"1v1",atk:"INTL",asrv:1234,def:"ROWW",dsrv:1237,res:"L",copper:0},
-];
+// ── Battle Data (loaded from CSV) ──
+let battleData = [];
 
 // ── Server-Faction Mapping & Battle Roles ──
 const serverFaction = {1194:'Koubutai',1220:'Koubutai',1234:'Koubutai',1247:'Koubutai',1196:'Kage no Sato',1237:'Kage no Sato',1242:'Kage no Sato',1252:'Kage no Sato'};
 const battleAttacker = {1:'Kage no Sato',2:'Koubutai'}; // which faction attacked each battle
 
-// ── Full Roster (team → server) ──
-const roster = {
-  // Koubutai — S1194
-  "B33":1194,"BROD":1194,"BROO":1194,"BTFC":1194,"NZM":1194,"OPPA":1194,"PNAS":1194,"SPRR":1194,"VALR":1194,"YAN8":1194,"ZMBY":1194,"ZONE":1194,
-  // Koubutai — S1220
-  "340G":1220,"ATUM":1220,"AZI":1220,"LYR":1220,"NYXX":1220,"O815":1220,"RUNE":1220,"SPAS":1220,"TSOE":1220,"UAC":1220,"UPER":1220,"V1PS":1220,"WASS":1220,
-  // Koubutai — S1234
-  "17GZ":1234,"BUNS":1234,"FEU":1234,"HOPE":1234,"INTL":1234,"MXP":1234,"MXP2":1234,"OCS":1234,"OGM":1234,"REVA":1234,"RHCP":1234,"RISE":1234,"RLPX":1234,"S700":1234,
-  // Koubutai — S1247
-  "7VEK":1247,"BOM8":1247,"FYER":1247,"GDNS":1247,"GONI":1247,"HAVK":1247,"IU99":1247,"ROKS":1247,"SANC":1247,"TII":1247,"UFFO":1247,"WATT":1247,"WRC":1247,"XESS":1247,
-  // Kage no Sato — S1196
-  "15N":1196,"CBT":1196,"EVGS":1196,"FORG":1196,"HPRO":1196,"K1L":1196,"LAUP":1196,"LAZO":1196,"MAAX":1196,"NYMD":1196,"OFFJ":1196,"TEN1":1196,"UFO":1196,"XUX":1196,"a0a":1196,
-  // Kage no Sato — S1237
-  "CLWN":1237,"E404":1237,"EKOS":1237,"IRD2":1237,"MDNT":1237,"OHMS":1237,"OYK":1237,"QUAN":1237,"ROWW":1237,"TNTX":1237,"W46":1237,"WLLF":1237,
-  // Kage no Sato — S1242
-  "AO5":1242,"BAKS":1242,"BNCR":1242,"BRIC":1242,"LDRA":1242,"LEOI":1242,"MORT":1242,"ROKK":1242,"SAML":1242,"TDO":1242,"WARS":1242,
-  // Kage no Sato — S1252
-  "815K":1252,"ETRR":1252,"ETRE":1252,"ETOA":1252,"FYDL":1252,"GWN":1252,"KBM":1252,"KZQZ":1252,"OKM":1252,"PIR4":1252,"ROKG":1252,"RR6":1252,"SPG1":1252,"VODL":1252
-};
+// ── Full Roster (loaded from CSV) ──
+let roster = {};
+
+// ── CSV Parser ──
+function parseCSV(text) {
+  const lines = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n').split('\n');
+  if (lines.length === 0) return [];
+  const headers = lines[0].split(',').map(h => h.trim());
+  const rows = [];
+  for (let i = 1; i < lines.length; i++) {
+    const line = lines[i].trim();
+    if (!line) continue;
+    // Simple CSV split (handles our data which has no commas in values)
+    const vals = line.split(',').map(v => v.trim());
+    const obj = {};
+    headers.forEach((h, idx) => { obj[h] = vals[idx] || ''; });
+    rows.push(obj);
+  }
+  return rows;
+}
+
+// ── Data Loading ──
+async function loadData() {
+  try {
+    const [battleRes, rosterRes] = await Promise.all([
+      fetch('battle_data.csv'),
+      fetch('roster.csv')
+    ]);
+
+    if (!battleRes.ok || !rosterRes.ok) {
+      throw new Error('Failed to load CSV files');
+    }
+
+    const battleText = await battleRes.text();
+    const rosterText = await rosterRes.text();
+
+    // Parse battle data
+    const battleRows = parseCSV(battleText);
+    battleData = battleRows.map(r => ({
+      battle: parseInt(r['Battle']),
+      mid: r['Match ID'],
+      type: r['Match Type'],
+      atk: r['Attacker'],
+      asrv: parseInt(r['Attacker Server']),
+      def: r['Defender'],
+      dsrv: r['Defender Server'] ? parseInt(r['Defender Server']) || '' : '',
+      res: r['Result'],
+      copper: parseFloat(r['Copper Gained']) || 0,
+      sup: r['Supporters'] || ''
+    }));
+
+    // Parse roster
+    roster = {};
+    const rosterRows = parseCSV(rosterText);
+    rosterRows.forEach(r => {
+      roster[r['Team']] = parseInt(r['Server']);
+    });
+
+    // Update battleAttacker for any new battles
+    const battles = [...new Set(battleData.map(d => d.battle))].sort();
+    // B1=Kage, B2=Koubutai, B3=Kage, B4=Koubutai... (alternating)
+    battles.forEach(b => {
+      if (!battleAttacker[b]) {
+        battleAttacker[b] = b % 2 === 1 ? 'Kage no Sato' : 'Koubutai';
+      }
+    });
+
+    // Update header subtitle
+    const maxBattle = Math.max(...battles);
+    document.querySelector('.header .subtitle').textContent = 'Season Dashboard — Battle ' + maxBattle + ' of 8';
+
+    // Update battle tabs
+    document.querySelectorAll('.battle-tab').forEach((tab, i) => {
+      const bNum = i + 1;
+      if (bNum <= maxBattle) {
+        tab.classList.add('active');
+        tab.classList.remove('locked');
+      } else {
+        tab.classList.remove('active');
+        tab.classList.add('locked');
+      }
+    });
+
+    // Update faction banner dynamically
+    const latestAtkFaction = battleAttacker[maxBattle];
+    const latestDefFaction = latestAtkFaction === 'Koubutai' ? 'Kage no Sato' : 'Koubutai';
+    updateFactionBanner(latestAtkFaction, latestDefFaction, maxBattle);
+
+    // Hide loading, render
+    document.getElementById('loadingIndicator').style.display = 'none';
+    renderAll();
+
+  } catch (err) {
+    document.getElementById('loadingIndicator').innerHTML =
+      '<span style="color:var(--red)">⚠ Failed to load data files. Make sure battle_data.csv and roster.csv are in the same directory.</span>';
+    console.error('Data load error:', err);
+  }
+}
+
+function updateFactionBanner(atkFaction, defFaction, latestBattle) {
+  const completed = battleData.filter(d => d.type !== 'DNF');
+
+  // Compute each faction's attack record and copper across all battles they attacked
+  function factionAtkStats(faction) {
+    const atkBattles = Object.entries(battleAttacker).filter(([b, f]) => f === faction).map(([b]) => parseInt(b));
+    const rows = completed.filter(d => atkBattles.includes(d.battle));
+    const w = rows.filter(d => d.res === 'W').length;
+    const l = rows.filter(d => d.res === 'L').length;
+    const copper = rows.reduce((s, d) => s + d.copper, 0);
+    return { w, l, copper };
+  }
+  function factionDefStats(faction) {
+    const defBattles = Object.entries(battleAttacker).filter(([b, f]) => f !== faction).map(([b]) => parseInt(b));
+    const rows = completed.filter(d => defBattles.includes(d.battle));
+    const holds = rows.filter(d => d.res === 'L').length;
+    return { holds };
+  }
+
+  const atkStats = factionAtkStats(atkFaction);
+  const defStats = factionDefStats(atkFaction);
+  const oppAtkStats = factionAtkStats(defFaction);
+  const oppDefStats = factionDefStats(defFaction);
+
+  const sides = document.querySelectorAll('.faction-side');
+  // Left side = current attacker
+  sides[0].innerHTML = `
+    <div class="faction-role attacker">⚔ Attackers — Battle ${latestBattle}</div>
+    <div class="faction-name" style="color:var(--green)">${atkFaction}</div>
+    <div class="faction-record"><span class="record-seg">Season ATK: ${atkStats.w}W / ${atkStats.l}L</span> <span class="record-sep">·</span> <span class="record-seg">DEF: ${defStats.holds} holds</span></div>
+    <div class="faction-record" style="color:var(--gold)">⚔ Copper Seized: ${fmtComma(atkStats.copper)}</div>
+  `;
+  // Right side = current defender
+  sides[1].innerHTML = `
+    <div class="faction-role defender">🛡 Defenders — Battle ${latestBattle}</div>
+    <div class="faction-name" style="color:var(--red)">${defFaction}</div>
+    <div class="faction-record"><span class="record-seg">Season ATK: ${oppAtkStats.w}W / ${oppAtkStats.l}L</span> <span class="record-sep">·</span> <span class="record-seg">DEF: ${oppDefStats.holds} holds</span></div>
+    <div class="faction-record" style="color:var(--gold)">⚔ Copper Seized: ${fmtComma(oppAtkStats.copper)}</div>
+  `;
+}
 
 // ── Global Server Filter State ──
 let selectedServers = new Set(); // empty = all
@@ -1684,6 +1706,13 @@ function renderMatchTypes() {
 // ── Multi-Attacker Cards ──
 function renderMultiCards() {
   const data = getFilteredData().filter(d => d.type === '2v1' || d.type === '3v1');
+  const battles = [...new Set(data.map(d => d.battle))].sort();
+
+  // Build filter buttons
+  let filterHtml = '<button class="filter-btn active" data-mfilter="all">All</button>';
+  battles.forEach(b => { filterHtml += '<button class="filter-btn" data-mfilter="' + b + '">Battle ' + b + '</button>'; });
+  document.getElementById('multiFilterBar').innerHTML = filterHtml;
+
   // Group by match ID
   const matches = {};
   data.forEach(d => {
@@ -1827,8 +1856,10 @@ function renderCopperChart(battleNum) {
   const maxCopper = sorted.length > 0 ? sorted[0].copper : 1;
 
   let html = '<div class="chart-tabs">';
-  html += `<div class="chart-tab ${battleNum === 1 ? 'active' : ''}" onclick="renderCopperChart(1)">Battle 1</div>`;
-  html += `<div class="chart-tab ${battleNum === 2 ? 'active' : ''}" onclick="renderCopperChart(2)">Battle 2</div>`;
+  const allBattles = [...new Set(battleData.map(d => d.battle))].sort();
+  allBattles.forEach(b => {
+    html += '<div class="chart-tab ' + (b === battleNum ? 'active' : '') + '" onclick="renderCopperChart(' + b + ')">Battle ' + b + '</div>';
+  });
   html += '</div>';
 
   if (isMobile()) {
@@ -2118,6 +2149,19 @@ function renderMatchupTable() {
   const typeClass = t => t === '1v1' ? 'type-1v1' : t === '2v1' ? 'type-2v1' : t === '3v1' ? 'type-3v1' : 'type-dnf';
   const resClass = r => r === 'W' ? 'win' : r === 'L' ? 'loss' : 'dnf';
 
+  // Build filter buttons dynamically
+  const filterBar = document.getElementById('filterBar');
+  if (!filterBar.hasChildNodes()) {
+    const allBattles = [...new Set(battleData.map(d => d.battle))].sort();
+    let fHtml = '<button class="filter-btn active" data-filter="all">All</button>';
+    allBattles.forEach(b => { fHtml += '<button class="filter-btn" data-filter="B' + b + '">Battle ' + b + '</button>'; });
+    fHtml += '<button class="filter-btn" data-filter="1v1">1v1</button>';
+    fHtml += '<button class="filter-btn" data-filter="2v1">2v1</button>';
+    fHtml += '<button class="filter-btn" data-filter="W">Wins</button>';
+    fHtml += '<button class="filter-btn" data-filter="L">Holds</button>';
+    filterBar.innerHTML = fHtml;
+  }
+
   // Get active matchup filter
   const activeBtn = document.querySelector('#filterBar .filter-btn.active');
   const filter = activeBtn ? activeBtn.dataset.filter : 'all';
@@ -2227,8 +2271,8 @@ function renderMatchupTable() {
   });
 })();
 
-// ── Initial Render ──
-renderAll();
+// ── Initial Load ──
+loadData();
 </script>
 </body>
 </html>
