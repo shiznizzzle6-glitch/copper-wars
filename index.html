@@ -1407,6 +1407,7 @@ body::before {
   <div class="section">
     <div class="section-title collapsible collapsed" onclick="toggleSection(this)" aria-expanded="false"><span class="icon" style="background:var(--purple)"></span> Participation Report <span class="toggle-icon">▼</span></div>
     <div class="collapsible-content collapsed" style="max-height:0;">
+      <div class="filter-bar" id="participationFilterBar"></div>
       <div id="participationReport"></div>
     </div>
   </div>
@@ -1592,7 +1593,7 @@ async function loadData() {
     const footer = document.querySelector('.footer');
     if (footer) {
       const dateStr = battleDate[maxBattle] || '';
-      footer.textContent = `Copper Wars Season Dashboard · Battle ${maxBattle} of ${TOTAL_BATTLES}${dateStr ? ' · Played ' + dateStr : ''} · v2.5`;
+      footer.textContent = `Copper Wars Season Dashboard · Battle ${maxBattle} of ${TOTAL_BATTLES}${dateStr ? ' · Played ' + dateStr : ''} · v2.6`;
     }
 
     // Hide loading, render
@@ -2118,7 +2119,33 @@ function renderCrossBattleTrends() {
 // ── Participation Report ──
 function renderParticipation() {
   const data = getFilteredData();
-  const battles = [...new Set(data.map(d => d.battle))].sort();
+  const allBattles = [...new Set(data.map(d => d.battle))].sort((a, b) => a - b);
+
+  // Build filter buttons dynamically (rebuild if battle count changes)
+  const pFilterBar = document.getElementById('participationFilterBar');
+  const expectedBtnCount = allBattles.length + 1; // +1 for "All"
+  if (pFilterBar.children.length !== expectedBtnCount) {
+    // Preserve current selection if possible
+    const prevActive = document.querySelector('#participationFilterBar .filter-btn.active');
+    const prevFilter = prevActive ? prevActive.dataset.pfilter : 'all';
+    let fHtml = '<button class="filter-btn' + (prevFilter === 'all' ? ' active' : '') + '" data-pfilter="all">All</button>';
+    allBattles.forEach(b => { fHtml += '<button class="filter-btn' + (prevFilter === 'B' + b ? ' active' : '') + '" data-pfilter="B' + b + '">Battle ' + b + '</button>'; });
+    pFilterBar.innerHTML = fHtml;
+  }
+
+  // Get active filter
+  const activeBtn = document.querySelector('#participationFilterBar .filter-btn.active');
+  const filter = activeBtn ? activeBtn.dataset.pfilter : 'all';
+
+  // Determine which battles to show
+  let battles;
+  if (filter && filter.startsWith('B')) {
+    const bNum = parseInt(filter.slice(1));
+    battles = allBattles.filter(b => b === bNum);
+  } else {
+    battles = allBattles;
+  }
+
   let html = '';
 
   html += '<div class="participation-legend">';
@@ -2331,6 +2358,13 @@ function renderMatchupTable() {
     document.querySelectorAll('#filterBar .filter-btn').forEach(b => b.classList.remove('active'));
     e.target.classList.add('active');
     renderMatchupTable();
+  });
+
+  document.getElementById('participationFilterBar').addEventListener('click', e => {
+    if (!e.target.classList.contains('filter-btn')) return;
+    document.querySelectorAll('#participationFilterBar .filter-btn').forEach(b => b.classList.remove('active'));
+    e.target.classList.add('active');
+    renderParticipation();
   });
 })();
 
