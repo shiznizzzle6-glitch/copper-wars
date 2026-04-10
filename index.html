@@ -1290,8 +1290,7 @@ body::before {
   <!-- Header -->
   <div class="header anim">
     <h1>Copper Wars</h1>
-    <div class="subtitle">Season Dashboard — Battle 2 of 8</div>
-    <a href="predictions.html" style="display:inline-block;margin-top:12px;font-family:'Share Tech Mono',monospace;font-size:0.78rem;color:var(--purple);text-decoration:none;letter-spacing:2px;padding:6px 16px;border:1px solid var(--border);border-radius:6px;transition:all 0.2s" onmouseover="this.style.borderColor='var(--purple)';this.style.background='rgba(168,85,247,0.12)'" onmouseout="this.style.borderColor='var(--border)';this.style.background='transparent'">Season Projector →</a>
+    <div class="subtitle">Season Dashboard — Battle 3 of 8</div>
   </div>
 
 
@@ -1299,7 +1298,7 @@ body::before {
   <div class="battle-tabs anim anim-d1">
     <div class="battle-tab active">B1</div>
     <div class="battle-tab active">B2</div>
-    <div class="battle-tab locked">B3</div>
+    <div class="battle-tab active">B3</div>
     <div class="battle-tab locked">B4</div>
     <div class="battle-tab locked">B5</div>
     <div class="battle-tab locked">B6</div>
@@ -1438,7 +1437,7 @@ body::before {
     </div>
   </div>
 
-  <div class="footer">Copper Wars Season Dashboard · Updated April 5, 2026 · Battle 2 of 8 · v2.2</div>
+  <div class="footer">Copper Wars Season Dashboard</div>
 </div>
 
 <div class="tooltip" id="tooltip"></div>
@@ -1469,7 +1468,9 @@ let battleData = [];
 
 // ── Server-Faction Mapping & Battle Roles ──
 const serverFaction = {1194:'Koubutai',1220:'Koubutai',1234:'Koubutai',1247:'Koubutai',1196:'Kage no Sato',1237:'Kage no Sato',1242:'Kage no Sato',1252:'Kage no Sato'};
-const battleAttacker = {1:'Kage no Sato',2:'Koubutai'}; // which faction attacked each battle
+const battleAttacker = {}; // populated from schedule.csv: {battleNum: factionName}
+const battleDate = {};     // populated from schedule.csv: {battleNum: 'YYYY-MM-DD'}
+const TOTAL_BATTLES = 8;
 
 // ── Full Roster (loaded from CSV) ──
 let roster = {};
@@ -1495,32 +1496,26 @@ function parseCSV(text) {
 // ── Data Loading ──
 async function loadData() {
   try {
-    const [battleRes, rosterRes] = await Promise.all([
+    const [battleRes, rosterRes, scheduleRes] = await Promise.all([
       fetch('battle_data.csv'),
-      fetch('roster.csv')
+      fetch('roster.csv'),
+      fetch('schedule.csv')
     ]);
 
-    if (!battleRes.ok || !rosterRes.ok) {
+    if (!battleRes.ok || !rosterRes.ok || !scheduleRes.ok) {
       throw new Error('Failed to load CSV files');
     }
 
     const battleText = await battleRes.text();
     const rosterText = await rosterRes.text();
+    const scheduleText = await scheduleRes.text();
 
-    // Parse battle data
-    const battleRows = parseCSV(battleText);
-    battleData = battleRows.map(r => ({
-      battle: parseInt(r['Battle']),
-      mid: r['Match ID'],
-      type: r['Match Type'],
-      atk: r['Attacker'],
-      asrv: parseInt(r['Attacker Server']),
-      def: r['Defender'],
-      dsrv: r['Defender Server'] ? parseInt(r['Defender Server']) || '' : '',
-      res: r['Result'],
-      copper: parseFloat(r['Copper Gained']) || 0,
-      sup: r['Supporters'] || ''
-    }));
+    // Parse schedule FIRST — it's the source of truth for battleAttacker and dates
+    parseCSV(scheduleText).forEach(r => {
+      const b = parseInt(r['Battle']);
+      battleAttacker[b] = r['Attacker'];
+      battleDate[b] = r['Date'];
+    });
 
     // Parse roster
     roster = {};
@@ -1529,12 +1524,45 @@ async function loadData() {
       roster[r['Team']] = parseInt(r['Server']);
     });
 
-    // Update battleAttacker for any new battles
-    const battles = [...new Set(battleData.map(d => d.battle))].sort();
-    // B1=Kage, B2=Koubutai, B3=Kage, B4=Koubutai... (alternating)
+    // Parse battle data — resolve servers via roster lookup
+    const battleRows = parseCSV(battleText);
+    const unresolved = new Set();
+    battleData = battleRows.map(r => {
+      const atk = r['Attacker'];
+      const def = r['Defender'];
+      const asrv = roster[atk];
+      const dsrv = def ? roster[def] : '';
+      if (atk && asrv === undefined) unresolved.add(atk);
+      if (def && dsrv === undefined) unresolved.add(def);
+      return {
+        battle: parseInt(r['Battle']),
+        mid: r['Match ID'],
+        type: r['Match Type'],
+        atk: atk,
+        asrv: asrv,
+        def: def,
+        dsrv: dsrv === undefined ? '' : dsrv,
+        res: r['Result'],
+        copper: parseFloat(r['Copper Gained']) || 0,
+        sup: r['Supporters'] || ''
+      };
+    });
+    if (unresolved.size > 0) {
+      console.warn('Teams in battle_data.csv not found in roster.csv:', [...unresolved]);
+    }
+
+    // Sanity check: warn if observed attacker faction doesn't match scheduled attacker
+    const battles = [...new Set(battleData.map(d => d.battle))].sort((a, b) => a - b);
     battles.forEach(b => {
-      if (!battleAttacker[b]) {
-        battleAttacker[b] = b % 2 === 1 ? 'Kage no Sato' : 'Koubutai';
+      const observed = {};
+      battleData.filter(d => d.battle === b && d.type !== 'DNF').forEach(d => {
+        const fac = serverFaction[d.asrv];
+        if (fac) observed[fac] = (observed[fac] || 0) + 1;
+      });
+      const scheduled = battleAttacker[b];
+      const top = Object.entries(observed).sort((a, b) => b[1] - a[1])[0];
+      if (top && scheduled && top[0] !== scheduled) {
+        console.warn(`Battle ${b}: schedule says ${scheduled} attacking, but data shows ${top[0]} as top attacker faction`);
       }
     });
 
@@ -1559,13 +1587,20 @@ async function loadData() {
     const latestDefFaction = latestAtkFaction === 'Koubutai' ? 'Kage no Sato' : 'Koubutai';
     updateFactionBanner(latestAtkFaction, latestDefFaction, maxBattle);
 
+    // Update footer with latest battle date
+    const footer = document.querySelector('.footer');
+    if (footer) {
+      const dateStr = battleDate[maxBattle] || '';
+      footer.textContent = `Copper Wars Season Dashboard · Battle ${maxBattle} of ${TOTAL_BATTLES}${dateStr ? ' · Played ' + dateStr : ''} · v2.4`;
+    }
+
     // Hide loading, render
     document.getElementById('loadingIndicator').style.display = 'none';
     renderAll();
 
   } catch (err) {
     document.getElementById('loadingIndicator').innerHTML =
-      '<span style="color:var(--red)">⚠ Failed to load data files. Make sure battle_data.csv and roster.csv are in the same directory.</span>';
+      '<span style="color:var(--red)">⚠ Failed to load data files. Make sure battle_data.csv, roster.csv, and schedule.csv are in the same directory.</span>';
     console.error('Data load error:', err);
   }
 }
@@ -1641,7 +1676,8 @@ function renderAll() {
   renderMultiCards();
   renderServerPerformance();
   renderLeaderboards();
-  renderCopperChart(window._currentChartBattle || 2);
+  const latestBattleForChart = battleData.length > 0 ? Math.max(...battleData.map(d => d.battle)) : 1;
+  renderCopperChart(window._currentChartBattle || latestBattleForChart);
   renderCrossBattleTrends();
   renderParticipation();
   renderMatchupTable();
@@ -1962,51 +1998,82 @@ function renderCopperChart(battleNum) {
 // ── Cross-Battle Trends ──
 function renderCrossBattleTrends() {
   const data = getFilteredCompleted();
+  const battles = [...new Set(data.map(d => d.battle))].sort((a, b) => a - b);
 
-  // Faction records — Kage attacked B1, Koubutai attacked B2
-  const kageAtk = data.filter(d => d.battle === 1);
-  const kageAtkW = kageAtk.filter(d => d.res === 'W').length;
-  const kageAtkL = kageAtk.filter(d => d.res === 'L').length;
-  const kageDef = data.filter(d => d.battle === 2);
-  const kageDefHolds = kageDef.filter(d => d.res === 'L').length;
+  // Helper: stats for a faction across all battles, split by attacking vs defending role
+  function factionRecord(faction) {
+    let atkW = 0, atkL = 0, defHolds = 0, defFaced = 0;
+    battles.forEach(b => {
+      const rows = data.filter(d => d.battle === b);
+      if (battleAttacker[b] === faction) {
+        rows.forEach(d => { if (d.res === 'W') atkW++; else if (d.res === 'L') atkL++; });
+      } else {
+        rows.forEach(d => { defFaced++; if (d.res === 'L') defHolds++; });
+      }
+    });
+    return { atkW, atkL, defHolds, defFaced };
+  }
 
-  const kouAtk = data.filter(d => d.battle === 2);
-  const kouAtkW = kouAtk.filter(d => d.res === 'W').length;
-  const kouAtkL = kouAtk.filter(d => d.res === 'L').length;
-  const kouDef = data.filter(d => d.battle === 1);
-  const kouDefHolds = kouDef.filter(d => d.res === 'L').length;
+  const kageRec = factionRecord('Kage no Sato');
+  const kouRec = factionRecord('Koubutai');
+  const kagePct = (kageRec.atkW + kageRec.atkL) > 0 ? (kageRec.atkW / (kageRec.atkW + kageRec.atkL) * 100).toFixed(1) : '0.0';
+  const kageDefPct = kageRec.defFaced > 0 ? (kageRec.defHolds / kageRec.defFaced * 100).toFixed(1) : '0.0';
+  const kouPct = (kouRec.atkW + kouRec.atkL) > 0 ? (kouRec.atkW / (kouRec.atkW + kouRec.atkL) * 100).toFixed(1) : '0.0';
+  const kouDefPct = kouRec.defFaced > 0 ? (kouRec.defHolds / kouRec.defFaced * 100).toFixed(1) : '0.0';
 
-  const kagePct = (kageAtkW + kageAtkL) > 0 ? (kageAtkW / (kageAtkW + kageAtkL) * 100).toFixed(1) : '0.0';
-  const kageDefPct = kageDef.length > 0 ? (kageDefHolds / kageDef.length * 100).toFixed(1) : '0.0';
-  const kouPct = (kouAtkW + kouAtkL) > 0 ? (kouAtkW / (kouAtkW + kouAtkL) * 100).toFixed(1) : '0.0';
-  const kouDefPct = kouDef.length > 0 ? (kouDefHolds / kouDef.length * 100).toFixed(1) : '0.0';
+  // Copper flow per battle
+  const battleCopper = battles.map(b => ({
+    battle: b,
+    copper: data.filter(d => d.battle === b).reduce((s, d) => s + d.copper, 0),
+    atkFac: battleAttacker[b] || '?'
+  }));
+  const maxCopperFlow = Math.max(...battleCopper.map(b => b.copper), 1);
+  const totalCopperMoved = battleCopper.reduce((s, b) => s + b.copper, 0);
 
-  // Copper flow
-  const b1Copper = data.filter(d => d.battle === 1).reduce((s, d) => s + d.copper, 0);
-  const b2Copper = data.filter(d => d.battle === 2).reduce((s, d) => s + d.copper, 0);
-  const maxCopperFlow = Math.max(b1Copper, b2Copper, 1);
+  let copperFlowHtml = '';
+  battleCopper.forEach(bc => {
+    const defFac = bc.atkFac === 'Koubutai' ? 'Kage no Sato' : 'Koubutai';
+    const barColor = bc.atkFac === 'Kage no Sato' ? 'var(--cyan)' : 'var(--green)';
+    copperFlowHtml += `<div class="copper-flow-row"><span class="copper-flow-label">B${bc.battle}</span><div class="copper-flow-bar-wrap"><div class="copper-flow-bar" style="background:${barColor};width:${Math.max(bc.copper / maxCopperFlow * 100, 8)}%">${bc.atkFac}: ${fmtComma(bc.copper)}</div></div></div>
+      <div style="font-family:'Share Tech Mono',monospace;font-size:0.7rem;color:var(--text-muted);padding:2px 0 8px 42px">${bc.atkFac} attacking → ${defFac} defending</div>`;
+  });
 
-  // Battle-over-battle
-  const b1Data = data.filter(d => d.battle === 1);
-  const b2Data = data.filter(d => d.battle === 2);
-  const b1WinRate = b1Data.length > 0 ? (b1Data.filter(d => d.res === 'W').length / b1Data.length * 100).toFixed(1) : '0.0';
-  const b2WinRate = b2Data.length > 0 ? (b2Data.filter(d => d.res === 'W').length / b2Data.length * 100).toFixed(1) : '0.0';
-  const trend = (parseFloat(b2WinRate) - parseFloat(b1WinRate)).toFixed(1);
-  const trendSign = parseFloat(trend) >= 0 ? '▲ +' : '▼ ';
+  // Battle-over-battle win rates and 2v1 outcomes
+  const battleStats = battles.map(b => {
+    const bd = data.filter(d => d.battle === b);
+    const wins = bd.filter(d => d.res === 'W').length;
+    const winRate = bd.length > 0 ? (wins / bd.length * 100) : 0;
+    const m2 = data.filter(d => d.battle === b && d.type === '2v1');
+    const m2W = m2.filter(d => d.res === 'W').length;
+    const m2L = m2.filter(d => d.res === 'L').length;
+    return { battle: b, total: bd.length, wins, winRate, m2W, m2L };
+  });
 
-  // 2v1 breakdown per battle
-  const b1_2v1 = data.filter(d => d.battle === 1 && d.type === '2v1');
-  const b1_2v1W = b1_2v1.filter(d => d.res === 'W').length;
-  const b1_2v1L = b1_2v1.filter(d => d.res === 'L').length;
-  const b2_2v1 = data.filter(d => d.battle === 2 && d.type === '2v1');
-  const b2_2v1W = b2_2v1.filter(d => d.res === 'W').length;
-  const b2_2v1L = b2_2v1.filter(d => d.res === 'L').length;
-  const b2_2v1Pct = (b2_2v1W + b2_2v1L) > 0 ? Math.round(b2_2v1W / (b2_2v1W + b2_2v1L) * 100) + '% win' : 'n/a';
+  let bobHtml = '';
+  battleStats.forEach((s, i) => {
+    bobHtml += `<div class="trend-row"><span class="trend-label">B${s.battle} — Attacker Win Rate</span><span class="trend-value" style="color:var(--green)">${s.winRate.toFixed(1)}% <span style="color:var(--text-muted)">(${s.wins}/${s.total})</span></span></div>`;
+  });
+  // Trend = latest battle vs previous battle
+  if (battleStats.length >= 2) {
+    const last = battleStats[battleStats.length - 1];
+    const prev = battleStats[battleStats.length - 2];
+    const delta = last.winRate - prev.winRate;
+    const trendSign = delta >= 0 ? '▲ +' : '▼ ';
+    bobHtml += `<div class="trend-row"><span class="trend-label">Trend (B${prev.battle} → B${last.battle})</span><span class="trend-value" style="color:${delta >= 0 ? 'var(--green)' : 'var(--red)'}">${trendSign}${Math.abs(delta).toFixed(1)}%</span></div>`;
+  }
+  battleStats.forEach(s => {
+    if (s.m2W + s.m2L > 0) {
+      const pct = Math.round(s.m2W / (s.m2W + s.m2L) * 100);
+      const color = pct >= 50 ? 'var(--orange)' : 'var(--red)';
+      const note = s.m2W === 0 ? ' (all held)' : '';
+      bobHtml += `<div class="trend-row"><span class="trend-label">B${s.battle} 2v1 Outcome</span><span class="trend-value" style="color:${color}">${s.m2W}W / ${s.m2L}L (${pct}% win)${note}</span></div>`;
+    }
+  });
 
   // Server consistency
   const allSrvs = new Set([...data.map(d => d.asrv), ...data.filter(d => d.dsrv).map(d => d.dsrv)]);
   let srvHtml = '';
-  [...allSrvs].sort().forEach(srv => {
+  [...allSrvs].filter(s => s).sort().forEach(srv => {
     const atkRows = data.filter(d => d.asrv === srv);
     const defRows = data.filter(d => d.dsrv === srv);
     const atkW = atkRows.filter(d => d.res === 'W').length;
@@ -2024,31 +2091,24 @@ function renderCrossBattleTrends() {
 
   document.getElementById('crossBattleTrends').innerHTML = `
     <div class="trend-card">
-      <div class="trend-card-title">Faction Records</div>
-      <div class="trend-row"><span class="trend-label" style="color:var(--green)">Kage no Sato</span><span class="trend-value">ATK: <span style="color:var(--green)">${kageAtkW}W</span>/<span style="color:var(--red)">${kageAtkL}L</span> (${kagePct}%)</span></div>
-      <div class="trend-row"><span class="trend-label" style="color:var(--green)">Kage no Sato</span><span class="trend-value">DEF: <span style="color:var(--red)">${kageDefHolds} holds</span> / ${kageDef.length} faced (${kageDefPct}%)</span></div>
-      <div class="trend-row"><span class="trend-label" style="color:var(--cyan)">Koubutai</span><span class="trend-value">ATK: <span style="color:var(--green)">${kouAtkW}W</span>/<span style="color:var(--red)">${kouAtkL}L</span> (${kouPct}%)</span></div>
-      <div class="trend-row"><span class="trend-label" style="color:var(--cyan)">Koubutai</span><span class="trend-value">DEF: <span style="color:var(--red)">${kouDefHolds} holds</span> / ${kouDef.length} faced (${kouDefPct}%)</span></div>
+      <div class="trend-card-title">Faction Records — Cumulative</div>
+      <div class="trend-row"><span class="trend-label" style="color:var(--cyan)">Kage no Sato</span><span class="trend-value">ATK: <span style="color:var(--green)">${kageRec.atkW}W</span>/<span style="color:var(--red)">${kageRec.atkL}L</span> (${kagePct}%)</span></div>
+      <div class="trend-row"><span class="trend-label" style="color:var(--cyan)">Kage no Sato</span><span class="trend-value">DEF: <span style="color:var(--red)">${kageRec.defHolds} holds</span> / ${kageRec.defFaced} faced (${kageDefPct}%)</span></div>
+      <div class="trend-row"><span class="trend-label" style="color:var(--green)">Koubutai</span><span class="trend-value">ATK: <span style="color:var(--green)">${kouRec.atkW}W</span>/<span style="color:var(--red)">${kouRec.atkL}L</span> (${kouPct}%)</span></div>
+      <div class="trend-row"><span class="trend-label" style="color:var(--green)">Koubutai</span><span class="trend-value">DEF: <span style="color:var(--red)">${kouRec.defHolds} holds</span> / ${kouRec.defFaced} faced (${kouDefPct}%)</span></div>
     </div>
     <div class="trend-card">
       <div class="trend-card-title">Copper Flow By Battle</div>
-      <div class="copper-flow-row"><span class="copper-flow-label">B1</span><div class="copper-flow-bar-wrap"><div class="copper-flow-bar" style="background:var(--green);width:${b1Copper / maxCopperFlow * 100}%">Kage: ${fmtComma(b1Copper)}</div></div></div>
-      <div style="font-family:'Share Tech Mono',monospace;font-size:0.7rem;color:var(--text-muted);padding:2px 0 8px 42px">Kage attacking → Koubutai defending</div>
-      <div class="copper-flow-row"><span class="copper-flow-label">B2</span><div class="copper-flow-bar-wrap"><div class="copper-flow-bar" style="background:var(--cyan);width:${b2Copper / maxCopperFlow * 100}%">Koubutai: ${fmtComma(b2Copper)}</div></div></div>
-      <div style="font-family:'Share Tech Mono',monospace;font-size:0.7rem;color:var(--text-muted);padding:2px 0 8px 42px">Koubutai attacking → Kage defending</div>
-      <div class="trend-row" style="margin-top:8px"><span class="trend-label">Total Copper Moved</span><span class="trend-value" style="color:var(--gold)">${fmtComma(b1Copper + b2Copper)}</span></div>
+      ${copperFlowHtml}
+      <div class="trend-row" style="margin-top:8px"><span class="trend-label">Total Copper Moved</span><span class="trend-value" style="color:var(--gold)">${fmtComma(totalCopperMoved)}</span></div>
     </div>
     <div class="trend-card">
       <div class="trend-card-title">Battle-Over-Battle Win Rate</div>
-      <div class="trend-row"><span class="trend-label">B1 — Attacker Win Rate</span><span class="trend-value" style="color:var(--green)">${b1WinRate}% <span style="color:var(--text-muted)">(${b1Data.filter(d => d.res === 'W').length}/${b1Data.length})</span></span></div>
-      <div class="trend-row"><span class="trend-label">B2 — Attacker Win Rate</span><span class="trend-value" style="color:var(--green)">${b2WinRate}% <span style="color:var(--text-muted)">(${b2Data.filter(d => d.res === 'W').length}/${b2Data.length})</span></span></div>
-      <div class="trend-row"><span class="trend-label">Trend</span><span class="trend-value" style="color:${parseFloat(trend) >= 0 ? 'var(--green)' : 'var(--red)'}">${trendSign}${Math.abs(parseFloat(trend)).toFixed(1)}%</span></div>
-      <div class="trend-row"><span class="trend-label">B1 2v1 Outcome</span><span class="trend-value" style="color:var(--red)">${b1_2v1W}W / ${b1_2v1L}L${b1_2v1.length > 0 ? (b1_2v1W === 0 ? ' (all held)' : '') : ''}</span></div>
-      <div class="trend-row"><span class="trend-label">B2 2v1 Outcome</span><span class="trend-value" style="color:var(--orange)">${b2_2v1W}W / ${b2_2v1L}L (${b2_2v1Pct})</span></div>
+      ${bobHtml}
     </div>
     <div class="trend-card">
       <div class="trend-card-title">Server Consistency</div>
-      <div style="font-family:'Share Tech Mono',monospace;font-size:0.72rem;color:var(--text-muted);margin-bottom:12px">Servers that attacked in B1 defended in B2 and vice versa</div>
+      <div style="font-family:'Share Tech Mono',monospace;font-size:0.72rem;color:var(--text-muted);margin-bottom:12px">Cumulative attack and defense performance across all battles</div>
       ${srvHtml}
     </div>
   `;
@@ -2106,7 +2166,8 @@ function renderParticipation() {
     const targeted = totalDef - notTargeted.length - supportList.length;
 
     html += '<div class="participation-battle">';
-    html += '<div class="participation-battle-header">Battle ' + bNum + ' — ' + atkFaction + ' attacking</div>';
+    const dateStr = battleDate[bNum] ? ' · ' + battleDate[bNum] : '';
+    html += '<div class="participation-battle-header">Battle ' + bNum + dateStr + ' — ' + atkFaction + ' attacking</div>';
 
     html += '<div class="participation-summary">';
     html += '<div class="participation-stat"><div class="participation-stat-value" style="color:var(--green)">' + declared + '/' + totalAtk + '</div><div class="participation-stat-label">Declared ATK</div></div>';
@@ -2188,8 +2249,10 @@ function renderMatchupTable() {
   const filter = activeBtn ? activeBtn.dataset.filter : 'all';
 
   let data = getFilteredData();
-  if (filter === 'B1') data = data.filter(d => d.battle === 1);
-  else if (filter === 'B2') data = data.filter(d => d.battle === 2);
+  if (filter && filter.startsWith('B')) {
+    const bNum = parseInt(filter.slice(1));
+    if (!isNaN(bNum)) data = data.filter(d => d.battle === bNum);
+  }
   else if (filter === '1v1') data = data.filter(d => d.type === '1v1');
   else if (filter === '2v1') data = data.filter(d => d.type === '2v1' || d.type === '3v1');
   else if (filter === 'W') data = data.filter(d => d.res === 'W');
@@ -2277,7 +2340,7 @@ function renderMatchupTable() {
     const nowMobile = window.innerWidth <= 768;
     if (nowMobile !== wasMobile) {
       wasMobile = nowMobile;
-      renderCopperChart(window._currentChartBattle || 2);
+      renderCopperChart(window._currentChartBattle || (battleData.length > 0 ? Math.max(...battleData.map(d => d.battle)) : 1));
     }
   });
 })();
