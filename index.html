@@ -1291,6 +1291,7 @@ body::before {
   <div class="header anim">
     <h1>Copper Wars</h1>
     <div class="subtitle">Season Dashboard — Battle 3 of 8</div>
+    <a href="predictions.html" style="display:inline-block;margin-top:12px;font-family:'Share Tech Mono',monospace;font-size:0.78rem;color:var(--purple);text-decoration:none;letter-spacing:2px;padding:6px 16px;border:1px solid var(--border);border-radius:6px;transition:all 0.2s" onmouseover="this.style.borderColor='var(--purple)';this.style.background='rgba(168,85,247,0.12)'" onmouseout="this.style.borderColor='var(--border)';this.style.background='transparent'">Season Projector →</a>
   </div>
 
 
@@ -1591,7 +1592,7 @@ async function loadData() {
     const footer = document.querySelector('.footer');
     if (footer) {
       const dateStr = battleDate[maxBattle] || '';
-      footer.textContent = `Copper Wars Season Dashboard · Battle ${maxBattle} of ${TOTAL_BATTLES}${dateStr ? ' · Played ' + dateStr : ''} · v2.4`;
+      footer.textContent = `Copper Wars Season Dashboard · Battle ${maxBattle} of ${TOTAL_BATTLES}${dateStr ? ' · Played ' + dateStr : ''} · v2.5`;
     }
 
     // Hide loading, render
