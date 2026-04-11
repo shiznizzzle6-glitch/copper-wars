@@ -470,18 +470,7 @@ body::before {
   letter-spacing: 1px;
 }
 
-.mm-matchup-row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 7px 0;
-  border-top: 1px solid rgba(255,255,255,0.04);
-}
-
-.mm-matchup-row:first-child { border-top: none; }
-
 .mm-matchup-atk {
-  flex: 1;
   text-align: right;
   font-family: 'Share Tech Mono', monospace;
   font-size: 0.78rem;
@@ -495,14 +484,108 @@ body::before {
   color: var(--text-muted);
   letter-spacing: 2px;
   flex-shrink: 0;
+  text-align: center;
 }
 
 .mm-matchup-def {
-  flex: 1;
   text-align: left;
   font-family: 'Share Tech Mono', monospace;
   font-size: 0.78rem;
   letter-spacing: 1px;
+}
+
+/* ── Interactive Matchup Row ── */
+.mm-matchup-row {
+  display: grid;
+  grid-template-columns: 70px 1fr auto 1fr 70px;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 0;
+  border-top: 1px solid rgba(255,255,255,0.04);
+}
+
+.mm-matchup-row:first-child { border-top: none; }
+
+.mm-prob {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-align: center;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.mm-prob-high { background: var(--green-dim); color: var(--green); }
+.mm-prob-mid { background: var(--orange-dim); color: var(--orange); }
+.mm-prob-low { background: var(--red-dim); color: var(--red); }
+
+.mm-slider-wrap {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 0 2px;
+}
+
+.mm-slider {
+  flex: 1;
+  -webkit-appearance: none;
+  appearance: none;
+  height: 6px;
+  border-radius: 3px;
+  background: rgba(255,255,255,0.08);
+  outline: none;
+  cursor: pointer;
+}
+
+.mm-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--gold);
+  cursor: pointer;
+  border: 2px solid var(--bg-primary);
+  box-shadow: 0 0 6px rgba(255,215,0,0.3);
+}
+
+.mm-slider::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--gold);
+  cursor: pointer;
+  border: 2px solid var(--bg-primary);
+  box-shadow: 0 0 6px rgba(255,215,0,0.3);
+}
+
+.mm-slider-pct {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.72rem;
+  color: var(--gold);
+  min-width: 32px;
+  text-align: right;
+}
+
+.mm-slider-copper {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  min-width: 70px;
+  text-align: left;
+}
+
+.mm-cascade-note {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  letter-spacing: 1px;
+  text-align: center;
+  padding: 8px 0;
+  margin-bottom: 8px;
+  border-bottom: 1px solid var(--border);
 }
 
 /* ── Battle Predictor ── */
@@ -726,18 +809,6 @@ body::before {
 }
 
 /* ── Phase Labels ── */
-.phase-label {
-  display: inline-block;
-  font-family: 'Share Tech Mono', monospace;
-  font-size: 0.65rem;
-  letter-spacing: 2px;
-  padding: 3px 10px;
-  border-radius: 4px;
-  background: var(--purple-dim);
-  color: var(--purple);
-  margin-bottom: 16px;
-}
-
 /* ── Monte Carlo Simulator ── */
 .mc-controls {
   display: flex;
@@ -891,204 +962,6 @@ body::before {
   font-weight: 700;
 }
 
-/* ── What-If Scenario Builder ── */
-.wi-team-select {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 20px;
-  flex-wrap: wrap;
-}
-
-.wi-team-btn {
-  font-family: 'Share Tech Mono', monospace;
-  font-size: 0.78rem;
-  padding: 7px 14px;
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  background: var(--bg-secondary);
-  color: var(--text-muted);
-  cursor: pointer;
-  transition: all 0.2s;
-  letter-spacing: 1px;
-}
-
-.wi-team-btn:hover { border-color: var(--gold); color: var(--text-primary); }
-.wi-team-btn.active { background: var(--gold-dim); border-color: var(--gold); color: var(--gold); }
-
-.wi-scenario-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
-  gap: 8px;
-  margin-bottom: 24px;
-}
-
-.wi-battle-card {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 12px;
-  text-align: center;
-  cursor: pointer;
-  transition: all 0.2s;
-  user-select: none;
-}
-
-.wi-battle-card:hover { border-color: var(--blue); }
-.wi-battle-card.completed { opacity: 0.4; cursor: default; }
-
-.wi-battle-card.win { border-color: var(--green); background: var(--green-dim); }
-.wi-battle-card.loss { border-color: var(--red); background: var(--red-dim); }
-.wi-battle-card.hold { border-color: var(--green); background: var(--green-dim); }
-.wi-battle-card.breached { border-color: var(--red); background: var(--red-dim); }
-.wi-battle-card.neutral { border-color: var(--border); }
-
-.wi-battle-num {
-  font-family: 'Orbitron', sans-serif;
-  font-size: 0.7rem;
-  font-weight: 700;
-  letter-spacing: 2px;
-  margin-bottom: 2px;
-}
-
-.wi-battle-date {
-  font-family: 'Share Tech Mono', monospace;
-  font-size: 0.6rem;
-  color: var(--text-muted);
-  margin-bottom: 4px;
-}
-
-.wi-battle-role {
-  font-family: 'Share Tech Mono', monospace;
-  font-size: 0.62rem;
-  letter-spacing: 1px;
-  margin-bottom: 4px;
-}
-
-.wi-battle-outcome {
-  font-family: 'Orbitron', sans-serif;
-  font-size: 0.65rem;
-  font-weight: 700;
-  letter-spacing: 2px;
-}
-
-.wi-result-card {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 20px;
-  margin-bottom: 16px;
-}
-
-.wi-result-title {
-  font-family: 'Orbitron', sans-serif;
-  font-size: 0.8rem;
-  font-weight: 600;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  margin-bottom: 12px;
-}
-
-.wi-result-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  gap: 10px;
-  margin-bottom: 16px;
-}
-
-.wi-result-stat {
-  background: var(--bg-secondary);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 12px;
-  text-align: center;
-}
-
-.wi-result-value {
-  font-family: 'Orbitron', sans-serif;
-  font-size: 1.2rem;
-  font-weight: 700;
-}
-
-.wi-result-label {
-  font-family: 'Share Tech Mono', monospace;
-  font-size: 0.62rem;
-  color: var(--text-muted);
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  margin-top: 2px;
-}
-
-.wi-timeline {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.wi-tl-row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 6px 0;
-  border-bottom: 1px solid rgba(255,255,255,0.03);
-  font-family: 'Share Tech Mono', monospace;
-  font-size: 0.78rem;
-}
-
-.wi-tl-battle {
-  font-family: 'Orbitron', sans-serif;
-  font-size: 0.65rem;
-  font-weight: 600;
-  width: 24px;
-  color: var(--blue);
-}
-
-.wi-tl-role {
-  width: 40px;
-  font-size: 0.68rem;
-}
-
-.wi-tl-outcome {
-  width: 50px;
-  font-size: 0.68rem;
-  font-family: 'Orbitron', sans-serif;
-  font-weight: 700;
-  letter-spacing: 1px;
-}
-
-.wi-tl-copper {
-  flex: 1;
-  text-align: right;
-  color: var(--gold);
-}
-
-.wi-tl-change {
-  width: 80px;
-  text-align: right;
-  font-size: 0.72rem;
-}
-
-.wi-presets {
-  display: flex;
-  gap: 8px;
-  margin-bottom: 16px;
-  flex-wrap: wrap;
-}
-
-.wi-preset-btn {
-  font-family: 'Share Tech Mono', monospace;
-  font-size: 0.72rem;
-  padding: 5px 12px;
-  border: 1px solid var(--border);
-  border-radius: 5px;
-  background: var(--bg-secondary);
-  color: var(--text-muted);
-  cursor: pointer;
-  transition: all 0.2s;
-  letter-spacing: 1px;
-}
-
-.wi-preset-btn:hover { border-color: var(--gold); color: var(--text-primary); }
 
 .coming-soon {
   text-align: center;
@@ -1167,29 +1040,30 @@ body::before {
     <!-- Info Bar -->
     <div id="infoBar" class="info-bar anim anim-d1"></div>
 
-    <!-- Production Projection -->
+    <!-- Matchmaking Simulator -->
     <div class="section anim anim-d2">
-      <span class="phase-label">Phase 1 — Production Projections</span>
-      <div class="section-title"><span class="icon" style="background:var(--gold)"></span> Projected Final Standings — Production Only</div>
+
+      <div class="section-title"><span class="icon" style="background:var(--purple)"></span> Battle Matchups &amp; Outcomes</div>
       <p style="font-family:'Share Tech Mono',monospace;font-size:0.78rem;color:var(--text-muted);margin-bottom:16px;letter-spacing:1px">
-        Projection based on current copper + generation rate × hours remaining. Does not include battle gains/losses.
+        Projected matchups by copper rank. Adjust sliders to simulate outcomes — changes cascade to later battles and final standings below.
+      </p>
+      <div class="mm-grid" id="mmGrid"></div>
+    </div>
+
+    <!-- Projected Final Standings -->
+    <div class="section anim anim-d3">
+
+      <div class="section-title"><span class="icon" style="background:var(--gold)"></span> Projected Final Standings</div>
+      <p style="font-family:'Share Tech Mono',monospace;font-size:0.78rem;color:var(--text-muted);margin-bottom:16px;letter-spacing:1px">
+        Projection based on current copper + generation + battle outcomes from sliders above.
       </p>
       <div class="proj-table-wrap" id="projTableWrap"></div>
       <div class="proj-chart" id="projChart"></div>
     </div>
 
-    <!-- Matchmaking Preview -->
-    <div class="section anim anim-d3">
-      <div class="section-title"><span class="icon" style="background:var(--purple)"></span> Matchmaking Groups — Projected</div>
-      <p style="font-family:'Share Tech Mono',monospace;font-size:0.78rem;color:var(--text-muted);margin-bottom:16px;letter-spacing:1px">
-        Groups based on projected rankings at each week. Rankings shift as production compounds.
-      </p>
-      <div class="mm-grid" id="mmGrid"></div>
-    </div>
-
     <!-- Battle Predictor -->
     <div class="section anim anim-d2">
-      <span class="phase-label">Phase 2 — Battle Predictor</span>
+
       <div class="section-title"><span class="icon" style="background:var(--green)"></span> Battle Predictor — Next Matchups</div>
       <p style="font-family:'Share Tech Mono',monospace;font-size:0.78rem;color:var(--text-muted);margin-bottom:16px;letter-spacing:1px">
         Win probabilities based on historical attack/defense records, copper differentials, and match type.
@@ -1200,7 +1074,7 @@ body::before {
 
     <!-- Monte Carlo Simulator -->
     <div class="section anim anim-d3">
-      <span class="phase-label">Phase 3 — Monte Carlo Season Simulator</span>
+
       <div class="section-title"><span class="icon" style="background:var(--purple)"></span> Season Outcome Simulator</div>
       <p style="font-family:'Share Tech Mono',monospace;font-size:0.78rem;color:var(--text-muted);margin-bottom:16px;letter-spacing:1px">
         Simulates 1,000 possible season outcomes. Models production, matchmaking, attacker choice, and battle outcomes probabilistically.
@@ -1214,19 +1088,9 @@ body::before {
       </div>
     </div>
 
-    <!-- What-If Scenario Builder -->
-    <div class="section anim anim-d3">
-      <span class="phase-label">Phase 4 — What-If Scenarios</span>
-      <div class="section-title"><span class="icon" style="background:var(--gold)"></span> What-If Scenario Builder</div>
-      <p style="font-family:'Share Tech Mono',monospace;font-size:0.78rem;color:var(--text-muted);margin-bottom:16px;letter-spacing:1px">
-        Select a team and toggle battle outcomes to see how their season plays out. Click each future battle to cycle through outcomes.
-      </p>
-      <div id="whatIf"></div>
-    </div>
-
   </div>
 
-  <div class="footer">Copper Wars Season Projector · Phase 4 · v0.5</div>
+  <div class="footer">Copper Wars Season Projector · v0.6</div>
 </div>
 
 <script>
@@ -1368,10 +1232,9 @@ async function loadData() {
     renderInfoBar(standings, hoursToEnd, snapshotDate, completedBattles);
     renderProjectionTable(standings, hoursToEnd);
     renderProjectionChart(standings, hoursToEnd);
-    renderMatchmaking(standings, hoursToEnd);
+    renderMatchmaking(standings, hoursToEnd, teamStats);
     renderBattlePredictor(declarations, teamStats, standings, completedBattles);
     storeMCData(standings, teamStats, completedBattles);
-    initWhatIf(standings, completedBattles);
 
   } catch (err) {
     document.getElementById('loadingIndicator').innerHTML =
@@ -1596,13 +1459,15 @@ function renderInfoBar(standings, hoursToEnd, snapshotDate, completedBattles) {
 function renderProjectionTable(standings, hoursToEnd) {
   // Only show teams with generation rates
   const tracked = standings.filter(s => s.genRate > 0);
+  const deltas = _mmCopperDeltas || {};
 
   // Calculate projections
   const projections = tracked.map((s, i) => {
     const currentRank = i + 1;
     const produced = s.genRate * hoursToEnd;
-    const projected = s.copper + produced;
-    return { ...s, currentRank, produced, projected };
+    const battleDelta = deltas[s.team] || 0;
+    const projected = s.copper + produced + battleDelta;
+    return { ...s, currentRank, produced, battleDelta, projected };
   });
 
   // Sort by projected
@@ -1614,7 +1479,7 @@ function renderProjectionTable(standings, hoursToEnd) {
   let html = '<table class="proj-table"><thead><tr>';
   html += '<th>Now</th><th>Proj</th><th>Team</th><th>Faction</th>';
   html += '<th>Current Copper</th><th>Gen/hr</th><th>Production</th>';
-  html += '<th>Projected Final</th><th>Change</th>';
+  html += '<th>Battle +/−</th><th>Projected Final</th><th>Change</th>';
   html += '</tr></thead><tbody>';
 
   projections.forEach(p => {
@@ -1628,6 +1493,12 @@ function renderProjectionTable(standings, hoursToEnd) {
 
     const rankClass = p.projectedRank <= 3 ? ' rank-' + p.projectedRank : '';
 
+    // Battle delta display
+    let deltaHtml;
+    if (p.battleDelta > 0) deltaHtml = '<span style="color:var(--green)">+' + fmtCopper(p.battleDelta) + '</span>';
+    else if (p.battleDelta < 0) deltaHtml = '<span style="color:var(--red)">' + fmtCopper(p.battleDelta) + '</span>';
+    else deltaHtml = '<span style="color:var(--text-muted)">—</span>';
+
     html += '<tr>';
     html += '<td><span class="rank">' + p.currentRank + '</span></td>';
     html += '<td><span class="rank' + rankClass + '">' + p.projectedRank + '</span></td>';
@@ -1636,6 +1507,7 @@ function renderProjectionTable(standings, hoursToEnd) {
     html += '<td style="color:var(--text-secondary);font-family:\'Share Tech Mono\',monospace">' + fmtCopper(p.copper) + '</td>';
     html += '<td style="color:var(--text-muted);font-family:\'Share Tech Mono\',monospace">' + p.genRate.toLocaleString() + '</td>';
     html += '<td style="color:var(--green);font-family:\'Share Tech Mono\',monospace">+' + fmtCopper(p.produced) + '</td>';
+    html += '<td style="font-family:\'Share Tech Mono\',monospace">' + deltaHtml + '</td>';
     html += '<td style="color:var(--gold);font-family:\'Share Tech Mono\',monospace;font-weight:600">' + fmtCopper(p.projected) + '</td>';
     html += '<td>' + changeHtml + '</td>';
     html += '</tr>';
@@ -1683,25 +1555,43 @@ function renderProjectionChart(standings, hoursToEnd) {
 }
 
 // ── Matchmaking Preview ──
-function renderMatchmaking(standings, hoursToEnd) {
+// ── Interactive Matchmaking State ──
+let _mmStandings = null;
+let _mmTeamStats = null;
+let _mmHoursToEnd = 0;
+let _mmSliderState = {}; // { 'B5_FYER_ROKK': 12, ... }
+let _mmCopperDeltas = {}; // cumulative copper deltas from all battle sliders
+
+function renderMatchmaking(standings, hoursToEnd, teamStats) {
+  _mmStandings = standings;
+  _mmTeamStats = teamStats;
+  _mmHoursToEnd = hoursToEnd;
+  rebuildMatchmaking();
+}
+
+function rebuildMatchmaking() {
+  const standings = _mmStandings;
+  const teamStats = _mmTeamStats;
   const tracked = standings.filter(s => s.genRate > 0);
   const snapshotDate = standings[0] ? standings[0].snapshotDate : '2026-04-12';
   const snapshotTime = new Date(snapshotDate + 'T12:00:00');
   const today = new Date().toISOString().slice(0, 10);
-  const dayNames = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
 
-  // Get future battles only
   const futureBattles = battleSchedule.filter(b => b.date > today);
+
+  // Track cumulative copper adjustments from slider outcomes
+  // Key: team name, Value: total copper delta from previous battles' sliders
+  const copperDeltas = {};
 
   let html = '';
 
-  futureBattles.forEach(battle => {
+  futureBattles.forEach((battle, battleIdx) => {
     const hoursFromSnapshot = (new Date(battle.date + 'T09:30:00') - snapshotTime) / 3600000;
 
-    // Project copper at this battle's date
+    // Project copper at this battle's date, including deltas from prior battle sliders
     const projected = tracked.map(s => ({
       ...s,
-      projCopper: s.copper + (s.genRate * hoursFromSnapshot)
+      projCopper: s.copper + (s.genRate * hoursFromSnapshot) + (copperDeltas[s.team] || 0)
     }));
 
     const atkFaction = battle.kouRole === 'ATK' ? 'Koubutai' : 'Kage no Sato';
@@ -1711,11 +1601,11 @@ function renderMatchmaking(standings, hoursToEnd) {
     const atkClass = atkFaction === 'Koubutai' ? 'mm-team-kou' : 'mm-team-kag';
     const defClass = defFaction === 'Koubutai' ? 'mm-team-kou' : 'mm-team-kag';
 
-    // Rank each faction separately
     const atkTeams = projected.filter(s => s.faction === atkFaction).sort((a, b) => b.projCopper - a.projCopper);
     const defTeams = projected.filter(s => s.faction === defFaction).sort((a, b) => b.projCopper - a.projCopper);
 
     const dateShort = battle.date.slice(5).replace('-', '/');
+    const isFirst = battleIdx === 0;
 
     html += '<div class="mm-card">';
     html += '<div class="mm-battle-header">';
@@ -1724,42 +1614,63 @@ function renderMatchmaking(standings, hoursToEnd) {
     html += '</div>';
     html += '<div class="mm-group-size"><span style="color:' + atkColor + '">⚔ ' + atkFaction + '</span> attacking · <span style="color:' + defColor + '">🛡 ' + defFaction + '</span> defending · Groups of ' + GROUP_SIZE + '</div>';
 
+    if (!isFirst) {
+      html += '<div class="mm-cascade-note">Groups adjusted by previous battle outcomes</div>';
+    }
+
     const gs = GROUP_SIZE;
     const maxRegularGroups = 10;
 
+    // Collect this battle's matchups for cascade calculation after rendering
+    const battleMatchups = [];
+
     for (let g = 0; g <= maxRegularGroups; g++) {
-      let atkSlice, defSlice, tierLabel;
-      if (g < maxRegularGroups) {
-        atkSlice = atkTeams.slice(g * gs, (g + 1) * gs);
-        defSlice = defTeams.slice(g * gs, (g + 1) * gs);
-        tierLabel = 'Group ' + (g + 1);
-      } else {
-        atkSlice = atkTeams.slice(g * gs);
-        defSlice = defTeams.slice(g * gs);
-        tierLabel = 'Group ' + (g + 1);
-      }
+      const atkSlice = g < maxRegularGroups ? atkTeams.slice(g * gs, (g + 1) * gs) : atkTeams.slice(g * gs);
+      const defSlice = g < maxRegularGroups ? defTeams.slice(g * gs, (g + 1) * gs) : defTeams.slice(g * gs);
       if (atkSlice.length === 0 && defSlice.length === 0) break;
 
       html += '<div class="mm-tier">';
-      html += '<div class="mm-tier-label">' + tierLabel + '</div>';
+      html += '<div class="mm-tier-label">Group ' + (g + 1) + '</div>';
 
-      // Pair attackers with defenders by rank within group
       const maxPairs = Math.max(atkSlice.length, defSlice.length);
       for (let p = 0; p < maxPairs; p++) {
         const atk = atkSlice[p];
         const def = defSlice[p];
+        if (!atk || !def) continue;
+
+        const sliderKey = 'B' + battle.num + '_' + atk.team + '_' + def.team;
+
+        // Calculate win probability
+        const prob = calcWinProb(atk.team, def.team, teamStats, projected);
+        const winPct = Math.round(prob.atkWinProb * 100);
+        const probClass = winPct >= 60 ? 'mm-prob-high' : winPct <= 40 ? 'mm-prob-low' : 'mm-prob-mid';
+
+        // Default slider: if win likely, default ~12%; if loss likely, default 0%
+        let sliderVal;
+        if (_mmSliderState[sliderKey] !== undefined) {
+          sliderVal = _mmSliderState[sliderKey];
+        } else {
+          sliderVal = winPct >= 50 ? 12 : 0;
+          _mmSliderState[sliderKey] = sliderVal;
+        }
+
+        const copperTaken = Math.round(def.projCopper * sliderVal / 100);
+
+        battleMatchups.push({ atkTeam: atk.team, defTeam: def.team, sliderKey, defCopper: def.projCopper });
+
         html += '<div class="mm-matchup-row">';
-        if (atk) {
-          html += '<div class="mm-matchup-atk"><span class="mm-team-tag ' + atkClass + '">' + atk.team + '</span></div>';
-        } else {
-          html += '<div class="mm-matchup-atk" style="color:var(--text-muted);font-size:0.7rem">—</div>';
-        }
+        html += '<div class="mm-prob ' + probClass + '">' + winPct + '%</div>';
+        html += '<div class="mm-matchup-atk"><span class="mm-team-tag ' + atkClass + '">' + atk.team + '</span></div>';
         html += '<div class="mm-matchup-vs">VS</div>';
-        if (def) {
-          html += '<div class="mm-matchup-def"><span class="mm-team-tag ' + defClass + '">' + def.team + '</span></div>';
-        } else {
-          html += '<div class="mm-matchup-def" style="color:var(--text-muted);font-size:0.7rem">—</div>';
-        }
+        html += '<div class="mm-matchup-def"><span class="mm-team-tag ' + defClass + '">' + def.team + '</span></div>';
+        html += '<div class="mm-prob" style="background:none;color:var(--gold);font-size:0.6rem">' + (copperTaken > 0 ? '+' + fmtCopper(copperTaken) : '—') + '</div>';
+        html += '</div>';
+
+        // Slider row
+        html += '<div class="mm-slider-wrap">';
+        html += '<input type="range" class="mm-slider" min="0" max="15" step="1" value="' + sliderVal + '" data-key="' + sliderKey + '" oninput="onMMSlider(this)">';
+        html += '<span class="mm-slider-pct" id="pct_' + sliderKey + '">' + sliderVal + '%</span>';
+        html += '<span class="mm-slider-copper" id="cop_' + sliderKey + '">' + (copperTaken > 0 ? fmtCopper(copperTaken) + ' Cu' : 'hold') + '</span>';
         html += '</div>';
       }
 
@@ -1767,9 +1678,40 @@ function renderMatchmaking(standings, hoursToEnd) {
     }
 
     html += '</div>';
+
+    // Apply this battle's slider outcomes to copper deltas for subsequent battles
+    battleMatchups.forEach(m => {
+      const sv = _mmSliderState[m.sliderKey] !== undefined ? _mmSliderState[m.sliderKey] : 0;
+      const taken = Math.round(m.defCopper * sv / 100);
+      if (taken > 0) {
+        copperDeltas[m.atkTeam] = (copperDeltas[m.atkTeam] || 0) + taken;
+        copperDeltas[m.defTeam] = (copperDeltas[m.defTeam] || 0) - taken;
+      }
+    });
   });
 
   document.getElementById('mmGrid').innerHTML = html;
+
+  // Store final cumulative deltas for projection table/chart
+  _mmCopperDeltas = copperDeltas;
+
+  // Rebuild projections with battle outcome data
+  rebuildProjections();
+}
+
+function rebuildProjections() {
+  if (!_mmStandings) return;
+  renderProjectionTable(_mmStandings, _mmHoursToEnd);
+  renderProjectionChart(_mmStandings, _mmHoursToEnd);
+}
+
+function onMMSlider(el) {
+  const key = el.dataset.key;
+  const val = parseInt(el.value);
+  _mmSliderState[key] = val;
+
+  // Rebuild everything to cascade changes
+  rebuildMatchmaking();
 }
 
 // ── Monte Carlo Season Simulator ──
@@ -2057,286 +1999,12 @@ function renderMCResults(results) {
   container.innerHTML = html;
 }
 
-// ── What-If Scenario Builder ──
-let _wiSelectedTeam = null;
-let _wiOutcomes = {}; // battleNum -> 'win'|'loss'|'hold'|'breached'|null
-let _wiStandings = null;
-
-function initWhatIf(standings, completedBattles) {
-  _wiStandings = standings;
-  const tracked = standings.filter(s => s.genRate > 0);
-  const container = document.getElementById('whatIf');
-
-  // Team selector
-  let html = '<div class="wi-team-select">';
-  html += '<span style="font-family:\'Share Tech Mono\',monospace;font-size:0.75rem;color:var(--text-muted);letter-spacing:1px">Select team:</span>';
-
-  // Sort by current copper
-  const sorted = [...tracked].sort((a, b) => b.copper - a.copper);
-  sorted.forEach(t => {
-    const facColor = t.faction === 'Koubutai' ? 'var(--green)' : 'var(--cyan)';
-    html += '<button class="wi-team-btn" data-team="' + t.team + '" onclick="selectWITeam(\'' + t.team + '\')" style="border-left:3px solid ' + facColor + '">' + t.team + '</button>';
-  });
-  html += '</div>';
-  html += '<div id="wiScenario"></div>';
-
-  container.innerHTML = html;
-}
-
-function selectWITeam(team) {
-  _wiSelectedTeam = team;
-  _wiOutcomes = {};
-
-  // Update button states
-  document.querySelectorAll('.wi-team-btn').forEach(btn => {
-    btn.classList.toggle('active', btn.dataset.team === team);
-  });
-
-  renderWIScenario();
-}
-
-function renderWIScenario() {
-  const team = _wiSelectedTeam;
-  if (!team) return;
-  const container = document.getElementById('wiScenario');
-  const standings = _wiStandings;
-  const teamData = standings.find(s => s.team === team);
-  if (!teamData) return;
-
-  const faction = teamData.faction;
-  const isKou = faction === 'Koubutai';
-
-  // Determine role for each remaining battle
-  const remaining = battleSchedule.filter(b => b.num > (_mcData ? _mcData.completedBattles : 2));
-
-  // Presets
-  let html = '<div class="wi-presets">';
-  html += '<button class="wi-preset-btn" onclick="wiPreset(\'best\')">Best Case (all wins/holds)</button>';
-  html += '<button class="wi-preset-btn" onclick="wiPreset(\'worst\')">Worst Case (all losses)</button>';
-  html += '<button class="wi-preset-btn" onclick="wiPreset(\'realistic\')">Realistic (65% ATK win)</button>';
-  html += '<button class="wi-preset-btn" onclick="wiPreset(\'clear\')">Clear All</button>';
-  html += '</div>';
-
-  // Battle cards
-  html += '<div class="wi-scenario-grid">';
-  remaining.forEach(b => {
-    const role = isKou ? b.kouRole : b.kagRole;
-    const isAtk = role === 'ATK';
-    const outcome = _wiOutcomes[b.num] || null;
-    const dateShort = b.date.slice(5).replace('-', '/');
-
-    let cls = 'neutral';
-    let outcomeLabel = 'CLICK';
-    let outcomeColor = 'var(--text-muted)';
-
-    if (outcome === 'win') { cls = 'win'; outcomeLabel = 'WIN'; outcomeColor = 'var(--green)'; }
-    else if (outcome === 'loss') { cls = 'loss'; outcomeLabel = 'LOSS'; outcomeColor = 'var(--red)'; }
-    else if (outcome === 'hold') { cls = 'hold'; outcomeLabel = 'HOLD'; outcomeColor = 'var(--green)'; }
-    else if (outcome === 'breached') { cls = 'breached'; outcomeLabel = 'BREACH'; outcomeColor = 'var(--red)'; }
-
-    html += '<div class="wi-battle-card ' + cls + '" onclick="cycleWIOutcome(' + b.num + ',\'' + role + '\')">';
-    html += '<div class="wi-battle-num">B' + b.num + '</div>';
-    html += '<div class="wi-battle-date">' + dateShort + ' ' + b.day + '</div>';
-    html += '<div class="wi-battle-role" style="color:' + (isAtk ? 'var(--green)' : 'var(--red)') + '">' + (isAtk ? '⚔ ATK' : '🛡 DEF') + '</div>';
-    html += '<div class="wi-battle-outcome" style="color:' + outcomeColor + '">' + outcomeLabel + '</div>';
-    html += '</div>';
-  });
-  html += '</div>';
-
-  // Calculate results if any outcomes set
-  const setOutcomes = Object.keys(_wiOutcomes).length;
-  if (setOutcomes > 0) {
-    const result = simulateWhatIf(team, teamData, remaining);
-    html += renderWIResults(team, teamData, result, remaining);
-  } else {
-    html += '<div style="text-align:center;font-family:\'Share Tech Mono\',monospace;font-size:0.8rem;color:var(--text-muted);padding:24px;letter-spacing:1px">Click each battle to set an outcome, or use a preset above</div>';
-  }
-
-  container.innerHTML = html;
-}
-
-function cycleWIOutcome(battleNum, role) {
-  const isAtk = role === 'ATK';
-  const current = _wiOutcomes[battleNum] || null;
-
-  if (isAtk) {
-    // Cycle: null -> win -> loss -> null
-    if (current === null) _wiOutcomes[battleNum] = 'win';
-    else if (current === 'win') _wiOutcomes[battleNum] = 'loss';
-    else { delete _wiOutcomes[battleNum]; }
-  } else {
-    // Cycle: null -> hold -> breached -> null
-    if (current === null) _wiOutcomes[battleNum] = 'hold';
-    else if (current === 'hold') _wiOutcomes[battleNum] = 'breached';
-    else { delete _wiOutcomes[battleNum]; }
-  }
-
-  renderWIScenario();
-}
-
-function wiPreset(type) {
-  const team = _wiSelectedTeam;
-  if (!team) return;
-  const teamData = _wiStandings.find(s => s.team === team);
-  const isKou = teamData.faction === 'Koubutai';
-  const remaining = battleSchedule.filter(b => b.num > (_mcData ? _mcData.completedBattles : 2));
-
-  _wiOutcomes = {};
-
-  if (type === 'clear') {
-    renderWIScenario();
-    return;
-  }
-
-  remaining.forEach(b => {
-    const role = isKou ? b.kouRole : b.kagRole;
-    if (type === 'best') {
-      _wiOutcomes[b.num] = role === 'ATK' ? 'win' : 'hold';
-    } else if (type === 'worst') {
-      _wiOutcomes[b.num] = role === 'ATK' ? 'loss' : 'breached';
-    } else if (type === 'realistic') {
-      // 65% attacker win rate
-      if (role === 'ATK') {
-        _wiOutcomes[b.num] = Math.random() < 0.655 ? 'win' : 'loss';
-      } else {
-        _wiOutcomes[b.num] = Math.random() < 0.655 ? 'breached' : 'hold';
-      }
-    }
-  });
-
-  renderWIScenario();
-}
-
-function simulateWhatIf(team, teamData, remaining) {
-  const STEAL_PCT = 0.15;
-  let copper = teamData.copper;
-  const snapshotTime = new Date('2026-04-06T12:00:00');
-  let prevTime = snapshotTime;
-  const timeline = [];
-
-  // Estimate avg opponent copper for steal calculations
-  const tracked = _wiStandings.filter(s => s.genRate > 0);
-  const avgOpponentCopper = tracked.reduce((s, t) => s + t.copper, 0) / tracked.length;
-
-  remaining.forEach(b => {
-    const battleTime = new Date(b.date + 'T09:30:00');
-    const hours = (battleTime - prevTime) / 3600000;
-    const produced = teamData.genRate * hours;
-    copper += produced;
-
-    const isKou = teamData.faction === 'Koubutai';
-    const role = isKou ? b.kouRole : b.kagRole;
-    const outcome = _wiOutcomes[b.num] || null;
-
-    let change = 0;
-    let changeLabel = '';
-
-    if (outcome === 'win') {
-      // Estimate steal: 15% of a projected opponent copper
-      const estOppCopper = avgOpponentCopper + (teamData.genRate * hours); // rough estimate
-      change = estOppCopper * STEAL_PCT;
-      copper += change;
-      changeLabel = '+' + fmtK(change);
-    } else if (outcome === 'loss') {
-      // Failed attack, no copper change
-      change = 0;
-      changeLabel = '—';
-    } else if (outcome === 'hold') {
-      change = 0;
-      changeLabel = '—';
-    } else if (outcome === 'breached') {
-      change = copper * STEAL_PCT;
-      copper -= change;
-      changeLabel = '-' + fmtK(change);
-      change = -change;
-    } else {
-      // Unset — skip
-      changeLabel = '?';
-    }
-
-    timeline.push({
-      battle: b.num, date: b.date.slice(5).replace('-', '/'), day: b.day,
-      role, outcome, produced, change, copper, changeLabel
-    });
-
-    prevTime = battleTime;
-  });
-
-  return { finalCopper: copper, timeline };
-}
-
-function renderWIResults(team, teamData, result, remaining) {
-  const isKou = teamData.faction === 'Koubutai';
-  const facColor = isKou ? 'var(--green)' : 'var(--cyan)';
-
-  // Count outcomes
-  const wins = result.timeline.filter(t => t.outcome === 'win').length;
-  const losses = result.timeline.filter(t => t.outcome === 'loss').length;
-  const holds = result.timeline.filter(t => t.outcome === 'hold').length;
-  const breaches = result.timeline.filter(t => t.outcome === 'breached').length;
-  const copperGained = result.timeline.filter(t => t.change > 0).reduce((s, t) => s + t.change, 0);
-  const copperLost = result.timeline.filter(t => t.change < 0).reduce((s, t) => s + Math.abs(t.change), 0);
-  const netBattle = copperGained - copperLost;
-  const totalProduced = result.timeline.reduce((s, t) => s + t.produced, 0);
-
-  let html = '<div class="wi-result-card">';
-  html += '<div class="wi-result-title" style="color:' + facColor + '">' + team + ' — Season Projection</div>';
-
-  // Summary stats
-  html += '<div class="wi-result-grid">';
-  html += '<div class="wi-result-stat"><div class="wi-result-value" style="color:var(--gold)">' + fmtCopper(result.finalCopper) + '</div><div class="wi-result-label">Final Copper</div></div>';
-  html += '<div class="wi-result-stat"><div class="wi-result-value" style="color:var(--green)">' + fmtCopper(totalProduced) + '</div><div class="wi-result-label">Production</div></div>';
-  html += '<div class="wi-result-stat"><div class="wi-result-value" style="color:' + (netBattle >= 0 ? 'var(--green)' : 'var(--red)') + '">' + (netBattle >= 0 ? '+' : '') + fmtCopper(netBattle) + '</div><div class="wi-result-label">Net Battle</div></div>';
-  html += '<div class="wi-result-stat"><div class="wi-result-value" style="color:var(--green)">' + wins + 'W/' + losses + 'L</div><div class="wi-result-label">Attack Record</div></div>';
-  html += '<div class="wi-result-stat"><div class="wi-result-value" style="color:var(--red)">' + holds + 'H/' + breaches + 'B</div><div class="wi-result-label">Defense Record</div></div>';
-  html += '</div>';
-
-  // Battle-by-battle timeline
-  html += '<div class="wi-timeline">';
-  html += '<div class="wi-tl-row" style="border-bottom:1px solid var(--border);padding-bottom:4px;margin-bottom:4px">';
-  html += '<span class="wi-tl-battle" style="color:var(--text-muted)"></span>';
-  html += '<span class="wi-tl-role" style="color:var(--text-muted);font-size:0.6rem;letter-spacing:1px">ROLE</span>';
-  html += '<span class="wi-tl-outcome" style="color:var(--text-muted);font-size:0.6rem;letter-spacing:1px">RESULT</span>';
-  html += '<span style="flex:1;font-family:\'Share Tech Mono\',monospace;font-size:0.6rem;color:var(--text-muted);letter-spacing:1px">PRODUCED</span>';
-  html += '<span class="wi-tl-change" style="color:var(--text-muted);font-size:0.6rem;letter-spacing:1px">BATTLE</span>';
-  html += '<span class="wi-tl-copper" style="color:var(--text-muted);font-size:0.6rem;letter-spacing:1px">BALANCE</span>';
-  html += '</div>';
-
-  // Starting balance row
-  html += '<div class="wi-tl-row">';
-  html += '<span class="wi-tl-battle"></span><span class="wi-tl-role"></span><span class="wi-tl-outcome"></span>';
-  html += '<span style="flex:1;font-family:\'Share Tech Mono\',monospace;font-size:0.75rem;color:var(--text-muted)">Starting</span>';
-  html += '<span class="wi-tl-change"></span>';
-  html += '<span class="wi-tl-copper">' + fmtCopper(teamData.copper) + '</span>';
-  html += '</div>';
-
-  result.timeline.forEach(t => {
-    const roleColor = t.role === 'ATK' ? 'var(--green)' : 'var(--red)';
-    let outColor = 'var(--text-muted)';
-    let outLabel = '—';
-    if (t.outcome === 'win') { outColor = 'var(--green)'; outLabel = 'WIN'; }
-    else if (t.outcome === 'loss') { outColor = 'var(--red)'; outLabel = 'LOSS'; }
-    else if (t.outcome === 'hold') { outColor = 'var(--green)'; outLabel = 'HOLD'; }
-    else if (t.outcome === 'breached') { outColor = 'var(--red)'; outLabel = 'BRCH'; }
-
-    const changeColor = t.change > 0 ? 'var(--green)' : t.change < 0 ? 'var(--red)' : 'var(--text-muted)';
-
-    html += '<div class="wi-tl-row">';
-    html += '<span class="wi-tl-battle">B' + t.battle + '</span>';
-    html += '<span class="wi-tl-role" style="color:' + roleColor + '">' + (t.role === 'ATK' ? '⚔ ATK' : '🛡 DEF') + '</span>';
-    html += '<span class="wi-tl-outcome" style="color:' + outColor + '">' + outLabel + '</span>';
-    html += '<span style="flex:1;font-family:\'Share Tech Mono\',monospace;font-size:0.75rem;color:var(--green)">+' + fmtCopper(t.produced) + '</span>';
-    html += '<span class="wi-tl-change" style="color:' + changeColor + '">' + t.changeLabel + '</span>';
-    html += '<span class="wi-tl-copper">' + fmtCopper(t.copper) + '</span>';
-    html += '</div>';
-  });
-  html += '</div></div>';
-
-  return html;
-}
-
 // ── Init ──
 loadData();
+
+/* What-If removed — functionality replaced by matchmaking sliders */
+
+
 </script>
 </body>
 </html>
