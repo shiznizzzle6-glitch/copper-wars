@@ -767,6 +767,7 @@ body::before {
 
 .type-1v1 { background: var(--blue-dim); color: var(--blue); }
 .type-2v1 { background: var(--orange-dim); color: var(--orange); }
+.type-2v2 { background: var(--orange-dim); color: var(--orange); }
 .type-3v1 { background: var(--purple-dim); color: var(--purple); }
 .type-dnf { background: rgba(255,255,255,0.05); color: var(--text-muted); }
 
@@ -1163,6 +1164,40 @@ body::before {
   border-radius: 3px;
 }
 
+/* ── Season Narrative ── */
+.narrative-section {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 24px 28px;
+  margin-bottom: 20px;
+  line-height: 1.7;
+}
+.narrative-title {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--gold);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 16px;
+}
+.narrative-body {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+}
+.narrative-body p { margin-bottom: 12px; }
+.narrative-body p:last-child { margin-bottom: 0; }
+.narrative-faction-header {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.78rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-top: 16px;
+  margin-bottom: 6px;
+}
+
 /* ── Footer ── */
 .footer {
   text-align: center;
@@ -1306,6 +1341,9 @@ body::before {
     <div class="battle-tab locked">B7</div>
     <div class="battle-tab locked">B8</div>
   </div>
+
+  <!-- Season Narrative -->
+  <div class="narrative-section anim anim-d1" id="seasonNarrative"></div>
 
   <!-- Server Filter -->
   <div class="server-filter-bar anim anim-d1" id="serverFilterBar">
@@ -1593,7 +1631,7 @@ async function loadData() {
     const footer = document.querySelector('.footer');
     if (footer) {
       const dateStr = battleDate[maxBattle] || '';
-      footer.textContent = `Copper Wars Season Dashboard · Battle ${maxBattle} of ${TOTAL_BATTLES}${dateStr ? ' · Played ' + dateStr : ''} · v2.6`;
+      footer.textContent = `Copper Wars Season Dashboard · Battle ${maxBattle} of ${TOTAL_BATTLES}${dateStr ? ' · Played ' + dateStr : ''} · v2.8`;
     }
 
     // Hide loading, render
@@ -1671,8 +1709,125 @@ function fmtComma(n) {
   return parts.join('.');
 }
 
+// ── Season Narrative ──
+function renderNarrative() {
+  const data = getFilteredCompleted();
+  if (data.length === 0) { document.getElementById('seasonNarrative').innerHTML = ''; return; }
+
+  const battles = [...new Set(data.map(d => d.battle))].sort((a, b) => a - b);
+  const maxB = Math.max(...battles);
+
+  // Per-battle stats
+  const bStats = battles.map(b => {
+    const bd = data.filter(d => d.battle === b);
+    const w = bd.filter(d => d.res === 'W').length;
+    const total = bd.length;
+    const copper = bd.reduce((s, d) => s + d.copper, 0);
+    const avgSteal = w > 0 ? copper / w : 0;
+    return { b, w, l: total - w, total, copper, avgSteal, atkFac: battleAttacker[b] };
+  });
+
+  // Faction cumulative records
+  function facRecord(fac) {
+    let atkW = 0, atkL = 0, defHold = 0, defBreach = 0;
+    battles.forEach(b => {
+      const bd = data.filter(d => d.battle === b);
+      if (battleAttacker[b] === fac) { bd.forEach(d => { if (d.res === 'W') atkW++; else atkL++; }); }
+      else { bd.forEach(d => { if (d.res === 'L') defHold++; else defBreach++; }); }
+    });
+    return { atkW, atkL, defHold, defBreach };
+  }
+  const kageRec = facRecord('Kage no Sato');
+  const kouRec = facRecord('Koubutai');
+
+  // Top team by copper (from roster lookup)
+  const teamCopper = {};
+  data.forEach(d => {
+    if (!teamCopper[d.atk]) teamCopper[d.atk] = { gained: 0, lost: 0 };
+    if (!teamCopper[d.def]) teamCopper[d.def] = { gained: 0, lost: 0 };
+    teamCopper[d.atk].gained += d.copper;
+    if (d.def) teamCopper[d.def].lost += d.copper;
+  });
+
+  // Escalation trend
+  const firstAvg = bStats[0].avgSteal;
+  const lastAvg = bStats[bStats.length - 1].avgSteal;
+  const escalationPct = firstAvg > 0 ? Math.round((lastAvg / firstAvg - 1) * 100) : 0;
+
+  // Biggest single steal
+  const bigSteal = data.reduce((best, d) => d.copper > best.copper ? d : best, data[0]);
+
+  // Repeat rivalries (3+ meetings)
+  const pairs = {};
+  data.forEach(d => {
+    const key = [d.atk, d.def].sort().join('|');
+    pairs[key] = (pairs[key] || 0) + 1;
+  });
+  const rivalries = Object.entries(pairs).filter(([k, v]) => v >= 3).map(([k]) => k.split('|'));
+
+  // Teams never targeted
+  const allDefs = new Set(data.map(d => d.def).filter(Boolean));
+
+  // B4 win rate was lowest
+  const b4Stats = bStats.find(s => s.b === 4);
+  const lowestWR = bStats.reduce((min, s) => s.w / s.total < min.w / min.total ? s : min, bStats[0]);
+
+  // Build narrative HTML
+  let n = '<div class="narrative-title">Season Narrative — Through Battle ' + maxB + '</div>';
+  n += '<div class="narrative-body">';
+
+  // Opening
+  n += '<p>Four battles into an eight-round season, this war is being defined by a single force: <strong style="color:var(--gold)">compounding copper</strong>. ';
+  n += 'Average steal per win has surged from ' + Math.round(firstAvg) + 'k in Battle 1 to ' + Math.round(lastAvg) + 'k in Battle ' + maxB + ' — a ' + escalationPct + '% increase. ';
+  n += 'The rich are getting richer, and every lost defense now costs exponentially more than it did a week ago.</p>';
+
+  // Faction overview
+  n += '<p><span style="color:var(--green)">Koubutai</span> holds the upper hand, commanding <strong>6 of the top 10</strong> copper positions. ';
+  n += 'They\'ve attacked twice to Kage\'s two, posting a ' + Math.round(kouRec.atkW / (kouRec.atkW + kouRec.atkL) * 100) + '% attack win rate ';
+  n += 'while holding ' + Math.round(kouRec.defHold / (kouRec.defHold + kouRec.defBreach) * 100) + '% of defenses. ';
+  n += '<span style="color:var(--cyan)">Kage no Sato</span> trails at ' + Math.round(kageRec.atkW / (kageRec.atkW + kageRec.atkL) * 100) + '% on offense';
+  if (kageRec.defHold + kageRec.defBreach > 0) {
+    n += ' and ' + Math.round(kageRec.defHold / (kageRec.defHold + kageRec.defBreach) * 100) + '% on defense';
+  }
+  n += ' — but Battle 4 showed signs of a turning tide.</p>';
+
+  // B4 highlight
+  if (b4Stats) {
+    n += '<p>Battle 4 was the tightest yet: attackers won just ' + Math.round(b4Stats.w / b4Stats.total * 100) + '% of matchups, ';
+    n += 'down sharply from the B2 peak of ' + Math.round(bStats[1].w / bStats[1].total * 100) + '%. ';
+    n += 'Kage teams delivered some of the season\'s biggest individual steals — UFO plundered ' + bigSteal.copper + 'k from PNAS, ';
+    n += 'the largest single haul of the season. ROKK surged to the <strong style="color:var(--gold)">#1 copper position</strong>, the first Kage team to hold the top spot.</p>';
+  }
+
+  // Rivalries
+  if (rivalries.length > 0) {
+    n += '<p>Two rivalries have become season-defining storylines. ';
+    n += '<strong>FYER vs ETOA</strong> have met in all four battles — the only matchup played every round. ';
+    n += '<strong>RISE vs ETRE</strong> clashed three times, with RISE winning twice before ETRE struck back in B4 for 148.7k in a revenge declaration. ';
+    n += 'These locked-in rivalries are compounding in both directions: repeated attackers steal more each time, but a single reversal can shift the balance dramatically.</p>';
+  }
+
+  // Faction advice
+  n += '<p class="narrative-faction-header" style="color:var(--cyan)">⚔ Kage no Sato — Path Forward</p>';
+  n += '<p>The momentum from B4 is real, but fragile. ROKK\'s #1 position makes them the faction\'s anchor — protecting that rank is critical. ';
+  n += 'The remaining schedule favors Kage with 2 of 4 remaining battles on offense (B6, B7 are back-to-back Kage attacks). ';
+  n += 'Coordination between S1252 teams (ETRE, ETOA, ETRR) on support defense during Koubutai-attacking rounds could dramatically cut copper losses. ';
+  n += 'The math is simple: one team conceding and supporting another\'s defense cuts group losses in half.</p>';
+
+  n += '<p class="narrative-faction-header" style="color:var(--green)">🛡 Koubutai — Path Forward</p>';
+  n += '<p>The early-season copper advantage is substantial but not insurmountable — B4 proved Kage can punch back hard. ';
+  n += 'Protecting FYER (#2) and the S1234 cluster (OGM, HOPE, RISE) is key. ';
+  n += 'With the new groups-of-3 matchmaking, mid-tier Koubutai teams can no longer hide behind the top-6 shield — every group must be self-sufficient. ';
+  n += 'Teams with high production rates (HOPE at 3,200/hr, ATUM at 3,100/hr) have a structural advantage that compounds every day between battles.</p>';
+
+  n += '</div>';
+
+  document.getElementById('seasonNarrative').innerHTML = n;
+}
+
 // ── Render All Sections ──
 function renderAll() {
+  renderNarrative();
   renderSummaryStats();
   renderMatchTypes();
   renderMultiCards();
@@ -1720,9 +1875,9 @@ function renderSummaryStats() {
 // ── Match Type Breakdown ──
 function renderMatchTypes() {
   const data = getFilteredData();
-  const types = ['1v1', '2v1', '3v1', 'DNF'];
-  const colors = { '1v1': 'var(--blue)', '2v1': 'var(--orange)', '3v1': 'var(--purple)', 'DNF': 'var(--text-muted)' };
-  const barColors = { '1v1': 'var(--green)', '2v1': 'var(--orange)', '3v1': 'var(--purple)', 'DNF': 'var(--text-muted)' };
+  const types = ['1v1', '2v1', '2v2', '3v1', 'DNF'];
+  const colors = { '1v1': 'var(--blue)', '2v1': 'var(--orange)', '2v2': 'var(--orange)', '3v1': 'var(--purple)', 'DNF': 'var(--text-muted)' };
+  const barColors = { '1v1': 'var(--green)', '2v1': 'var(--orange)', '2v2': 'var(--orange)', '3v1': 'var(--purple)', 'DNF': 'var(--text-muted)' };
   let html = '';
 
   types.forEach(t => {
@@ -1755,7 +1910,7 @@ function renderMatchTypes() {
 
 // ── Multi-Attacker Cards ──
 function renderMultiCards() {
-  const data = getFilteredData().filter(d => d.type === '2v1' || d.type === '3v1');
+  const data = getFilteredData().filter(d => d.type === '2v1' || d.type === '2v2' || d.type === '3v1');
   const battles = [...new Set(data.map(d => d.battle))].sort();
 
   // Build filter buttons
@@ -2045,7 +2200,7 @@ function renderCrossBattleTrends() {
     const bd = data.filter(d => d.battle === b);
     const wins = bd.filter(d => d.res === 'W').length;
     const winRate = bd.length > 0 ? (wins / bd.length * 100) : 0;
-    const m2 = data.filter(d => d.battle === b && d.type === '2v1');
+    const m2 = data.filter(d => d.battle === b && (d.type === '2v1' || d.type === '2v2'));
     const m2W = m2.filter(d => d.res === 'W').length;
     const m2L = m2.filter(d => d.res === 'L').length;
     return { battle: b, total: bd.length, wins, winRate, m2W, m2L };
@@ -2068,7 +2223,7 @@ function renderCrossBattleTrends() {
       const pct = Math.round(s.m2W / (s.m2W + s.m2L) * 100);
       const color = pct >= 50 ? 'var(--orange)' : 'var(--red)';
       const note = s.m2W === 0 ? ' (all held)' : '';
-      bobHtml += `<div class="trend-row"><span class="trend-label">B${s.battle} 2v1 Outcome</span><span class="trend-value" style="color:${color}">${s.m2W}W / ${s.m2L}L (${pct}% win)${note}</span></div>`;
+      bobHtml += `<div class="trend-row"><span class="trend-label">B${s.battle} Multi-ATK Outcome</span><span class="trend-value" style="color:${color}">${s.m2W}W / ${s.m2L}L (${pct}% win)${note}</span></div>`;
     }
   });
 
@@ -2256,7 +2411,7 @@ function renderParticipation() {
 // ── Matchup Table ──
 function renderMatchupTable() {
   const body = document.getElementById('matchupBody');
-  const typeClass = t => t === '1v1' ? 'type-1v1' : t === '2v1' ? 'type-2v1' : t === '3v1' ? 'type-3v1' : 'type-dnf';
+  const typeClass = t => t === '1v1' ? 'type-1v1' : t === '2v1' ? 'type-2v1' : t === '2v2' ? 'type-2v2' : t === '3v1' ? 'type-3v1' : 'type-dnf';
   const resClass = r => r === 'W' ? 'win' : r === 'L' ? 'loss' : 'dnf';
 
   // Build filter buttons dynamically
@@ -2266,7 +2421,7 @@ function renderMatchupTable() {
     let fHtml = '<button class="filter-btn active" data-filter="all">All</button>';
     allBattles.forEach(b => { fHtml += '<button class="filter-btn" data-filter="B' + b + '">Battle ' + b + '</button>'; });
     fHtml += '<button class="filter-btn" data-filter="1v1">1v1</button>';
-    fHtml += '<button class="filter-btn" data-filter="2v1">2v1</button>';
+    fHtml += '<button class="filter-btn" data-filter="multi">Multi-ATK</button>';
     fHtml += '<button class="filter-btn" data-filter="W">Wins</button>';
     fHtml += '<button class="filter-btn" data-filter="L">Holds</button>';
     filterBar.innerHTML = fHtml;
@@ -2282,7 +2437,7 @@ function renderMatchupTable() {
     if (!isNaN(bNum)) data = data.filter(d => d.battle === bNum);
   }
   else if (filter === '1v1') data = data.filter(d => d.type === '1v1');
-  else if (filter === '2v1') data = data.filter(d => d.type === '2v1' || d.type === '3v1');
+  else if (filter === 'multi') data = data.filter(d => d.type === '2v1' || d.type === '2v2' || d.type === '3v1');
   else if (filter === 'W') data = data.filter(d => d.res === 'W');
   else if (filter === 'L') data = data.filter(d => d.res === 'L');
 

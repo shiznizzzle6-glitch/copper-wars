@@ -1177,54 +1177,15 @@ body::before {
 
   </div>
 
-  <div class="footer">Copper Wars Season Projector · Phase 4 · v0.4</div>
+  <div class="footer">Copper Wars Season Projector · Phase 4 · v0.5</div>
 </div>
 
 <script>
 // ── Battle Schedule ──
-const battleSchedule = [
-  { num: 1, date: '2026-04-01', day: 'Wed', week: 1, kouRole: 'DEF', kagRole: 'ATK' },
-  { num: 2, date: '2026-04-04', day: 'Sat', week: 1, kouRole: 'ATK', kagRole: 'DEF' },
-  { num: 3, date: '2026-04-08', day: 'Wed', week: 2, kouRole: 'ATK', kagRole: 'DEF' },
-  { num: 4, date: '2026-04-11', day: 'Sat', week: 2, kouRole: 'ATK', kagRole: 'DEF' },
-  { num: 5, date: '2026-04-15', day: 'Wed', week: 3, kouRole: 'ATK', kagRole: 'DEF' },
-  { num: 6, date: '2026-04-18', day: 'Sat', week: 3, kouRole: 'ATK', kagRole: 'DEF' },
-  { num: 7, date: '2026-04-22', day: 'Wed', week: 4, kouRole: 'DEF', kagRole: 'ATK' },
-  { num: 8, date: '2026-04-25', day: 'Sat', week: 4, kouRole: 'ATK', kagRole: 'DEF' },
-];
+// Battle schedule — populated from schedule.csv
+let battleSchedule = [];
 
-// Correct roles from screenshot
-// B1: Kage ATK, Kou DEF | B2: Kou ATK, Kage DEF | B3: Kou ATK, Kage DEF
-// B4: Kage ATK, Kou DEF | B5: Kou ATK, Kage DEF | B6: Kage ATK, Kou DEF
-// B7: Kage ATK, Kou DEF | B8: Kou ATK, Kage DEF
-battleSchedule[0].kouRole = 'DEF'; battleSchedule[0].kagRole = 'ATK';
-battleSchedule[1].kouRole = 'ATK'; battleSchedule[1].kagRole = 'DEF';
-battleSchedule[2].kouRole = 'ATK'; battleSchedule[2].kagRole = 'DEF';
-battleSchedule[3].kouRole = 'ATK'; battleSchedule[3].kagRole = 'DEF';
-battleSchedule[4].kouRole = 'ATK'; battleSchedule[4].kagRole = 'DEF';
-battleSchedule[5].kouRole = 'ATK'; battleSchedule[5].kagRole = 'DEF';
-battleSchedule[6].kouRole = 'DEF'; battleSchedule[6].kagRole = 'ATK';
-battleSchedule[7].kouRole = 'ATK'; battleSchedule[7].kagRole = 'DEF';
-
-// Wait — let me re-read the screenshot more carefully
-// B1 4/1: Kage=swords(ATK), Kou=shield(DEF)
-// B2 4/4: Kage=shield(DEF), Kou=swords(ATK)
-// B3 4/8: Kage=shield(DEF), Kou=swords(ATK)
-// B4 4/11: Kage=swords(ATK), Kou=shield(DEF)
-// B5 4/15: Kage=shield(DEF), Kou=swords(ATK)
-// B6 4/18: Kage=swords(ATK), Kou=shield(DEF)
-// B7 4/22: Kage=swords(ATK), Kou=shield(DEF)
-// B8 4/25: Kage=shield(DEF), Kou=swords(ATK)
-battleSchedule[0].kouRole = 'DEF'; battleSchedule[0].kagRole = 'ATK';
-battleSchedule[1].kouRole = 'ATK'; battleSchedule[1].kagRole = 'DEF';
-battleSchedule[2].kouRole = 'ATK'; battleSchedule[2].kagRole = 'DEF';
-battleSchedule[3].kouRole = 'DEF'; battleSchedule[3].kagRole = 'ATK';
-battleSchedule[4].kouRole = 'ATK'; battleSchedule[4].kagRole = 'DEF';
-battleSchedule[5].kouRole = 'DEF'; battleSchedule[5].kagRole = 'ATK';
-battleSchedule[6].kouRole = 'DEF'; battleSchedule[6].kagRole = 'ATK';
-battleSchedule[7].kouRole = 'ATK'; battleSchedule[7].kagRole = 'DEF';
-
-const groupSizes = { 1: 10, 2: 6, 3: 3, 4: 3 };
+const GROUP_SIZE = 3;
 const serverFaction = {1194:'Koubutai',1220:'Koubutai',1234:'Koubutai',1247:'Koubutai',1196:'Kage no Sato',1237:'Kage no Sato',1242:'Kage no Sato',1252:'Kage no Sato'};
 const seasonEnd = new Date('2026-04-25T09:30:00');
 
@@ -1256,17 +1217,32 @@ function fmtK(n) {
 // ── Data Loading ──
 async function loadData() {
   try {
-    const [genRes, standingsRes, battleRes] = await Promise.all([
+    const [genRes, standingsRes, battleRes, scheduleRes] = await Promise.all([
       fetch('copper_generation.csv'),
       fetch('copper_standings.csv'),
-      fetch('battle_data.csv')
+      fetch('battle_data.csv'),
+      fetch('schedule.csv')
     ]);
 
-    if (!genRes.ok || !standingsRes.ok || !battleRes.ok) throw new Error('CSV load failed');
+    if (!genRes.ok || !standingsRes.ok || !battleRes.ok || !scheduleRes.ok) throw new Error('CSV load failed');
 
     const genRows = parseCSV(await genRes.text());
     const standingsRows = parseCSV(await standingsRes.text());
     const battleRows = parseCSV(await battleRes.text());
+    const scheduleRows = parseCSV(await scheduleRes.text());
+
+    // Build battleSchedule from schedule.csv
+    const dayNames = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+    scheduleRows.forEach(r => {
+      const num = parseInt(r['Battle']);
+      const date = r['Date'];
+      const d = new Date(date + 'T12:00:00');
+      const day = dayNames[d.getDay()];
+      const week = Math.ceil(num / 2);
+      const kouRole = r['Attacker'] === 'Koubutai' ? 'ATK' : 'DEF';
+      const kagRole = r['Attacker'] === 'Kage no Sato' ? 'ATK' : 'DEF';
+      battleSchedule.push({ num, date, day, week, kouRole, kagRole });
+    });
 
     // Parse generation rates
     const genRates = {};
@@ -1281,7 +1257,7 @@ async function loadData() {
       const copper = parseInt(r['Copper']);
       const faction = serverFaction[srv] || 'Unknown';
       const genRate = genRates[team] || 0;
-      standings.push({ team, server: srv, faction, copper, genRate });
+      standings.push({ team, server: srv, faction, copper, genRate, snapshotDate });
     });
     standings.sort((a, b) => b.copper - a.copper);
 
@@ -1329,11 +1305,11 @@ async function loadData() {
     const snapshotTime = new Date(snapshotDate + 'T12:00:00');
     const hoursToEnd = (seasonEnd - snapshotTime) / 3600000;
 
-    // Determine current/next battle
+    // Determine current/next battle — battle is "completed" if its date is today or earlier
     const today = now.toISOString().slice(0, 10);
     let completedBattles = 0;
     battleSchedule.forEach(b => {
-      if (b.date < today) completedBattles = b.num;
+      if (b.date <= today) completedBattles = b.num;
     });
 
     document.getElementById('loadingIndicator').style.display = 'none';
@@ -1350,7 +1326,7 @@ async function loadData() {
 
   } catch (err) {
     document.getElementById('loadingIndicator').innerHTML =
-      '<span style="color:var(--red)">⚠ Failed to load data. Make sure CSV files are in the same directory.</span>';
+      '<span style="color:var(--red)">⚠ Failed to load data. Make sure copper_generation.csv, copper_standings.csv, battle_data.csv, and schedule.csv are in the same directory.</span>';
     console.error(err);
   }
 }
@@ -1660,19 +1636,31 @@ function renderProjectionChart(standings, hoursToEnd) {
 // ── Matchmaking Preview ──
 function renderMatchmaking(standings, hoursToEnd) {
   const tracked = standings.filter(s => s.genRate > 0);
+  const snapshotDate = standings[0] ? standings[0].snapshotDate : '2026-04-12';
+  const snapshotTime = new Date(snapshotDate + 'T12:00:00');
 
-  // For each remaining week, project rankings at that week's start and show groups
-  const weeks = [
-    { num: 2, label: 'Week 2 (B3–B4)', battles: [3, 4], groupSize: 6, hoursFromSnapshot: 0 },
-    { num: 3, label: 'Week 3 (B5–B6)', battles: [5, 6], groupSize: 3, hoursFromSnapshot: null },
-    { num: 4, label: 'Week 4 (B7–B8)', battles: [7, 8], groupSize: 3, hoursFromSnapshot: null },
-  ];
+  // Build weeks from battleSchedule, only showing future/current weeks
+  const today = new Date().toISOString().slice(0, 10);
+  const weekMap = {};
+  battleSchedule.forEach(b => {
+    if (!weekMap[b.week]) weekMap[b.week] = { battles: [], dates: [] };
+    weekMap[b.week].battles.push(b.num);
+    weekMap[b.week].dates.push(b.date);
+  });
 
-  // Calculate hours from snapshot to each week start
-  const snapshotTime = new Date('2026-04-06T12:00:00');
-  weeks[0].hoursFromSnapshot = (new Date('2026-04-08T09:30:00') - snapshotTime) / 3600000;
-  weeks[1].hoursFromSnapshot = (new Date('2026-04-15T09:30:00') - snapshotTime) / 3600000;
-  weeks[2].hoursFromSnapshot = (new Date('2026-04-22T09:30:00') - snapshotTime) / 3600000;
+  const weeks = Object.entries(weekMap)
+    .map(([wNum, w]) => {
+      const label = 'Week ' + wNum + ' (B' + w.battles.join('–B') + ')';
+      const weekStartDate = w.dates[0];
+      const hoursFromSnapshot = (new Date(weekStartDate + 'T09:30:00') - snapshotTime) / 3600000;
+      // Only show weeks that haven't fully completed
+      const allCompleted = w.battles.every(b => {
+        const bInfo = battleSchedule.find(x => x.num === b);
+        return bInfo && bInfo.date < today;
+      });
+      return { num: parseInt(wNum), label, battles: w.battles, groupSize: GROUP_SIZE, hoursFromSnapshot, allCompleted };
+    })
+    .filter(w => !w.allCompleted);
 
   let html = '';
 
@@ -1686,25 +1674,38 @@ function renderMatchmaking(standings, hoursToEnd) {
     // Rank by projected copper
     projected.sort((a, b) => b.projCopper - a.projCopper);
 
-    // Split by faction
-    const kouTeams = projected.filter(s => s.faction === 'Koubutai');
-    const kagTeams = projected.filter(s => s.faction === 'Kage no Sato');
-
-    // Form groups
     const gs = week.groupSize;
-    const numGroups = Math.ceil(Math.max(kouTeams.length, kagTeams.length) / gs);
 
     html += '<div class="mm-card">';
     html += '<div class="mm-week">' + week.label + '</div>';
-    html += '<div class="mm-group-size">Groups of ' + gs + ' per faction</div>';
+    html += '<div class="mm-group-size">Groups of ' + gs + ' per faction by copper rank</div>';
 
-    for (let g = 0; g < numGroups; g++) {
-      const kouSlice = kouTeams.slice(g * gs, (g + 1) * gs);
-      const kagSlice = kagTeams.slice(g * gs, (g + 1) * gs);
+    // Rank each faction separately, then pair groups
+    const kouTeams = projected.filter(s => s.faction === 'Koubutai').sort((a, b) => b.projCopper - a.projCopper);
+    const kagTeams = projected.filter(s => s.faction === 'Kage no Sato').sort((a, b) => b.projCopper - a.projCopper);
+
+    const maxFactionLen = Math.max(kouTeams.length, kagTeams.length);
+    const maxRegularGroups = 10; // Groups 1-10 = faction ranks 1-30
+    const numGroups = Math.min(Math.ceil(maxFactionLen / gs), maxRegularGroups + 1);
+
+    for (let g = 0; g <= maxRegularGroups; g++) {
+      let kouSlice, kagSlice, tierLabel;
+      if (g < maxRegularGroups) {
+        kouSlice = kouTeams.slice(g * gs, (g + 1) * gs);
+        kagSlice = kagTeams.slice(g * gs, (g + 1) * gs);
+        tierLabel = 'Group ' + (g + 1) + ' <span style="color:var(--text-muted);font-size:0.7rem">(Faction Rank ' + (g*gs+1) + '–' + ((g+1)*gs) + ')</span>';
+      } else {
+        kouSlice = kouTeams.slice(g * gs);
+        kagSlice = kagTeams.slice(g * gs);
+        tierLabel = 'Group ' + (g + 1) + ' <span style="color:var(--text-muted);font-size:0.7rem">(Faction Rank 31+)</span>';
+      }
       if (kouSlice.length === 0 && kagSlice.length === 0) break;
 
+      // Determine attack/defense roles for this week's battles
+      const weekBattles = week.battles.map(bNum => battleSchedule.find(b => b.num === bNum)).filter(Boolean);
+
       html += '<div class="mm-tier">';
-      html += '<div class="mm-tier-label">Tier ' + (g + 1) + '</div>';
+      html += '<div class="mm-tier-label">' + tierLabel + '</div>';
       html += '<div class="mm-teams">';
       kouSlice.forEach(t => { html += '<span class="mm-team-tag mm-team-kou">' + t.team + '</span>'; });
       kagSlice.forEach(t => { html += '<span class="mm-team-tag mm-team-kag">' + t.team + '</span>'; });
@@ -1794,24 +1795,29 @@ function simulateSeasons(numSims) {
       const kouAttacks = battle.kouRole === 'ATK';
       const atkFaction = kouAttacks ? 'Koubutai' : 'Kage no Sato';
 
-      // Rank teams by copper for matchmaking
-      const ranked = tracked.map(t => ({ ...t, copper: copper[t.team] })).sort((a, b) => b.copper - a.copper);
-      const attackers = ranked.filter(t => t.faction === atkFaction);
-      const defenders = ranked.filter(t => t.faction !== atkFaction);
+      // Rank each faction separately by copper for matchmaking
+      const allWithCopper = tracked.map(t => ({ ...t, copper: copper[t.team] }));
+      const attackers = allWithCopper.filter(t => t.faction === atkFaction).sort((a, b) => b.copper - a.copper);
+      const defenders = allWithCopper.filter(t => t.faction !== atkFaction).sort((a, b) => b.copper - a.copper);
 
-      // Matchmaking groups
-      const week = battle.week;
-      const gs = groupSizes[week];
+      // Matchmaking groups: groups of 3 by faction rank, catch-all for faction rank 31+
+      const gs = GROUP_SIZE;
+      const maxRegularGroups = 10;
 
       // Simulate attacker choices within groups
       const usedDefs = new Set();
       const fights = [];
 
-      for (let g = 0; ; g++) {
-        const atkGroup = attackers.slice(g * gs, (g + 1) * gs);
-        const defGroup = defenders.slice(g * gs, (g + 1) * gs);
-        if (atkGroup.length === 0) break;
-        if (defGroup.length === 0) break;
+      for (let g = 0; g <= maxRegularGroups; g++) {
+        let atkGroup, defGroup;
+        if (g < maxRegularGroups) {
+          atkGroup = attackers.slice(g * gs, (g + 1) * gs);
+          defGroup = defenders.slice(g * gs, (g + 1) * gs);
+        } else {
+          atkGroup = attackers.slice(g * gs);
+          defGroup = defenders.slice(g * gs);
+        }
+        if (atkGroup.length === 0 || defGroup.length === 0) continue;
 
         // Each attacker picks a defender from their group
         // Heuristic: prefer highest copper defender not yet chosen (greedy)
