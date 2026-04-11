@@ -456,6 +456,55 @@ body::before {
 .mm-team-kou { background: var(--green-dim); color: var(--green); }
 .mm-team-kag { background: rgba(34,211,238,0.12); color: var(--cyan); }
 
+.mm-battle-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 4px;
+}
+
+.mm-battle-date {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  letter-spacing: 1px;
+}
+
+.mm-matchup-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 0;
+  border-top: 1px solid rgba(255,255,255,0.04);
+}
+
+.mm-matchup-row:first-child { border-top: none; }
+
+.mm-matchup-atk {
+  flex: 1;
+  text-align: right;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.78rem;
+  letter-spacing: 1px;
+}
+
+.mm-matchup-vs {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 0.6rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  letter-spacing: 2px;
+  flex-shrink: 0;
+}
+
+.mm-matchup-def {
+  flex: 1;
+  text-align: left;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.78rem;
+  letter-spacing: 1px;
+}
+
 /* ── Battle Predictor ── */
 .bp-status {
   display: flex;
@@ -1638,78 +1687,83 @@ function renderMatchmaking(standings, hoursToEnd) {
   const tracked = standings.filter(s => s.genRate > 0);
   const snapshotDate = standings[0] ? standings[0].snapshotDate : '2026-04-12';
   const snapshotTime = new Date(snapshotDate + 'T12:00:00');
-
-  // Build weeks from battleSchedule, only showing future/current weeks
   const today = new Date().toISOString().slice(0, 10);
-  const weekMap = {};
-  battleSchedule.forEach(b => {
-    if (!weekMap[b.week]) weekMap[b.week] = { battles: [], dates: [] };
-    weekMap[b.week].battles.push(b.num);
-    weekMap[b.week].dates.push(b.date);
-  });
+  const dayNames = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
 
-  const weeks = Object.entries(weekMap)
-    .map(([wNum, w]) => {
-      const label = 'Week ' + wNum + ' (B' + w.battles.join('–B') + ')';
-      const weekStartDate = w.dates[0];
-      const hoursFromSnapshot = (new Date(weekStartDate + 'T09:30:00') - snapshotTime) / 3600000;
-      // Only show weeks that haven't fully completed
-      const allCompleted = w.battles.every(b => {
-        const bInfo = battleSchedule.find(x => x.num === b);
-        return bInfo && bInfo.date < today;
-      });
-      return { num: parseInt(wNum), label, battles: w.battles, groupSize: GROUP_SIZE, hoursFromSnapshot, allCompleted };
-    })
-    .filter(w => !w.allCompleted);
+  // Get future battles only
+  const futureBattles = battleSchedule.filter(b => b.date > today);
 
   let html = '';
 
-  weeks.forEach(week => {
-    // Project copper at this week's start
+  futureBattles.forEach(battle => {
+    const hoursFromSnapshot = (new Date(battle.date + 'T09:30:00') - snapshotTime) / 3600000;
+
+    // Project copper at this battle's date
     const projected = tracked.map(s => ({
       ...s,
-      projCopper: s.copper + (s.genRate * week.hoursFromSnapshot)
+      projCopper: s.copper + (s.genRate * hoursFromSnapshot)
     }));
 
-    // Rank by projected copper
-    projected.sort((a, b) => b.projCopper - a.projCopper);
+    const atkFaction = battle.kouRole === 'ATK' ? 'Koubutai' : 'Kage no Sato';
+    const defFaction = atkFaction === 'Koubutai' ? 'Kage no Sato' : 'Koubutai';
+    const atkColor = atkFaction === 'Koubutai' ? 'var(--green)' : 'var(--cyan)';
+    const defColor = defFaction === 'Koubutai' ? 'var(--green)' : 'var(--cyan)';
+    const atkClass = atkFaction === 'Koubutai' ? 'mm-team-kou' : 'mm-team-kag';
+    const defClass = defFaction === 'Koubutai' ? 'mm-team-kou' : 'mm-team-kag';
 
-    const gs = week.groupSize;
+    // Rank each faction separately
+    const atkTeams = projected.filter(s => s.faction === atkFaction).sort((a, b) => b.projCopper - a.projCopper);
+    const defTeams = projected.filter(s => s.faction === defFaction).sort((a, b) => b.projCopper - a.projCopper);
+
+    const dateShort = battle.date.slice(5).replace('-', '/');
 
     html += '<div class="mm-card">';
-    html += '<div class="mm-week">' + week.label + '</div>';
-    html += '<div class="mm-group-size">Groups of ' + gs + ' per faction by copper rank</div>';
+    html += '<div class="mm-battle-header">';
+    html += '<div class="mm-week">Battle ' + battle.num + '</div>';
+    html += '<div class="mm-battle-date">' + dateShort + ' ' + battle.day + '</div>';
+    html += '</div>';
+    html += '<div class="mm-group-size"><span style="color:' + atkColor + '">⚔ ' + atkFaction + '</span> attacking · <span style="color:' + defColor + '">🛡 ' + defFaction + '</span> defending · Groups of ' + GROUP_SIZE + '</div>';
 
-    // Rank each faction separately, then pair groups
-    const kouTeams = projected.filter(s => s.faction === 'Koubutai').sort((a, b) => b.projCopper - a.projCopper);
-    const kagTeams = projected.filter(s => s.faction === 'Kage no Sato').sort((a, b) => b.projCopper - a.projCopper);
-
-    const maxFactionLen = Math.max(kouTeams.length, kagTeams.length);
-    const maxRegularGroups = 10; // Groups 1-10 = faction ranks 1-30
-    const numGroups = Math.min(Math.ceil(maxFactionLen / gs), maxRegularGroups + 1);
+    const gs = GROUP_SIZE;
+    const maxRegularGroups = 10;
 
     for (let g = 0; g <= maxRegularGroups; g++) {
-      let kouSlice, kagSlice, tierLabel;
+      let atkSlice, defSlice, tierLabel;
       if (g < maxRegularGroups) {
-        kouSlice = kouTeams.slice(g * gs, (g + 1) * gs);
-        kagSlice = kagTeams.slice(g * gs, (g + 1) * gs);
-        tierLabel = 'Group ' + (g + 1) + ' <span style="color:var(--text-muted);font-size:0.7rem">(Faction Rank ' + (g*gs+1) + '–' + ((g+1)*gs) + ')</span>';
+        atkSlice = atkTeams.slice(g * gs, (g + 1) * gs);
+        defSlice = defTeams.slice(g * gs, (g + 1) * gs);
+        tierLabel = 'Group ' + (g + 1);
       } else {
-        kouSlice = kouTeams.slice(g * gs);
-        kagSlice = kagTeams.slice(g * gs);
-        tierLabel = 'Group ' + (g + 1) + ' <span style="color:var(--text-muted);font-size:0.7rem">(Faction Rank 31+)</span>';
+        atkSlice = atkTeams.slice(g * gs);
+        defSlice = defTeams.slice(g * gs);
+        tierLabel = 'Group ' + (g + 1);
       }
-      if (kouSlice.length === 0 && kagSlice.length === 0) break;
-
-      // Determine attack/defense roles for this week's battles
-      const weekBattles = week.battles.map(bNum => battleSchedule.find(b => b.num === bNum)).filter(Boolean);
+      if (atkSlice.length === 0 && defSlice.length === 0) break;
 
       html += '<div class="mm-tier">';
       html += '<div class="mm-tier-label">' + tierLabel + '</div>';
-      html += '<div class="mm-teams">';
-      kouSlice.forEach(t => { html += '<span class="mm-team-tag mm-team-kou">' + t.team + '</span>'; });
-      kagSlice.forEach(t => { html += '<span class="mm-team-tag mm-team-kag">' + t.team + '</span>'; });
-      html += '</div></div>';
+
+      // Pair attackers with defenders by rank within group
+      const maxPairs = Math.max(atkSlice.length, defSlice.length);
+      for (let p = 0; p < maxPairs; p++) {
+        const atk = atkSlice[p];
+        const def = defSlice[p];
+        html += '<div class="mm-matchup-row">';
+        if (atk) {
+          html += '<div class="mm-matchup-atk"><span class="mm-team-tag ' + atkClass + '">' + atk.team + '</span></div>';
+        } else {
+          html += '<div class="mm-matchup-atk" style="color:var(--text-muted);font-size:0.7rem">—</div>';
+        }
+        html += '<div class="mm-matchup-vs">VS</div>';
+        if (def) {
+          html += '<div class="mm-matchup-def"><span class="mm-team-tag ' + defClass + '">' + def.team + '</span></div>';
+        } else {
+          html += '<div class="mm-matchup-def" style="color:var(--text-muted);font-size:0.7rem">—</div>';
+        }
+        html += '</div>';
+      }
+
+      html += '</div>';
     }
 
     html += '</div>';
