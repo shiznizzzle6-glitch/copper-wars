@@ -526,6 +526,7 @@ body::before {
   align-items: center;
   gap: 8px;
   padding: 4px 0 2px;
+  flex-wrap: wrap;
 }
 
 .mm-slider {
@@ -586,6 +587,56 @@ body::before {
   padding: 8px 0;
   margin-bottom: 8px;
   border-bottom: 1px solid var(--border);
+}
+
+.mm-presets {
+  display: flex;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.mm-preset {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 1px;
+  padding: 2px 6px;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.mm-preset:hover {
+  border-color: var(--gold);
+  color: var(--gold);
+}
+
+.mm-preset.active {
+  border-color: var(--gold);
+  background: var(--gold-dim);
+  color: var(--gold);
+}
+
+.mm-reset-btn {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.72rem;
+  letter-spacing: 2px;
+  padding: 6px 14px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+
+.mm-reset-btn:hover {
+  border-color: var(--orange);
+  color: var(--orange);
+  background: var(--orange-dim);
 }
 
 /* ── Battle Predictor ── */
@@ -889,9 +940,12 @@ body::before {
     <div class="section anim anim-d2">
 
       <div class="section-title"><span class="icon" style="background:var(--purple)"></span> Battle Matchups &amp; Outcomes</div>
-      <p style="font-family:'Share Tech Mono',monospace;font-size:0.78rem;color:var(--text-muted);margin-bottom:16px;letter-spacing:1px">
-        Projected matchups by copper rank. Adjust sliders to simulate outcomes — changes cascade to later battles and final standings below.
-      </p>
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px;margin-bottom:16px">
+        <p style="font-family:'Share Tech Mono',monospace;font-size:0.78rem;color:var(--text-muted);letter-spacing:1px;flex:1;min-width:200px">
+          Projected matchups by copper rank. Adjust sliders to simulate outcomes — changes cascade to later battles and final standings below.
+        </p>
+        <button class="mm-reset-btn" onclick="resetAllSliders()">Reset All</button>
+      </div>
       <div class="mm-grid" id="mmGrid"></div>
     </div>
 
@@ -1495,9 +1549,16 @@ function rebuildMatchmaking() {
         html += '<div class="mm-prob" style="background:none;color:var(--gold);font-size:0.6rem">' + (copperTaken > 0 ? '+' + fmtCopper(copperTaken) : '—') + '</div>';
         html += '</div>';
 
-        // Slider row
+        // Slider row with presets
         html += '<div class="mm-slider-wrap">';
-        html += '<input type="range" class="mm-slider" min="0" max="15" step="1" value="' + sliderVal + '" data-key="' + sliderKey + '" oninput="onMMSlider(this)">';
+        html += '<div class="mm-presets">';
+        html += '<button class="mm-preset' + (sliderVal === 0 ? ' active' : '') + '" onclick="setMMSlider(\'' + sliderKey + '\',0)">Hold</button>';
+        html += '<button class="mm-preset' + (sliderVal === 6 ? ' active' : '') + '" onclick="setMMSlider(\'' + sliderKey + '\',6)">6%</button>';
+        html += '<button class="mm-preset' + (sliderVal === 9 ? ' active' : '') + '" onclick="setMMSlider(\'' + sliderKey + '\',9)">9%</button>';
+        html += '<button class="mm-preset' + (sliderVal === 12 ? ' active' : '') + '" onclick="setMMSlider(\'' + sliderKey + '\',12)">12%</button>';
+        html += '<button class="mm-preset' + (sliderVal === 15 ? ' active' : '') + '" onclick="setMMSlider(\'' + sliderKey + '\',15)">15%</button>';
+        html += '</div>';
+        html += '<input type="range" class="mm-slider" min="0" max="15" step="1" value="' + sliderVal + '" data-key="' + sliderKey + '" data-defcopper="' + def.projCopper + '" oninput="onMMSlider(this)" onchange="onMMSliderCommit(this)">';
         html += '<span class="mm-slider-pct" id="pct_' + sliderKey + '">' + sliderVal + '%</span>';
         html += '<span class="mm-slider-copper" id="cop_' + sliderKey + '">' + (copperTaken > 0 ? fmtCopper(copperTaken) + ' Cu' : 'hold') + '</span>';
         html += '</div>';
@@ -1539,7 +1600,30 @@ function onMMSlider(el) {
   const val = parseInt(el.value);
   _mmSliderState[key] = val;
 
-  // Rebuild everything to cascade changes
+  // Quick inline update for the current slider's display values
+  const pctEl = document.getElementById('pct_' + key);
+  const copEl = document.getElementById('cop_' + key);
+  if (pctEl) pctEl.textContent = val + '%';
+  if (copEl) {
+    // Parse defender copper from the slider's data attribute
+    const defCopper = parseFloat(el.dataset.defcopper) || 0;
+    const taken = Math.round(defCopper * val / 100);
+    copEl.textContent = taken > 0 ? fmtCopper(taken) + ' Cu' : 'hold';
+  }
+}
+
+// Debounced full rebuild on slider release (cascading to later battles + projections)
+function onMMSliderCommit(el) {
+  rebuildMatchmaking();
+}
+
+function setMMSlider(key, val) {
+  _mmSliderState[key] = val;
+  rebuildMatchmaking();
+}
+
+function resetAllSliders() {
+  _mmSliderState = {};
   rebuildMatchmaking();
 }
 
