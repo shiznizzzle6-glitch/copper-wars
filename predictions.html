@@ -423,12 +423,14 @@ body::before {
 }
 
 .mm-tier {
-  margin-bottom: 12px;
-  padding-bottom: 10px;
-  border-bottom: 1px solid rgba(255,255,255,0.04);
+  margin-bottom: 16px;
+  padding: 12px 14px;
+  border-left: 3px solid var(--border);
+  border-radius: 6px;
+  background: rgba(255,255,255,0.015);
 }
 
-.mm-tier:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+.mm-tier:last-child { margin-bottom: 0; }
 
 .mm-tier-label {
   font-family: 'Orbitron', sans-serif;
@@ -436,7 +438,9 @@ body::before {
   font-weight: 600;
   color: var(--text-muted);
   letter-spacing: 2px;
-  margin-bottom: 6px;
+  margin-bottom: 8px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
 }
 
 .mm-teams {
@@ -471,10 +475,14 @@ body::before {
 }
 
 .mm-matchup-atk {
-  text-align: right;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 4px;
   font-family: 'Share Tech Mono', monospace;
   font-size: 0.78rem;
   letter-spacing: 1px;
+  white-space: nowrap;
 }
 
 .mm-matchup-vs {
@@ -488,10 +496,13 @@ body::before {
 }
 
 .mm-matchup-def {
-  text-align: left;
+  display: flex;
+  align-items: center;
+  gap: 4px;
   font-family: 'Share Tech Mono', monospace;
   font-size: 0.78rem;
   letter-spacing: 1px;
+  white-space: nowrap;
 }
 
 /* ── Interactive Matchup Row ── */
@@ -658,7 +669,7 @@ body::before {
   padding: 1px 4px;
   border-radius: 3px;
   background: rgba(255,255,255,0.04);
-  position: relative;
+  flex-shrink: 0;
 }
 
 .mm-final-rank.rank-1 { color: var(--gold); background: var(--gold-dim); }
