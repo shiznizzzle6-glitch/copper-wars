@@ -665,6 +665,50 @@ body::before {
 .mm-final-rank.rank-2 { color: #c0c0c0; background: rgba(192,192,192,0.1); }
 .mm-final-rank.rank-3 { color: #cd7f32; background: rgba(205,127,50,0.1); }
 
+.mm-atk-select {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 1px;
+  padding: 3px 8px;
+  border-radius: 4px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: border-color 0.15s;
+  -webkit-appearance: none;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='5' viewBox='0 0 8 5'%3E%3Cpath fill='%235a6a84' d='M0 0l4 5 4-5z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 6px center;
+  padding-right: 18px;
+}
+
+.mm-atk-select.mm-team-kou {
+  background-color: var(--green-dim);
+  color: var(--green);
+}
+
+.mm-atk-select.mm-team-kag {
+  background-color: rgba(34,211,238,0.12);
+  color: var(--cyan);
+}
+
+.mm-atk-select:hover {
+  border-color: var(--text-muted);
+}
+
+.mm-atk-select:focus {
+  outline: none;
+  border-color: var(--gold);
+  box-shadow: 0 0 6px rgba(255,215,0,0.2);
+}
+
+.mm-atk-select option {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  font-family: 'Share Tech Mono', monospace;
+}
+
 /* ── Battle Predictor ── */
 .bp-status {
   display: flex;
@@ -1478,6 +1522,37 @@ let _mmTeamStats = null;
 let _mmHoursToEnd = 0;
 let _mmSliderState = {}; // { 'B5_FYER_ROKK': 12, ... }
 let _mmCopperDeltas = {}; // cumulative copper deltas from all battle sliders
+let _mmAtkOrder = {};     // { 'B5_0': ['FYER','OGM','ATUM'], ... } custom attacker order per battle+group
+
+// Apply custom attacker ordering if user has swapped within a group
+function applyAtkOrder(atkSlice, orderKey) {
+  const names = atkSlice.map(a => a.team);
+  const custom = _mmAtkOrder[orderKey];
+  if (!custom) return atkSlice;
+  // Verify all teams still match (copper re-ranking may have changed group membership)
+  const customSet = new Set(custom);
+  const currentSet = new Set(names);
+  if (custom.length !== names.length || ![...customSet].every(t => currentSet.has(t))) return atkSlice;
+  // Reorder atkSlice to match custom order
+  const byName = {};
+  atkSlice.forEach(a => { byName[a.team] = a; });
+  return custom.map(t => byName[t]);
+}
+
+function onAtkSwap(battleNum, groupIdx, pairIdx, newAtkTeam) {
+  const orderKey = 'B' + battleNum + '_' + groupIdx;
+  const order = _mmAtkOrder[orderKey];
+  if (!order) return;
+  // Find where the new attacker currently sits
+  const oldIdx = pairIdx;
+  const swapIdx = order.indexOf(newAtkTeam);
+  if (swapIdx === -1 || swapIdx === oldIdx) return;
+  // Swap positions
+  const temp = order[oldIdx];
+  order[oldIdx] = order[swapIdx];
+  order[swapIdx] = temp;
+  rebuildMatchmaking();
+}
 
 function renderMatchmaking(standings, hoursToEnd, teamStats) {
   _mmStandings = standings;
@@ -1510,8 +1585,11 @@ function rebuildMatchmaking() {
     const defTeams = proj.filter(s => s.faction !== atkFaction).sort((a, b) => b.projCopper - a.projCopper);
     const gs = GROUP_SIZE;
     for (let g = 0; g <= 10; g++) {
-      const aSlice = g < 10 ? atkTeams.slice(g * gs, (g + 1) * gs) : atkTeams.slice(g * gs);
+      let aSlice = g < 10 ? atkTeams.slice(g * gs, (g + 1) * gs) : atkTeams.slice(g * gs);
       const dSlice = g < 10 ? defTeams.slice(g * gs, (g + 1) * gs) : defTeams.slice(g * gs);
+      const oKey = 'B' + battle.num + '_' + g;
+      aSlice = applyAtkOrder(aSlice, oKey);
+      if (!_mmAtkOrder[oKey]) _mmAtkOrder[oKey] = aSlice.map(a => a.team);
       const pairs = Math.max(aSlice.length, dSlice.length);
       for (let p = 0; p < pairs; p++) {
         const a = aSlice[p], d = dSlice[p];
@@ -1583,9 +1661,14 @@ function rebuildMatchmaking() {
     const battleMatchups = [];
 
     for (let g = 0; g <= maxRegularGroups; g++) {
-      const atkSlice = g < maxRegularGroups ? atkTeams.slice(g * gs, (g + 1) * gs) : atkTeams.slice(g * gs);
+      let atkSlice = g < maxRegularGroups ? atkTeams.slice(g * gs, (g + 1) * gs) : atkTeams.slice(g * gs);
       const defSlice = g < maxRegularGroups ? defTeams.slice(g * gs, (g + 1) * gs) : defTeams.slice(g * gs);
       if (atkSlice.length === 0 && defSlice.length === 0) break;
+
+      // Apply custom attacker order
+      const orderKey = 'B' + battle.num + '_' + g;
+      atkSlice = applyAtkOrder(atkSlice, orderKey);
+      if (!_mmAtkOrder[orderKey]) _mmAtkOrder[orderKey] = atkSlice.map(a => a.team);
 
       html += '<div class="mm-tier">';
       html += '<div class="mm-tier-label">Group ' + (g + 1) + '</div>';
@@ -1619,9 +1702,17 @@ function rebuildMatchmaking() {
         const atkRankClass = atkRank <= 3 ? ' rank-' + atkRank : '';
         const defRankClass = defRank <= 3 ? ' rank-' + defRank : '';
 
+        // Attacker dropdown — list all attackers in this group
+        let atkDropdown = '<select class="mm-atk-select ' + atkClass + '" onchange="onAtkSwap(' + battle.num + ',' + g + ',' + p + ',this.value)">';
+        atkSlice.forEach(a => {
+          const sel = a.team === atk.team ? ' selected' : '';
+          atkDropdown += '<option value="' + a.team + '"' + sel + '>' + a.team + '</option>';
+        });
+        atkDropdown += '</select>';
+
         html += '<div class="mm-matchup-row">';
         html += '<div class="mm-prob ' + probClass + '">' + winPct + '%</div>';
-        html += '<div class="mm-matchup-atk"><span class="mm-team-tag ' + atkClass + '">' + atk.team + '</span><span class="mm-final-rank' + atkRankClass + '">#' + atkRank + '</span></div>';
+        html += '<div class="mm-matchup-atk">' + atkDropdown + '<span class="mm-final-rank' + atkRankClass + '">#' + atkRank + '</span></div>';
         html += '<div class="mm-matchup-vs">VS</div>';
         html += '<div class="mm-matchup-def"><span class="mm-final-rank' + defRankClass + '">#' + defRank + '</span><span class="mm-team-tag ' + defClass + '">' + def.team + '</span></div>';
         html += '<div class="mm-prob" style="background:none;color:var(--gold);font-size:0.6rem">' + (copperTaken > 0 ? '+' + fmtCopper(copperTaken) : '—') + '</div>';
@@ -1692,6 +1783,7 @@ function setMMSlider(key, val) {
 
 function resetAllSliders() {
   _mmSliderState = {};
+  _mmAtkOrder = {};
   rebuildMatchmaking();
 }
 
