@@ -1104,11 +1104,12 @@ function fmtK(n) {
 // ── Data Loading ──
 async function loadData() {
   try {
-    const [genRes, standingsRes, battleRes, scheduleRes] = await Promise.all([
+    const [genRes, standingsRes, battleRes, scheduleRes, rosterRes] = await Promise.all([
       fetch('copper_generation.csv'),
       fetch('copper_standings.csv'),
       fetch('battle_data.csv'),
-      fetch('schedule.csv')
+      fetch('schedule.csv'),
+      fetch('roster.csv')
     ]);
 
     if (!genRes.ok || !standingsRes.ok || !battleRes.ok || !scheduleRes.ok) throw new Error('CSV load failed');
@@ -1117,6 +1118,14 @@ async function loadData() {
     const standingsRows = parseCSV(await standingsRes.text());
     const battleRows = parseCSV(await battleRes.text());
     const scheduleRows = parseCSV(await scheduleRes.text());
+
+    // Build roster lookup: team → server
+    const rosterLookup = {};
+    if (rosterRes.ok) {
+      parseCSV(await rosterRes.text()).forEach(r => {
+        rosterLookup[r['Team']] = parseInt(r['Server']);
+      });
+    }
 
     // Build battleSchedule from schedule.csv
     const dayNames = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
@@ -1135,12 +1144,12 @@ async function loadData() {
     const genRates = {};
     genRows.forEach(r => { genRates[r['Team']] = parseInt(r['Copper Per Hour']); });
 
-    // Parse standings
+    // Parse standings — Server column may be in CSV or looked up from roster
     const standings = [];
     const snapshotDate = standingsRows[0] ? standingsRows[0]['Snapshot Date'] : '2026-04-06';
     standingsRows.forEach(r => {
       const team = r['Team'];
-      const srv = parseInt(r['Server']);
+      const srv = r['Server'] ? parseInt(r['Server']) : (rosterLookup[team] || 0);
       const copper = parseInt(r['Copper']);
       const faction = serverFaction[srv] || 'Unknown';
       const genRate = genRates[team] || 0;
