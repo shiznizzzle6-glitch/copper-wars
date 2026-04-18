@@ -1781,73 +1781,61 @@ function renderNarrative() {
   const b6Stats = bStats.find(s => s.b === 6);
 
   if (b6Stats) {
-    // Six battles in narrative
-    n += '<p>Six battles in, and this season has completely flipped. What looked like a Koubutai runaway after B5 was answered in B6 with one of the most explosive Kage offensive rounds of the season. ';
-    n += 'Average steal per win has surged from ' + Math.round(firstAvg) + 'k in Battle 1 to ' + Math.round(lastAvg) + 'k in Battle ' + maxB + ' — a ' + escalationPct + '% increase. ';
-    n += 'With just two battles remaining, the final standings are genuinely unpredictable.</p>';
+    // Six battles in — general reflection
+    n += '<p>Six battles in, and this season has completely flipped. What looked like a Koubutai runaway after B5 was answered in B6 with one of the most explosive Kage offensive rounds yet. ';
+    n += 'Average steal per win has surged from ' + Math.round(firstAvg) + 'k in Battle 1 to ' + Math.round(lastAvg) + 'k in Battle ' + maxB + ' — a ' + escalationPct + '% escalation. ';
+    n += 'With two battles remaining, the final standings are genuinely unpredictable.</p>';
 
-    n += '<p>The B6 numbers were staggering: <strong style="color:var(--cyan)">ETOA</strong> seized 347.7k from ATUM, <strong style="color:var(--cyan)">UFO</strong> stripped 335.3k from RISE, ';
-    n += '<strong style="color:var(--cyan)">EVGS</strong> plundered 319.9k from OGM, and <strong style="color:var(--cyan)">TNTX</strong> took 310.4k from HAVK. ';
-    n += 'Four Kage teams each stole more copper in a single battle than FYER\'s season-record haul from B5. ETOA now sits at <strong style="color:var(--gold)">#2 overall</strong> — just 1,465 copper behind FYER. ';
-    n += 'Kage won ' + b6Stats.w + ' of ' + b6Stats.total + ' matchups (' + Math.round(b6Stats.w / b6Stats.total * 100) + '%).</p>';
-
-    n += '<p>Koubutai\'s defenders were not without their own story. <strong style="color:var(--green)">FYER held</strong> against ETRE (221.4k earned defending), HOPE repelled ROKK (202.2k), ZMBY held ETRR (195.5k), and FEU, PNAS, WRC, and MXP all shut out their opponents completely. ';
-    n += 'Koubutai\'s top teams defended well — it was the mid-table that was exposed.</p>';
+    n += '<p>B6 was a turning point. Kage\'s attackers posted some of the largest individual steals of the season, reshuffling the standings and putting their top team within striking distance of #1 overall. ';
+    n += 'Koubutai\'s upper tier largely held — but mid-table breaches were costly, and the kind of losses that compound into rank drops as the season closes out. ';
+    n += 'Kage won ' + b6Stats.w + ' of ' + b6Stats.total + ' B6 matchups (' + Math.round(b6Stats.w / b6Stats.total * 100) + '%), their best attacking round of the season.</p>';
 
   } else {
-    // Five battles in narrative
-    n += '<p>Five battles deep in an eight-round season, the defining force remains <strong style="color:var(--gold)">compounding copper</strong>. ';
+    // Five battles in — general reflection
+    n += '<p>Five battles into an eight-round season, the defining force remains <strong style="color:var(--gold)">compounding copper</strong>. ';
     n += 'Average steal per win has surged from ' + Math.round(firstAvg) + 'k in Battle 1 to ' + Math.round(lastAvg) + 'k in Battle ' + maxB + ' — a ' + escalationPct + '% increase. ';
-    n += 'The stakes are escalating exponentially: a single lost defense in B5 costs more copper than an entire B1 matchup produced.</p>';
+    n += 'The stakes keep escalating: a single lost defense now costs more than an entire early-battle matchup produced.</p>';
 
-    n += '<p><span style="color:var(--green)">Koubutai</span> has tightened its grip on the season with a devastating B5 offensive. ';
-    n += 'Across their three attacking rounds, they\'ve posted a ' + Math.round(kouRec.atkW / (kouRec.atkW + kouRec.atkL) * 100) + '% attack win rate ';
-    n += 'while holding ' + Math.round(kouRec.defHold / (kouRec.defHold + kouRec.defBreach) * 100) + '% of defenses. ';
-    n += '<span style="color:var(--cyan)">Kage no Sato</span> sits at ' + Math.round(kageRec.atkW / (kageRec.atkW + kageRec.atkL) * 100) + '% on offense. ';
-    n += 'The momentum Kage built in B4 was emphatically erased in B5 — but B6 is their chance to respond.</p>';
-
+    n += '<p><span style="color:var(--green)">Koubutai</span> retook control with a dominant B5 offensive — ';
+    n += Math.round(kouRec.atkW / (kouRec.atkW + kouRec.atkL) * 100) + '% attack win rate across their three attack rounds, ';
+    n += 'holding ' + Math.round(kouRec.defHold / (kouRec.defHold + kouRec.defBreach) * 100) + '% of defenses overall. ';
     if (b5Stats) {
-      n += '<p>Battle 5 was a statement round for Koubutai. ' + bigSteal.atk + ' dismantled ' + bigSteal.def + ' for <strong style="color:var(--gold)">' + bigSteal.copper + 'k copper</strong> — the largest single steal of the season. ';
-      n += 'ATUM avenged their B4 loss to UFO with 264.3k, RISE took 262.7k from ETRE, and HOPE cracked ETRR for 251.3k. ';
-      n += 'Koubutai won ' + b5Stats.w + ' of ' + b5Stats.total + ' matchups (' + Math.round(b5Stats.w / b5Stats.total * 100) + '%).</p>';
+      n += bigSteal.atk + '\'s dismantling of ' + bigSteal.def + ' for <strong style="color:var(--gold)">' + bigSteal.copper + 'k</strong> stands as the largest single steal of the season. ';
     }
+    n += 'The momentum Kage built in B4 was reversed — but two attack rounds remain, and the standings are far from settled.</p>';
   }
 
-  // Rivalries — always shown, updated for B6 context
+  // Rivalries — thematic, no hardcoded matchup results
   if (rivalries.length > 0) {
-    n += '<p>Season-defining rivalries continue to intensify. ';
-    n += '<strong>RISE vs ETRE</strong> have met four times — RISE won B2, B3, held ETRE\'s B4 attack, then struck back for 262.7k in B5. ';
-    if (b6Stats) {
-      n += 'They didn\'t face each other in B6, but UFO stepped in to take 335.3k from RISE — the server 1252 faction delivering a devastating counter regardless. ';
-    }
-    n += '<strong>ATUM vs UFO</strong> continue their volatile rivalry — ATUM took B5\'s 264.3k after losing B4\'s 239.3k';
-    if (b6Stats) { n += '. They didn\'t meet in B6, leaving the series tied 1-1 heading into B7'; }
-    n += '.</p>';
+    n += '<p>Season-defining rivalries have become a hallmark of this war. ';
+    n += '<strong>RISE vs ETRE</strong> have been recurring opponents, trading wins across multiple battles in a matchup that mirrors the broader Koubutai vs Kage tension. ';
+    n += '<strong>ATUM vs UFO</strong> have developed an equally volatile head-to-head, with each side extracting heavy copper from the other in alternating rounds. ';
+    n += 'These duels will likely shape where both factions finish when the final standings are locked.</p>';
   }
 
   // Faction advice — B6 context
   if (b6Stats) {
     n += '<p class="narrative-faction-header" style="color:var(--cyan)">⚔ Kage no Sato — Path Forward</p>';
-    n += '<p>B6 proved Kage can win at the highest level. ETOA is now within striking distance of #1, and ROKK, UFO, and EVGS are all in the top 12. ';
-    n += '<strong>B7 is the final Kage attack round</strong> — use it to push ETOA over FYER and consolidate the mid-table positions. ';
-    n += 'The FYER matchup is the prize: whoever takes #1 copper going into B8 enters the final battle in the strongest defensive position. ';
-    n += 'TNTX, MAAX, and HPRO showed they can break Koubutai\'s mid-tier — that depth needs to show up again in B7 to lock in multiple top-15 finishes.</p>';
+    n += '<p>B6 proved Kage can compete at the highest level. The gap at the top of the standings has never been closer, and multiple Kage teams have established strong positions in the top 12. ';
+    n += '<strong>B7 is the final Kage attack round</strong> — the chance to push their top team to #1 and consolidate mid-table before Koubutai gets one final swing in B8. ';
+    n += 'The prize is entering B8 in the strongest defensive position possible: whoever holds #1 copper going into the final battle has the most to protect — and the most to lose.</p>';
 
     n += '<p class="narrative-faction-header" style="color:var(--green)">🛡 Koubutai — Path Forward</p>';
-    n += '<p>FYER\'s B6 defense was the bright spot — holding ETRE and earning 221.4k in copper. But ATUM, RISE, OGM, and HAVK each conceded 300k+. ';
-    n += '<strong>B7 is a Kage attack round</strong> — the season\'s final pressure point before the roles reverse in B8. ';
-    n += 'Koubutai must prioritize their top 5 defending well. Generation rates are still Koubutai\'s structural advantage: even after heavy B6 losses, teams like FYER, FEU, and PNAS have enough runway to hold their positions if B7 defenses hold. ';
-    n += 'B8 gives Koubutai one final attack — targeting the Kage teams who surged in B6 will be critical to reclaiming lost ground.</p>';
+    n += '<p>Koubutai\'s top teams showed they can hold under pressure — but depth was exposed in B6. ';
+    n += '<strong>B7 is a Kage attack round</strong> — the season\'s final pressure point before roles reverse. ';
+    n += 'Copper generation remains Koubutai\'s structural advantage: teams with strong reserves can absorb a difficult B7 and still reclaim ground in B8. ';
+    n += 'The focus now is protecting the top of the standings and arriving at B8 healthy enough to make the final attack round count.</p>';
+
   } else {
     n += '<p class="narrative-faction-header" style="color:var(--cyan)">⚔ Kage no Sato — Path Forward</p>';
-    n += '<p>B5 was a bloodbath on defense. The S1252 core (ETRE, ETOA, ETRR) collectively lost over 600k copper. ';
-    n += '<strong>B6 is the most critical battle of the season</strong> — both attacking rounds (B6 and B7) must deliver maximum copper against Koubutai\'s leaders to close the gap. ';
-    n += 'Teams that held in B5 (EVGS, WARS, BAKS, OKM) have proven they can defend under pressure.</p>';
+    n += '<p>B5 was a difficult round, but the season isn\'t decided. Both B6 and B7 are Kage attack rounds — back-to-back opportunities to close the gap at the top. ';
+    n += '<strong>B6 is the most critical battle of the season</strong>: a commanding performance now puts real pressure on Koubutai\'s hold on the upper standings. ';
+    n += 'Teams that defended well in B5 enter B6 in the strongest position to push the pace.</p>';
 
     n += '<p class="narrative-faction-header" style="color:var(--green)">🛡 Koubutai — Path Forward</p>';
-    n += '<p>Koubutai commands the standings after B5, but B6 puts them on defense against a desperate Kage faction. ';
-    n += 'Protect FYER and the S1234 cluster — a few mid-table breaches can cascade into rank reshuffling. ';
-    n += 'Production rates remain Koubutai\'s structural edge even if B6 goes badly.</p>';
+    n += '<p>Koubutai commands the standings after B5, but two consecutive Kage attack rounds are ahead. ';
+    n += 'Protecting the top of the table is essential — a few key defenses holding can absorb the storm and preserve a winning position heading into B8. ';
+    n += 'Copper generation remains Koubutai\'s structural edge even if B6 goes badly.</p>';
   }
 
   n += '</div>';
